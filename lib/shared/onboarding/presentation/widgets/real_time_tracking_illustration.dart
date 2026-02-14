@@ -270,12 +270,16 @@ class _QueueItem extends StatelessWidget {
                 ),
               ),
 
-              if (isActive)
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: AppColors.primary,
-                ),
+              SizedBox(
+                width: isActive ? 20 : 0,
+                child: isActive
+                    ? Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: AppColors.primary,
+                      )
+                    : null,
+              ),
             ],
           ),
         ),
