@@ -16,7 +16,10 @@ Update `pubspec.yaml`:
 - **Navigation:** `go_router`
 - **State:** `flutter_bloc`, `equatable`
 - **Firebase:** `firebase_core`, `firebase_auth`, `google_sign_in`, `cloud_firestore`
+- **Crash reporting:** `firebase_crashlytics`
 - **Utilities:** `intl`, `uuid`
+- **DI:** `get_it`, `injectable`
+- **Dev (codegen):** `build_runner`, `injectable_generator`
 
 ---
 
@@ -24,14 +27,28 @@ Update `pubspec.yaml`:
 ```
 lib/
 ├── main.dart                        # Bootstrap + Firebase.initializeApp
-├── core/                            # Shared app infrastructure + shared features
+├── core/                            # Shared app infrastructure
 │   ├── app/                         # App widget, router, theme, DI
-│   ├── auth/                        # Login/signup, role resolution (shared)
-│   ├── organization/                # Org landing, services catalog (shared read)
-│   ├── booking/                     # Time slot selection, create booking (shared)
-│   ├── queue/                       # Queue status domain (shared read)
 │   ├── widgets/                     # Shared UI widgets
 │   └── utils/                       # Shared helpers, constants
+│
+├── shared/                          # Shared features (used by both roles)
+│   ├── auth/                        # Login/signup, role resolution
+│   │   ├── domain/
+│   │   ├── data/
+│   │   └── presentation/
+│   ├── organization/                # Org landing, services catalog (read)
+│   │   ├── domain/
+│   │   ├── data/
+│   │   └── presentation/
+│   ├── booking/                     # Time slot selection, create booking
+│   │   ├── domain/
+│   │   ├── data/
+│   │   └── presentation/
+│   └── queue/                       # Queue status domain (shared read)
+│       ├── domain/
+│       ├── data/
+│       └── presentation/
 │
 ├── customer/                        # Customer module (contains sub-features)
 │   ├── entry/                       # QR/link entry flow
@@ -42,7 +59,7 @@ lib/
 │       └── presentation/
 │
 └── admin/                           # Admin module (contains sub-features)
-   ├── dashboard/                   # Admin home, navigation hub
+   ├── dashboard/                   # Admin home, navigation hub (presentation-only)
    │   └── presentation/
    ├── services/                    # Service management (CRUD)
    │   ├── domain/
@@ -56,7 +73,7 @@ lib/
    │   ├── domain/
    │   ├── data/
    │   └── presentation/
-   ├── share_access/                # QR code & booking link generation
+   ├── share_access/                # QR code & booking link generation (presentation-only)
    │   └── presentation/
    └── daily_summary/               # End-of-day stats
       ├── domain/
@@ -65,8 +82,9 @@ lib/
 ```
 
 **Structure rules:**
-- `core/` = shared app infrastructure and shared features used by both roles.
-- `customer/` = customer module with its own feature folders.
+- `core/` = shared app infrastructure only.
+- `shared/` = shared features used by both roles; each shared feature uses `domain/`, `data/`, `presentation/`.
+- `customer/` = customer module with its own feature folders; use `domain/` and `data/` if customer-only logic appears.
 - `admin/` = admin module with sub-features, each with its own Clean Architecture layers where needed.
 - Sub-features that are presentation-only (dashboard, share_access) skip `domain/` and `data/` layers.
 
@@ -80,14 +98,15 @@ Each feature/sub-feature follows Clean Architecture layers as needed:
 ### 4. Role-Based Access Control (RBAC)
 
 **Concept:** Two roles - `admin` and `customer`. Role is stored in Firestore `users/{uid}` doc and resolved after login.
+**Role assignment:** Admin role is assigned during signup via whitelist/invite checks (stored in Firestore), with the first admin set manually.
 
 **Client-side enforcement:**
 1. `AuthBloc` emits authenticated state including resolved `role`.
 2. `go_router` redirect logic checks role:
-   - `/a/...` routes require `role == admin`; otherwise redirect to customer home.
-   - `/c/...` routes require `role == customer`; otherwise redirect to admin home.
+   - `/a/...` routes require `role == admin`; otherwise redirect to `/c/...`.
+   - `/c/...` routes require `role == customer`; otherwise redirect to `/a/...`.
    - Unauthenticated users on protected routes redirect to `/login` with return path.
-3. Deep link `/o/:orgId` resolves to `/c/o/:orgId` for customers (admins access their own org differently).
+3. Deep link `/o/:orgId` resolves to `/c/o/:orgId` for customers; admins are redirected to `/a/customer-view/:orgId` which renders the customer org landing in the admin shell.
 
 **Server-side enforcement (critical):**
 - Firestore Security Rules check `request.auth.uid` and role from user doc before allowing writes.
@@ -100,17 +119,44 @@ Each feature/sub-feature follows Clean Architecture layers as needed:
 - Run `flutterfire configure` to generate `firebase_options.dart`.
 - Add Google Services plugin to Android Gradle files.
 - Wire `Firebase.initializeApp()` in `main.dart`.
+- Enable Crashlytics:
+   - Add Crashlytics Gradle plugin for Android.
+   - Initialize Crashlytics in app startup and forward Flutter errors.
+   - Disable Crashlytics in debug builds by default (use flavors to gate it if needed).
 
 ---
 
 ### 6. Assets & Theme Scaffold
-- Create `assets/images/`, `assets/icons/`, `assets/fonts/` (add Inter font).
-- Register in `pubspec.yaml`.
-- Add `lib/src/app/theme/` with Material 3 theme matching UI mocks (colors, typography, card radii).
+- Create `assets/images/`, `assets/icons/`, `assets/fonts/`.
+- Add initial assets from design mocks:
+   - App icon (adaptive + legacy) and app logo.
+   - UI icons used in queue status and admin actions.
+   - Fonts (Inter family files).
+- Register assets and fonts in `pubspec.yaml`.
+- Add `lib/core/app/theme/` with starter files:
+   - `app_colors.dart` for brand colors and semantic colors.
+   - `app_theme.dart` for `ThemeData` with typography and component defaults.
+   - `app_text_styles.dart` for common text styles.
 
 ---
 
-### 7. Git Workflow & Branching Strategy
+### 7. Native Splash (flutter_native_splash)
+- Add `flutter_native_splash` to `dev_dependencies`.
+- Create `flutter_native_splash` config in `pubspec.yaml`:
+   - Background color matches brand primary.
+   - Centered logo from `assets/images/`.
+- Run `dart run flutter_native_splash:create` after assets are in place.
+
+---
+
+### 8. Dependency Injection Setup (get_it + injectable)
+- Create `lib/core/app/di/`.
+- Add `di.config.dart` generation via `build_runner`.
+- Register core singletons (Firebase, repositories, blocs) through `injectable`.
+
+---
+
+### 9. Git Workflow & Branching Strategy
 
 **Branches:**
 | Branch | Purpose |
@@ -128,7 +174,7 @@ Each feature/sub-feature follows Clean Architecture layers as needed:
 
 ---
 
-### 8. CI/CD Pipeline (GitHub Actions)
+### 10. CI/CD Pipeline (GitHub Actions)
 
 **Workflows to create:**
 
@@ -142,7 +188,7 @@ Each feature/sub-feature follows Clean Architecture layers as needed:
 2. **build-android.yml** (runs on push to `main` or manual trigger)
    - Same setup as CI
    - `flutter build apk --release`
-   - Upload APK artifact
+   - Upload **unsigned** release APK artifact (no keystore in CI)
 
 3. **firebase-deploy.yml** (optional, for Functions/Hosting)
    - Deploy Cloud Functions on push to `main`
@@ -152,7 +198,7 @@ Each feature/sub-feature follows Clean Architecture layers as needed:
 
 ---
 
-### 9. Testing Strategy (Init Phase)
+### 11. Testing Strategy (Init Phase)
 
 | Layer | What to test | Tools |
 |-------|--------------|-------|
@@ -160,17 +206,31 @@ Each feature/sub-feature follows Clean Architecture layers as needed:
 | Widget | Individual widgets render correctly | `flutter_test` |
 | Integration | Full user flows (auth, booking) | `integration_test` package |
 
-**Init deliverable:** Create `test/` mirror of `lib/src/features/` structure with placeholder test files so CI passes from day one.
+**Init deliverable:** Create `test/` mirror of `lib/shared/`, `lib/customer/`, and `lib/admin/` with placeholder test files so CI passes from day one.
 
 ---
 
-### 10. Verification Checklist
+### 12. Verification Checklist
 - [ ] `flutter analyze` passes with no issues.
 - [ ] `flutter test` runs (even if tests are minimal placeholders).
 - [ ] App launches on Android emulator -> splash -> login screen.
 - [ ] Firebase Auth (email + Google) works end-to-end.
 - [ ] Role resolution redirects to correct home (admin vs customer).
 - [ ] CI pipeline runs green on a test PR.
+
+---
+
+### Deliverables (Initialization Complete)
+- App boots with Firebase initialized and routing wired.
+- Core folder structure and admin/customer modules created.
+- RBAC redirects implemented and validated on a test role.
+- Native splash configured and generated.
+- Base theme files in place (`app_colors.dart`, `app_theme.dart`, `app_text_styles.dart`).
+- Assets registered (icons, fonts, logo).
+- DI container bootstrapped with `get_it` + `injectable`.
+- Crashlytics wired for crash reporting.
+- CI runs green (format, analyze, test) and Android build workflow works.
+- CI produces an **unsigned** release APK artifact.
 
 ---
 
@@ -183,7 +243,7 @@ Each feature/sub-feature follows Clean Architecture layers as needed:
 | Backend | Firestore + Cloud Functions |
 | Platform (MVP) | Android only |
 | Deep links | App Links (HTTPS URL with orgId) |
-| Branching | GitHub Flow (main + develop + feature branches) |
+| Branching | GitFlow-style (main + develop + feature/release) |
 | CI/CD | GitHub Actions |
 
 ---

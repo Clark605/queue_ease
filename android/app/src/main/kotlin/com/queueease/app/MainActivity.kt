@@ -1,4 +1,4 @@
-package com.example.queue_ease
+package com.queueease.app
 
 import io.flutter.embedding.android.FlutterActivity
 
