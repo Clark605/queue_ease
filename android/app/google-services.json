@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "836631105553",
+    "project_id": "ease-queue",
+    "storage_bucket": "ease-queue.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836631105553:android:add75ab3601be0066ca1b0",
+        "android_client_info": {
+          "package_name": "com.queueease.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM70DyzvDa9QqjJQ0q_aZoHaxJjDGHZK8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
