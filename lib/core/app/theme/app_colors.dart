@@ -13,7 +13,6 @@ abstract final class AppColors {
   static const Color error = Color(0xFFEF5350);
   static const Color info = Color(0xFF29B6F6);
 
-  // Neutral
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color onPrimary = Color(0xFFFFFFFF);
