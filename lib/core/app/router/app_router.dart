@@ -28,8 +28,8 @@ GoRouter createRouter() {
     initialLocation: Routes.onboarding,
     redirect: (BuildContext context, GoRouterState state) async {
       final onboardingService = getIt<OnboardingService>();
-      final hasCompletedOnboarding =
-          await onboardingService.hasCompletedOnboarding();
+      final hasCompletedOnboarding = await onboardingService
+          .hasCompletedOnboarding();
 
       final isOnboarding = state.matchedLocation == Routes.onboarding;
 
