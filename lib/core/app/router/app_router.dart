@@ -20,7 +20,7 @@ abstract final class Routes {
 /// - `/login` is the unauthenticated entry point
 GoRouter createRouter() {
   return GoRouter(
-    initialLocation: Routes.adminDashboard,
+    initialLocation: Routes.login,
     redirect: (BuildContext context, GoRouterState state) {
       // TODO: Implement auth-aware redirect logic:
       // 1. Check if user is authenticated via AuthBloc
