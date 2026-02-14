@@ -1,3 +1,5 @@
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'router/app_router.dart';
@@ -10,11 +12,17 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'QueueEase',
-      theme: AppTheme.light,
-      routerConfig: _router,
-      debugShowCheckedModeBanner: false,
+    return DevicePreview(
+      enabled: kDebugMode,
+      builder: (context) => MaterialApp.router(
+        title: 'QueueEase',
+        theme: AppTheme.light,
+        routerConfig: _router,
+        debugShowCheckedModeBanner: false,
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
+        useInheritedMediaQuery: true,
+      ),
     );
   }
 }
