@@ -32,15 +32,8 @@ Small clinics and service providers often rely on paper notebooks, WhatsApp mess
 ### 2. Customer
 
 * Accesses booking via QR code or unique link
-
 * Books appointments or joins a queue
-
 * Wants to know their position and wait time
-
-* Books appointments or joins a queue
-
-* Wants to know their position and wait time
-
 * Expects timely notifications
 
 ---
@@ -115,10 +108,6 @@ Small clinics and service providers often rely on paper notebooks, WhatsApp mess
   * Queue advances to the next customer
 * Margin logic is enforced server-side to avoid manipulation
 
----
-
----
-
 ### 5. Real-Time Updates
 
 * Queue updates propagate instantly
@@ -170,49 +159,26 @@ Small clinics and service providers often rely on paper notebooks, WhatsApp mess
 
 ```mermaid
 flowchart TD
-    A[Splash Screen] --> B[Login / Signup]
+  A[Splash Screen] --> B[Login / Signup]
 
-    B -->|Admin| D[Admin Dashboard]
-    B -->|Customer via QR/Link| C0[Organization Landing]
+  B -->|Admin| D[Admin Dashboard]
+  B -->|Customer via QR/Link| C0[Organization Landing]
 
-    %% Customer Screens
-    C0 --> C1[Select Service]
-    C1 --> C2[Select Time Slot]
-    C2 --> C3[Booking Confirmation]
-    C3 --> C4[My Queue Status]
+  %% Customer Screens
+  C0 --> C1[Select Service]
+  C1 --> C1a[Service Details]
+  C1a --> C2[Select Time Slot]
+  C2 --> C3[Booking / Queue Join]
+  C3 --> C4[Booking Confirmation]
+  C4 --> C5[Queue Status]
 
-    %% Admin Screens
-    D --> D1[Service Management]
-    D --> D2[Working Hours Setup]
-    D --> D3[Today's Queue]
-    D3 --> D4[Queue Actions]
-    D --> D5[Share QR / Booking Link]
-```
-
-### Screen Responsibilities
-
----
-
-```mermaid
-flowchart TD
-    A[Splash Screen] --> B[Login / Signup]
-
-    B -->|Customer| C[Customer Home]
-    B -->|Admin| D[Admin Dashboard]
-
-    %% Customer Screens
-    C --> C1[Select Service]
-    C1 --> C2[Select Time Slot]
-    C2 --> C3[Booking Confirmation]
-    C3 --> C4[My Queue Status]
-    C4 --> C5[Notifications]
-
-    %% Admin Screens
-    D --> D1[Service Management]
-    D --> D2[Working Hours Setup]
-    D --> D3[Today's Queue]
-    D3 --> D4[Queue Actions]
-    D --> D5[Daily Summary]
+  %% Admin Screens
+  D --> D1[Service Management]
+  D --> D2[Working Hours Setup]
+  D --> D3[Today's Queue]
+  D3 --> D4[Queue Actions]
+  D --> D5[Share QR / Booking Link]
+  D --> D6[Daily Summary (Basic)]
 ```
 
 ### Screen Responsibilities
@@ -226,11 +192,6 @@ flowchart TD
 
 * Authenticate user
 * Determine role (Admin / Customer)
-
-**Customer Home**
-
-* Entry point for customers
-* Access booking and queue status
 
 **Organization Landing Screen**
 
@@ -249,7 +210,25 @@ flowchart TD
 * Show available slots
 * Prevent conflicts
 
-**My Queue Status**
+**Service Details Screen**
+
+* Service description and duration
+* Time margin / grace period explanation
+* Continue CTA
+
+**Booking / Queue Join Screen**
+
+* Minimal customer input (name, phone optional)
+* Selected service summary
+* Booking type confirmation
+
+**Booking Confirmation**
+
+* Booking ID / queue number
+* Organization details and instructions
+* Track status CTA
+
+**Queue Status**
 
 * Current position
 * Estimated wait time
@@ -279,13 +258,11 @@ flowchart TD
 * Skip customer
 * Mark no-show
 
-**Daily Summary**
+**Daily Summary (Basic)**
 
 * Appointments count
 * No-shows
 * Average wait time
-
----
 
 ---
 
@@ -513,20 +490,38 @@ flowchart LR
 * Unique booking URL
 * Share / download options
 
-#### 5. Queue History & Analytics Screen
+#### 5. Daily Summary (Basic)
 
-**Purpose:** Operational insights. **Contains:**
+**Purpose:** End-of-day snapshot (MVP-safe). **Contains:**
 
 * Daily served customers
 * Average waiting time
 * No-show rate
+
+---
+
+### Post-MVP Screens (Design Only)
+
+#### 1. Queue History & Analytics Screen
+
+**Purpose:** Deeper operational insights (post-MVP). **Contains:**
+
 * Service popularity
+* Trend charts
+* Advanced analytics
 
-#### 6. Settings Screen
+#### 2. Settings Screen
 
-**Purpose:** Organization configuration. **Contains:**
+**Purpose:** Organization configuration (post-MVP). **Contains:**
 
 * Organization info
 * Working hours
 * Queue behavior rules
 * Notification preferences
+
+#### 3. Onboarding Screens
+
+**Purpose:** Brief product walkthrough and value framing (post-MVP). **Contains:**
+
+* 2-3 slides highlighting benefits
+* Skip option
