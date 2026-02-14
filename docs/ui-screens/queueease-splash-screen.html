@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QueueEase Splash Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#136dec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d131b] dark:text-white h-screen w-full overflow-hidden select-none">
+<div class="relative flex h-full w-full flex-col justify-between items-center bg-background-light dark:bg-background-dark p-6">
+<div class="flex-1"></div>
+<div class="flex flex-col items-center justify-center gap-6 animate-pulse">
+<div class="flex items-center justify-center w-24 h-24 rounded-2xl bg-primary shadow-xl shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[48px]">
+                    calendar_clock
+                </span>
+</div>
+<div class="text-center space-y-2">
+<h1 class="text-4xl font-bold tracking-tight text-[#0d131b] dark:text-white">
+                    QueueEase
+                </h1>
+<p class="text-[#4c6c9a] dark:text-[#94a3b8] text-lg font-medium">
+                    Smart appointments &amp; queues
+                </p>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-end w-full pb-12 items-center">
+</div>
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-1]">
+<div class="absolute -top-[20%] -right-[20%] w-[80%] h-[50%] bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute top-[40%] -left-[20%] w-[60%] h-[40%] bg-[#cfd9e7]/30 dark:bg-slate-800/30 rounded-full blur-3xl"></div>
+</div>
+</div>
+</body></html>

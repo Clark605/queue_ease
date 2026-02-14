@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QueueEase Onboarding - Fair Turns</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#135bec", "primary-dark": "#0fbfa1", "background-light": "#f6f6f8", "background-dark": "#101622", "surface-light": "#ffffff", "surface-dark": "#162e2a", "text-main-light": "#0d1b19", "text-main-dark": "#f0fdfa", "text-sub-light": "#4b5563", "text-sub-dark": "#9ca3af"}, fontFamily: {display: "Inter"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, boxShadow: {soft: "0 4px 20px -2px rgba(0, 0, 0, 0.05)"}}}};</script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased h-screen w-full flex flex-col overflow-hidden text-text-main-light dark:text-text-main-dark transition-colors duration-200">
+<!-- Header / Top Bar -->
+<header class="flex-none w-full px-6 pt-6 pb-2 flex justify-end items-center z-10">
+<button class="text-primary hover:text-primary-dark dark:hover:text-primary font-semibold text-sm tracking-wide transition-colors focus:outline-none">
+            Skip
+        </button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center w-full px-6 max-w-md mx-auto relative">
+<!-- Illustration Area -->
+<div class="w-full aspect-[4/5] max-h-[400px] mb-8 relative flex items-center justify-center">
+<!-- Abstract Background Decorations -->
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-3xl transform scale-75 opacity-50 dark:opacity-20"></div>
+<!-- Timeline Card Container -->
+<div class="relative z-10 w-full flex flex-col gap-4">
+<!-- Completed/Past Item (Faded) -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-surface-light/60 dark:bg-surface-dark/40 border border-slate-100 dark:border-slate-800 opacity-50 transform scale-95 origin-bottom">
+<div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400 text-xl">check</span>
+</div>
+<div class="flex-1">
+<div class="h-3 w-24 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+<div class="h-2 w-16 bg-slate-100 dark:bg-slate-800 rounded"></div>
+</div>
+<span class="text-xs text-slate-400 font-medium">10:00 AM</span>
+</div>
+<!-- Active Item (Hero) -->
+<div class="relative flex items-center gap-4 p-5 rounded-2xl bg-surface-light dark:bg-surface-dark border border-primary/20 shadow-soft transform scale-105 z-20">
+<div class="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-12 bg-primary rounded-r-full"></div>
+<div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 relative overflow-hidden">
+<img alt="Avatar of current user in queue" class="w-full h-full object-cover" data-alt="User avatar for active queue turn" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDs5C9FhFEgMtVk5goNJe1c6sNnZKEGCREL2Zr1dU467FJxxvLTnLY7QDTg9M_4SibzsuIkjzVskyyPV7je54WLHR8J8NdBFpfbeFGBDKzoJj4sQioUDLxMAlRgBA3ztvWamaI-zMP3QaNKdmVygeMaxm70nSRk5WpNi6DvUsZ6eneseB7A-VTQRTxOw-pUT6DaZ21LgYGfNlsbqVRAwZ0m6x3DMKTJTEobnLNKcPwMlWFXPQYkhl9MBEoEuObggb1UtReRwNNbN6e"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-text-main-light dark:text-text-main-dark mb-1">Your Turn</p>
+<div class="flex items-center gap-1">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<p class="text-xs text-primary font-medium">Now serving</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-primary text-2xl">arrow_forward</span>
+</div>
+</div>
+<!-- Next Item (Waiting) -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-100 dark:border-slate-800 opacity-80 transform scale-95 origin-top">
+<div class="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 font-medium text-xs border border-slate-200 dark:border-slate-700">
+                        JD
+                    </div>
+<div class="flex-1">
+<div class="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+<div class="h-2 w-12 bg-slate-100 dark:bg-slate-800 rounded"></div>
+</div>
+<span class="text-xs text-slate-400 dark:text-slate-500 font-medium">10:30 AM</span>
+</div>
+<!-- Connection Lines -->
+<div class="absolute left-[2.75rem] top-8 bottom-8 w-px border-l-2 border-dashed border-slate-200 dark:border-slate-700 -z-10"></div>
+</div>
+</div>
+<!-- Text Content -->
+<div class="text-center w-full space-y-3 z-10 mt-auto mb-8">
+<h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-text-main-light dark:text-white leading-[1.15]">
+                Fair turns.<br/>No confusion.
+            </h1>
+<p class="text-text-sub-light dark:text-text-sub-dark text-base md:text-lg leading-relaxed max-w-[280px] mx-auto">
+                If someone doesn’t arrive on time, the queue moves forward automatically.
+            </p>
+</div>
+</main>
+<!-- Bottom Controls -->
+<footer class="flex-none w-full px-6 pb-10 pt-2 flex flex-col items-center gap-8 max-w-md mx-auto">
+<!-- Indicators -->
+<div class="flex items-center justify-center gap-3">
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-colors"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-colors"></div>
+<div class="h-2.5 w-8 rounded-full bg-primary transition-all duration-300"></div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full bg-primary hover:bg-primary-dark text-white dark:text-slate-900 font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group">
+            Get Started
+            <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</footer>
+</body></html>

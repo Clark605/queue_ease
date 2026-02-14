@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QueueEase - Queue Status Serving</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#136dec", "background-light": "#f6f7f8", "background-dark": "#101822", "surface-light": "#ffffff", "surface-dark": "#1a2e1d"}, fontFamily: {display: "Inter"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}}}};</script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-xl">
+<!-- TopAppBar -->
+<header class="flex items-center p-4 pb-2 justify-between sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm">
+<button class="text-[#0d1b10] dark:text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-[#0d1b10] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Queue Status</h2>
+<div class="flex size-12 items-center justify-end">
+<button class="flex shrink-0 items-center justify-center rounded-full size-10 text-[#0d1b10] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">more_horiz</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col px-4 pt-2 pb-8 gap-6">
+<!-- Status Card -->
+<div class="w-full">
+<div class="relative overflow-hidden rounded-2xl shadow-lg group">
+<!-- Background with Gradient Overlay -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Abstract green geometric patterns indicating movement" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCBhGgJw_SERCe7hE9f2wI2pZmpWmkmhszrG2pyTKtZ4WqpTRycENU19Dq7bVVx-NXlR_umJLWAWMOCkLqG4KPEjPkvkc8gBbRBgBGlX1w30-1R5IgaQ5704evfxjVvmm3Vmrr9pEjBl0B5iceDG_RITrdY9zr5INCKsmQFXk_dtqrFD3rAnMY-uJ37wag2oV5baxShUSwVGYxehgRCaFiwF9e1pDGVMPHSmiHie1Bpe-RXScJbU0yY6dFQ71Ch_23fbTmsGfwhsefb");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-br from-green-600/90 to-background-dark/90 mix-blend-multiply"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<!-- Card Content -->
+<div class="relative z-10 flex flex-col items-center justify-center py-10 px-6 text-center gap-2">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 mb-2">
+<span class="animate-pulse relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="text-primary text-xs font-bold uppercase tracking-wider">Now Serving</span>
+</div>
+<p class="text-white text-8xl font-black tracking-tighter leading-none filter drop-shadow-lg">#1</p>
+<div class="mt-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-6 py-2">
+<p class="text-white text-xl font-bold tracking-widest uppercase">Your Turn</p>
+</div>
+<p class="text-gray-200 text-sm font-medium mt-4 max-w-[240px]">
+                            Counter 03 • Dr. Sarah Jenkins<br/>
+<span class="opacity-80">General Consultation</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Timer Section -->
+<div class="flex flex-col items-center gap-2">
+<div class="flex items-center gap-2 text-[#0d1b10] dark:text-gray-300 text-sm font-medium">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">timer</span>
+<span>Check-in remaining time</span>
+</div>
+<div class="w-full flex gap-3">
+<!-- Hours -->
+<div class="flex grow basis-0 flex-col items-stretch gap-2">
+<div class="flex h-16 grow items-center justify-center rounded-2xl bg-primary/10 dark:bg-primary/5 border border-primary/10 dark:border-primary/10 shadow-sm">
+<p class="text-[#0d1b10] dark:text-white text-2xl font-bold leading-tight tracking-tight tabular-nums">00</p>
+</div>
+<div class="flex items-center justify-center">
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Hrs</p>
+</div>
+</div>
+<!-- Separator -->
+<div class="flex flex-col justify-start pt-4">
+<span class="text-2xl font-bold text-gray-300 dark:text-gray-600">:</span>
+</div>
+<!-- Minutes -->
+<div class="flex grow basis-0 flex-col items-stretch gap-2">
+<div class="flex h-16 grow items-center justify-center rounded-2xl bg-primary/10 dark:bg-primary/5 border border-primary/10 dark:border-primary/10 shadow-sm relative overflow-hidden">
+<!-- Progress indication fill example -->
+<div class="absolute bottom-0 left-0 w-full h-1 bg-primary/20"></div>
+<p class="text-[#0d1b10] dark:text-white text-2xl font-bold leading-tight tracking-tight tabular-nums">09</p>
+</div>
+<div class="flex items-center justify-center">
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Min</p>
+</div>
+</div>
+<!-- Separator -->
+<div class="flex flex-col justify-start pt-4">
+<span class="text-2xl font-bold text-gray-300 dark:text-gray-600">:</span>
+</div>
+<!-- Seconds -->
+<div class="flex grow basis-0 flex-col items-stretch gap-2">
+<div class="flex h-16 grow items-center justify-center rounded-2xl bg-primary/20 dark:bg-primary/10 border border-primary/30 dark:border-primary/20 shadow-sm">
+<p class="text-primary-700 dark:text-primary text-2xl font-bold leading-tight tracking-tight tabular-nums">59</p>
+</div>
+<div class="flex items-center justify-center">
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Sec</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer to push content up if needed, or visual gap -->
+<div class="h-2"></div>
+</main>
+<!-- Bottom Actions -->
+<div class="p-4 pt-0 mt-auto bg-background-light dark:bg-background-dark sticky bottom-0 z-40">
+<!-- Fade gradient at top of sticky footer -->
+<div class="absolute -top-6 left-0 right-0 h-6 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none"></div>
+<div class="flex flex-col gap-3">
+<!-- Primary Button -->
+<button class="group flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary hover:bg-[#0fd630] active:scale-[0.98] transition-all text-[#0d1b10] shadow-[0_4px_12px_rgba(19,236,55,0.3)]">
+<div class="mr-2 flex items-center justify-center bg-black/10 rounded-full p-1 group-hover:bg-black/20 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">check</span>
+</div>
+<span class="text-base font-bold leading-normal tracking-[0.015em]">Check In — I’m Here</span>
+</button>
+<!-- Secondary Button -->
+<button class="flex w-full cursor-pointer items-center justify-center rounded-xl h-12 px-4 bg-transparent hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-gray-400 text-sm font-semibold transition-colors">
+<span class="truncate">Can’t make it? Cancel or Reschedule</span>
+</button>
+</div>
+<!-- Home Bar Indicator for iOS -->
+<div class="flex justify-center pt-5 pb-2">
+<div class="h-1.5 w-32 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+</div>
+</div>
+</div>
+</body></html>

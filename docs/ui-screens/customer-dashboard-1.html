@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary-blue: #2563eb;
+            --accent-blue: #3b82f6;
+            --bg-gray: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-gray);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen">
+<div class="max-w-md mx-auto min-h-screen flex flex-col pb-10">
+<header class="flex items-center justify-between px-6 py-4">
+<button class="p-2">
+<span class="material-symbols-outlined text-slate-900 text-3xl">menu</span>
+</button>
+<h1 class="text-xl font-bold text-slate-900 tracking-tight">QueueEase</h1>
+<div class="relative p-2">
+<span class="material-symbols-outlined text-slate-900 text-3xl">notifications</span>
+<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+</div>
+</header>
+<section class="px-6 py-4">
+<h2 class="text-3xl font-bold text-slate-900">Welcome, Sarah</h2>
+<p class="text-slate-500 mt-1">Ready to skip the wait today?</p>
+</section>
+<section class="px-4 py-2">
+<div class="bg-blue-600 rounded-[2rem] p-6 shadow-lg shadow-blue-200 text-white">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="text-blue-100 text-sm font-medium">Current Status</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="w-3 h-3 bg-emerald-400 rounded-full"></span>
+<h3 class="text-2xl font-bold">You are in queue</h3>
+</div>
+<p class="text-blue-100 text-xs mt-1">Bright Smiles Dental Clinic • Dental Check-up Service</p>
+</div>
+<div class="bg-white/20 p-3 rounded-2xl">
+<span class="material-symbols-outlined text-white text-3xl fill">hourglass_empty</span>
+</div>
+</div>
+<div class="bg-blue-700/40 rounded-2xl flex items-center justify-center border border-white/10">
+<div class="flex-1 py-4 px-6 flex flex-col items-center">
+<p class="text-blue-200 text-[10px] font-bold tracking-widest uppercase mb-1">Position</p>
+<p class="text-3xl font-bold">#4</p>
+</div>
+<div class="w-px h-10 bg-white/20"></div>
+<div class="flex-1 py-4 px-6 flex flex-col items-center">
+<p class="text-blue-200 text-[10px] font-bold tracking-widest uppercase mb-1">Est. Wait</p>
+<div class="flex items-baseline gap-1">
+<p class="text-3xl font-bold">12</p>
+<p class="text-blue-100 text-sm">mins</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="px-4 py-4 space-y-3">
+<button class="w-full bg-blue-600 text-white font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-md">
+<span class="material-symbols-outlined fill text-xl">calendar_add_on</span>
+            Book Appointment
+        </button>
+<button class="w-full bg-white text-slate-900 font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 border border-slate-100 shadow-sm">
+<span class="material-symbols-outlined fill text-blue-600 text-xl">visibility</span>
+            View My Queue
+        </button>
+</section>
+<section class="px-6 py-4">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xl font-bold text-slate-900">Next Appointment</h3>
+<a class="text-blue-600 font-semibold text-sm" href="#">See all</a>
+</div>
+<div class="bg-white rounded-2xl p-5 border border-slate-50 shadow-sm">
+<div class="flex items-center justify-between pb-4 border-b border-slate-50 mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-emerald-600 fill">dentistry</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900">Dental Checkup</h4>
+<p class="text-slate-400 text-xs">Dr. Emily Chen • Brig...</p>
+</div>
+</div>
+<span class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">Confirmed</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-lg">calendar_today</span>
+<p class="text-slate-600 text-sm font-medium">Tomorrow, Oct 25</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-lg">schedule</span>
+<p class="text-slate-600 text-sm font-medium">10:00 AM - 10:30 AM</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-lg">location_on</span>
+<p class="text-slate-600 text-sm font-medium">123 Wellness Blvd, Suite 200</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+
+</body></html>

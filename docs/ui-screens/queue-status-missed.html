@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Queue Status: Missed</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1313",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221010",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b0d0d] dark:text-white font-display transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-gray-200 dark:border-gray-800">
+<div class="text-[#1b0d0d] dark:text-white flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back</span>
+</div>
+<h2 class="text-[#1b0d0d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Queue Status</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-12 cursor-pointer items-center justify-center overflow-hidden rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-[#1b0d0d] dark:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto pb-24"> <!-- Padding bottom for bottom nav -->
+<!-- Warning Banner (Optional visual reinforcement) -->
+<div class="bg-red-50 dark:bg-red-900/20 px-4 py-2 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">error</span>
+<p class="text-primary text-xs font-medium">Your turn has passed</p>
+</div>
+<!-- Card -->
+<div class="p-4 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-white dark:bg-[#2a1d1d] overflow-hidden border-l-4 border-primary">
+<!-- Image Section -->
+<div class="w-full h-32 bg-gray-200 dark:bg-gray-700 relative">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="Modern waiting room of a medical clinic with clean white chairs" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuASqw8qLk3cH2cp0KIKRAIJJw3Elb1zPUhO3CIFngVx7Gc4b4jzC95zlnCRevy2Gyxhhtm52uFXD-IZ6CBKBn-Jjb7jBVckwa9R_mggNZQVABU1UDh_192xPQerrUFw_mknEbKVC-foXm3p4EwfHL7Wbq_X8fmVaINMPsYnkPG5otLwNbP7Vf49n2BnoOTNp-roYNd2FqC1vN-yfg-0yMmTlWQ4cFuQfElWX5Y4BHY7e8B7SCCEpWhTzffk3q9uIPDjpSZ5j8qMCHPU");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-3 left-4 text-white">
+<h3 class="font-bold text-lg">General Practice Clinic</h3>
+<p class="text-xs opacity-90">Dr. Sarah Johnson</p>
+</div>
+</div>
+<!-- Status Content -->
+<div class="flex w-full grow flex-col items-center justify-center gap-2 py-6 px-4 text-center">
+<div class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-primary dark:text-red-400 text-sm font-semibold leading-normal mb-2">
+<span class="material-symbols-outlined mr-1" style="font-size: 16px;">history</span>
+                            No-show
+                        </div>
+<div class="relative">
+<!-- Faded #7 -->
+<p class="text-gray-300 dark:text-gray-600 text-7xl font-bold leading-none tracking-tighter opacity-50 select-none">#7</p>
+<!-- Overlay icon/status -->
+<div class="absolute -bottom-2 -right-2 bg-background-light dark:bg-background-dark rounded-full p-1 border-2 border-white dark:border-[#2a1d1d]">
+<span class="material-symbols-outlined text-primary" style="font-size: 32px;">cancel</span>
+</div>
+</div>
+<div class="mt-4 space-y-1">
+<h3 class="text-[#1b0d0d] dark:text-white text-xl font-bold">You missed your turn</h3>
+<p class="text-red-600 dark:text-red-400 text-sm font-medium leading-normal">Marked as no-show at 10:34 AM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- BodyText -->
+<div class="px-6 py-2">
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-relaxed text-center">
+                    Since you missed your turn, you can rejoin the queue at the end of the line or contact the clinic directly for assistance.
+                </p>
+</div>
+<!-- ButtonGroup -->
+<div class="flex justify-center mt-4">
+<div class="flex flex-1 gap-3 max-w-[480px] flex-col items-stretch px-4 py-3">
+<!-- Primary CTA -->
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 bg-primary hover:bg-red-700 text-white text-base font-bold leading-normal tracking-[0.015em] transition-all shadow-md shadow-red-500/20 active:scale-[0.98]">
+<span class="truncate">Rejoin Queue</span>
+</button>
+<!-- Secondary CTA -->
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 bg-transparent border border-gray-200 dark:border-gray-700 text-[#1b0d0d] dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 text-base font-bold leading-normal tracking-[0.015em] transition-all active:scale-[0.98]">
+<span class="truncate">Contact Clinic</span>
+</button>
+</div>
+</div>
+<div class="h-10"></div>
+</div>
+<!-- BottomNavBar -->
+<div class="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 dark:border-gray-800 bg-background-light dark:bg-background-dark px-4 pb-safe pt-2">
+<div class="flex gap-2 justify-around pb-4"> <!-- Added pb-4 for safe area approximation on generic devices, usually handled by env(safe-area-inset-bottom) -->
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined fill-current" style="font-size: 24px; font-variation-settings: 'FILL' 1;">queue</span>
+</div>
+<p class="text-xs font-bold leading-normal tracking-[0.015em]">Queue</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-size: 24px;">medical_services</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Clinics</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-size: 24px;">person</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+</a>
+</div>
+</div>
+</div>
+</body></html>

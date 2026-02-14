@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QueueEase - Organization Landing</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#136dec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col group/design-root pb-24">
+<!-- Top App Bar -->
+<div class="flex items-center sticky top-0 z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm p-4 pb-2 justify-between">
+<button class="text-[#111418] dark:text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h2 class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">
+                QueueEase
+            </h2>
+</div>
+<!-- Profile Header Section -->
+<div class="flex p-4 flex-col items-center gap-6 pt-6">
+<!-- Logo & Info -->
+<div class="flex w-full flex-col gap-4 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-32 w-32 shadow-sm border border-gray-200 dark:border-gray-700" data-alt="Doctor portrait or clinic logo abstract" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDSgZi82VvXp7rZV7PL8OdBJnmW6yLFoEpvRMAnPUOiyRHpbj6-WNRJe9k-o0Pk858gBYCGORcltbf042N32nCGPKK3mKQvNstjcyO5vmTYlcZLBDeekPe6JvM7hy7xAKcy54_wYmvjph9V7a33ZSSAh5fnmN96vMG3G6YDHe__fmnXdh_fMg0VeXTwbBZWpROPPIcpIpsEK7FmJsYOnNhkjSUmQVcpHVMJsz9rAYwFaaxFYNWKLEOP7soKEm8SgYp-vHzSluRcNR1b");'>
+</div>
+<div class="flex flex-col items-center justify-center gap-2">
+<h1 class="text-[#111418] dark:text-white text-[26px] font-bold leading-tight tracking-[-0.015em] text-center">
+                        City Central Clinic
+                    </h1>
+<p class="text-[#617289] dark:text-gray-400 text-base font-normal leading-normal text-center max-w-[85%]">
+                        Efficient and caring medical services for the community.
+                    </p>
+</div>
+</div>
+<!-- Status Badge -->
+<div class="flex justify-center">
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 pl-3 pr-4 border border-emerald-200 dark:border-emerald-800">
+<span class="material-symbols-outlined text-emerald-700 dark:text-emerald-400 text-[18px]">check_circle</span>
+<p class="text-emerald-700 dark:text-emerald-400 text-sm font-medium leading-normal">Open Now</p>
+</div>
+</div>
+</div>
+<!-- Info Row (Location & Hours) -->
+<div class="flex flex-col px-4 gap-3 mt-2">
+<!-- Location -->
+<div class="flex items-center gap-4 p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900/50">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-10">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</div>
+<div class="flex flex-col flex-1">
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal truncate">123 Health Avenue</p>
+<p class="text-[#617289] dark:text-gray-400 text-xs font-normal">Medical District, New York</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">chevron_right</span>
+</div>
+<!-- Hours -->
+<div class="flex items-center gap-4 p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900/50">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-10">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+</div>
+<div class="flex flex-col flex-1">
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">08:00 AM - 06:00 PM</p>
+<p class="text-[#617289] dark:text-gray-400 text-xs font-normal">Monday - Friday</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[20px] opacity-0">chevron_right</span> <!-- Spacer for alignment -->
+</div>
+</div>
+<div class="h-px bg-gray-200 dark:bg-gray-800 mx-4 my-6"></div>
+<!-- Services Section -->
+<div class="flex flex-col px-4 gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-[#111418] dark:text-white text-lg font-bold leading-tight">Select Service</h3>
+<button class="text-primary text-sm font-medium">View All</button>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<!-- Service Card 1 -->
+<div class="group flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex flex-col gap-1">
+<p class="text-[#111418] dark:text-white text-base font-semibold">General Consultation</p>
+<p class="text-[#617289] dark:text-gray-400 text-sm">30 mins • $50.00</p>
+</div>
+<div class="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500 group-hover:text-white text-[20px]">add</span>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="group flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex flex-col gap-1">
+<p class="text-[#111418] dark:text-white text-base font-semibold">Dental Checkup</p>
+<p class="text-[#617289] dark:text-gray-400 text-sm">45 mins • $80.00</p>
+</div>
+<div class="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500 group-hover:text-white text-[20px]">add</span>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="group flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex flex-col gap-1">
+<p class="text-[#111418] dark:text-white text-base font-semibold">Vaccination</p>
+<p class="text-[#617289] dark:text-gray-400 text-sm">15 mins • $25.00</p>
+</div>
+<div class="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500 group-hover:text-white text-[20px]">add</span>
+</div>
+</div>
+<!-- Service Card 4 -->
+<div class="group flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex flex-col gap-1">
+<p class="text-[#111418] dark:text-white text-base font-semibold">Blood Test</p>
+<p class="text-[#617289] dark:text-gray-400 text-sm">10 mins • $20.00</p>
+</div>
+<div class="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500 group-hover:text-white text-[20px]">add</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-12"></div> <!-- Spacer for sticky footer -->
+</div>
+<!-- Bottom Sticky Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 p-4 pb-8 safe-area-pb shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
+<div class="flex gap-3 max-w-md mx-auto">
+<button class="flex-1 h-12 rounded-full border border-primary/30 bg-primary/5 dark:bg-primary/10 text-primary font-bold text-sm hover:bg-primary/10 transition-colors">
+                Join Queue
+            </button>
+<button class="flex-[2] h-12 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                Book Appointment
+            </button>
+</div>
+</div>
+</body></html>
