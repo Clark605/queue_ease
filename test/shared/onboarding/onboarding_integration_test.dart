@@ -23,6 +23,10 @@ void main() {
 
       // Clear SharedPreferences before running tests.
       SharedPreferences.setMockInitialValues({});
+
+      // Reset GetIt to avoid registration errors when tests run in isolation
+      await getIt.reset();
+
       configureDependencies();
       onboardingService = getIt<OnboardingService>();
     });

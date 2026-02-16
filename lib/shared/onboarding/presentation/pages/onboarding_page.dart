@@ -87,8 +87,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
               alignment: Alignment.centerRight,
               child: Padding(
                 padding: const EdgeInsets.only(right: 24, top: 16),
-                child: GestureDetector(
-                  onTap: _completeOnboarding,
+                child: TextButton(
+                  onPressed: _completeOnboarding,
                   child: const Text(
                     'Skip',
                     style: TextStyle(

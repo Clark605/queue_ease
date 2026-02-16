@@ -44,7 +44,7 @@ class SkipTheWaitIllustration extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   child: Image.asset(
                     'assets/images/onboarding.png',
-                    fit: BoxFit.fill,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),

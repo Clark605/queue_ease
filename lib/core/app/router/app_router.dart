@@ -32,6 +32,12 @@ GoRouter createRouter() {
           .hasCompletedOnboarding();
 
       final isOnboarding = state.matchedLocation == Routes.onboarding;
+      final isRoot = state.matchedLocation == '/';
+
+      // Handle root path: redirect based on onboarding status
+      if (isRoot) {
+        return hasCompletedOnboarding ? Routes.login : Routes.onboarding;
+      }
 
       // First launch: force onboarding.
       if (!hasCompletedOnboarding && !isOnboarding) {
