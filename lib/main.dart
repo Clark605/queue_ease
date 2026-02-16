@@ -16,13 +16,15 @@ Future<void> main() async {
     );
 
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-    
+
     debugPrint('✅ Firebase initialized successfully');
   } on PlatformException catch (e) {
     // Firebase requires Google Play Services on Android
     // This error occurs when running on emulators without Play Services
     debugPrint('⚠️ Firebase initialization failed: ${e.message}');
-    debugPrint('📱 To use Firebase, run on a physical device or emulator with Google Play Services');
+    debugPrint(
+      '📱 To use Firebase, run on a physical device or emulator with Google Play Services',
+    );
   } catch (e) {
     debugPrint('⚠️ Firebase initialization failed: $e');
   }
