@@ -9,9 +9,17 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    FlutterError.onError =
+        FirebaseCrashlytics.instance.recordFlutterFatalError;
+  } catch (e) {
+    // Firebase initialization failed - continue without it
+    // This can happen in test environments or if Firebase is misconfigured
+    debugPrint('Firebase initialization failed: $e');
+  }
 
   configureDependencies();
 
