@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,11 +7,20 @@ import 'package:queue_ease/core/app/app.dart';
 import 'package:queue_ease/core/app/di/injection.dart';
 import 'package:queue_ease/core/services/onboarding_service.dart';
 
+import '../../firebase_mocks.dart';
+
 void main() {
   group('Onboarding Integration Tests', () {
     late OnboardingService onboardingService;
 
     setUpAll(() async {
+      // Set up Firebase mocking for tests
+      TestWidgetsFlutterBinding.ensureInitialized();
+      setupFirebaseCoreMocks();
+
+      // Initialize Firebase for testing
+      await Firebase.initializeApp();
+
       // Clear SharedPreferences before running tests.
       SharedPreferences.setMockInitialValues({});
       configureDependencies();
