@@ -5,6 +5,7 @@
         "/^Select-String -Path \"docs\\\\PRD\\.md\" -Pattern \"Target Users\\|Screen-by-Screen Navigation Map\\|Screen Responsibilities\\|Service Details Screen\\|Booking / Queue Join Screen\\|Queue Status\\|Daily Summary \\\\\\(Basic\\\\\\)\\|Post-MVP Screens\" \\| ForEach-Object \\{ \"\\{0\\}: \\{1\\}\" -f \\$_\\.LineNumber, \\$_\\.Line\\.Trim\\(\\) \\}$/": {
             "approve": true,
             "matchCommandLine": true
-        }
+        },
+        "flutter": true
     }
 }

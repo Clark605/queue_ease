@@ -125,6 +125,25 @@ Small clinics and service providers often rely on paper notebooks, WhatsApp mess
 
 ---
 
+### 7. Onboarding Flow
+
+* First-time user experience introducing key features
+* 3-screen swipeable onboarding with custom illustrations:
+  1. **Skip the Wait**: Join queues or book appointments before arrival
+  2. **Real-Time Tracking**: Know your turn in real time
+  3. **Fair Turns**: Transparent queue management, no confusion
+* Features:
+  * Skip button (top-right) to bypass onboarding
+  * Next/Get Started buttons for navigation
+  * Smooth page indicators
+  * Completion state persisted via SharedPreferences
+* Router integration: Checks onboarding completion status on app launch
+* After completion (skip or finish), user proceeds to login
+
+**Implementation Status:** ✅ Completed
+
+---
+
 ## Out of Scope (Not in MVP)
 
 * Online payments
@@ -159,7 +178,10 @@ Small clinics and service providers often rely on paper notebooks, WhatsApp mess
 
 ```mermaid
 flowchart TD
-  A[Splash Screen] --> B[Login / Signup]
+  A[Splash Screen] --> A1{Onboarding\nComplete?}
+  A1 -->|No| A2[Onboarding Screens]
+  A2 --> B[Login / Signup]
+  A1 -->|Yes| B
 
   B -->|Admin| D[Admin Dashboard]
   B -->|Customer via QR/Link| C0[Organization Landing]
@@ -187,6 +209,14 @@ flowchart TD
 
 * App initialization
 * Check authentication state
+* Check onboarding completion status
+
+**Onboarding Screens**
+
+* 3-screen introduction to app features
+* Skip option available
+* Page indicators for progress
+* Completion triggers navigation to login
 
 **Login / Signup**
 
@@ -519,9 +549,11 @@ flowchart LR
 * Queue behavior rules
 * Notification preferences
 
-#### 3. Onboarding Screens
+#### 3. Analytics & Settings Screens (Future)
 
-**Purpose:** Brief product walkthrough and value framing (post-MVP). **Contains:**
+**Note:** Onboarding has been moved to MVP and is now implemented.
 
-* 2-3 slides highlighting benefits
-* Skip option
+**Future enhancements may include:**
+
+* Advanced analytics dashboards
+* Extended settings and customization options
