@@ -21,8 +21,8 @@ class App extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
-        // ignore: deprecated_member_use
         // Required by DevicePreview until it's updated
+        // ignore: deprecated_member_use
         useInheritedMediaQuery: true,
       ),
     );

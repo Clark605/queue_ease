@@ -43,7 +43,7 @@ class _MockFirebaseCore extends FirebasePlatform {
 }
 
 class _MockFirebaseApp extends FirebaseAppPlatform {
-  _MockFirebaseApp(String name, FirebaseOptions options) : super(name, options);
+  _MockFirebaseApp(super.name, super.options);
 
   @override
   Future<void> delete() async {}
