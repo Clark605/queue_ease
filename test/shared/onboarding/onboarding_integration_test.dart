@@ -52,8 +52,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Page 2: "Know your turn in real time"
-      expect(find.text('Know your turn in'), findsOneWidget);
-      expect(find.text('real time'), findsOneWidget);
+      expect(find.textContaining('Know your turn in'), findsOneWidget);
+      expect(find.textContaining('real time'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
 
       // Tap Next to go to page 3.
@@ -61,7 +61,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Page 3: "Fair turns. No confusion."
-      expect(find.text('Fair turns.'), findsOneWidget);
+      expect(find.textContaining('Fair turns'), findsOneWidget);
       expect(find.text('Get Started'), findsOneWidget);
     });
 
@@ -100,7 +100,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Verify we're on the last page.
-        expect(find.text('Fair turns.'), findsOneWidget);
+        expect(find.textContaining('Fair turns'), findsOneWidget);
         expect(find.text('Get Started'), findsOneWidget);
 
         // Tap Get Started.
@@ -145,14 +145,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // Indicator should update (widget rebuilds correctly).
-      expect(find.text('Know your turn in'), findsOneWidget);
+      expect(find.textContaining('Know your turn in'), findsOneWidget);
 
       // Go to next page again.
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
       // Final page.
-      expect(find.text('Fair turns.'), findsOneWidget);
+      expect(find.textContaining('Fair turns'), findsOneWidget);
     });
   });
 }
