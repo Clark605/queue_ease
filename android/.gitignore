@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Ignore root-level google-services.json (keep flavor-specific ones in src/)
+app/google-services.json

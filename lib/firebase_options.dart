@@ -4,52 +4,77 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-/// Default [FirebaseOptions] for use with your Firebase apps.
+import 'core/config/flavor_config.dart';
+
+/// Flavor-aware [FirebaseOptions] factory for different environments.
+///
+/// Use [FirebaseOptionsFactory.getOptions] to get Firebase configuration
+/// for a specific flavor and platform.
 ///
 /// Example:
 /// ```dart
 /// import 'firebase_options.dart';
+/// import 'core/config/flavor_config.dart';
 /// // ...
 /// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
+///   options: FirebaseOptionsFactory.getOptions(FlavorConfig.instance.flavor),
 /// );
 /// ```
-class DefaultFirebaseOptions {
-  static FirebaseOptions get currentPlatform {
+class FirebaseOptionsFactory {
+  /// Get Firebase options for the given flavor and current platform.
+  ///
+  /// Throws [UnsupportedError] if the platform is not configured.
+  static FirebaseOptions getOptions(Flavor flavor) {
     if (kIsWeb) {
       throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
+        'FirebaseOptions have not been configured for web',
       );
     }
+
+    switch (flavor) {
+      case Flavor.dev:
+        return _getDevOptions();
+      case Flavor.prod:
+        return _getProdOptions();
+    }
+  }
+
+  /// Backward compatibility: get options for current platform using prod flavor.
+  ///
+  /// @deprecated Use [getOptions] with explicit flavor instead.
+  @Deprecated('Use getOptions(FlavorConfig.instance.flavor) instead')
+  static FirebaseOptions get currentPlatform => getOptions(Flavor.prod);
+
+  static FirebaseOptions _getDevOptions() {
+    // TODO: Replace with actual dev Firebase project config in Step 6
+    // For now, using prod config as placeholder
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        return _androidDev;
       case TargetPlatform.iOS:
-        return ios;
-      case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      case TargetPlatform.linux:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return _iosDev;
       default:
         throw UnsupportedError(
-          'DefaultFirebaseOptions are not supported for this platform.',
+          'FirebaseOptions are not configured for $defaultTargetPlatform in dev flavor',
         );
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static FirebaseOptions _getProdOptions() {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return _androidProd;
+      case TargetPlatform.iOS:
+        return _iosProd;
+      default:
+        throw UnsupportedError(
+          'FirebaseOptions are not configured for $defaultTargetPlatform in prod flavor',
+        );
+    }
+  }
+
+  // Production Firebase configurations
+  static const FirebaseOptions _androidProd = FirebaseOptions(
     apiKey: 'AIzaSyCM70DyzvDa9QqjJQ0q_aZoHaxJjDGHZK8',
     appId: '1:836631105553:android:add75ab3601be0066ca1b0',
     messagingSenderId: '836631105553',
@@ -57,7 +82,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'ease-queue.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
+  static const FirebaseOptions _iosProd = FirebaseOptions(
     apiKey: 'AIzaSyBFqoyb-phsY_tlc5FZctp4yhuziH8OrqA',
     appId: '1:836631105553:ios:a5158afe99340b356ca1b0',
     messagingSenderId: '836631105553',
@@ -65,4 +90,27 @@ class DefaultFirebaseOptions {
     storageBucket: 'ease-queue.firebasestorage.app',
     iosBundleId: 'com.example.queueEase',
   );
+
+  // Development Firebase configurations
+  static const FirebaseOptions _androidDev = FirebaseOptions(
+    apiKey: 'AIzaSyCTL05OIbysTMI9CcXR5nIp1h7giGevX9E',
+    appId: '1:811891961988:android:f732635ea023c08a9692d1',
+    messagingSenderId: '811891961988',
+    projectId: 'ease-queue-dev',
+    storageBucket: 'ease-queue-dev.firebasestorage.app',
+  );
+
+  static const FirebaseOptions _iosDev = FirebaseOptions(
+    apiKey:
+        'AIzaSyBFqoyb-phsY_tlc5FZctp4yhuziH8OrqA', // Placeholder - update when iOS dev app is created
+    appId: '1:836631105553:ios:a5158afe99340b356ca1b0', // Placeholder
+    messagingSenderId: '811891961988',
+    projectId: 'ease-queue-dev',
+    storageBucket: 'ease-queue-dev.firebasestorage.app',
+    iosBundleId: 'com.queueease.app.dev',
+  );
 }
+
+/// Legacy alias for backward compatibility
+@Deprecated('Use FirebaseOptionsFactory instead')
+typedef DefaultFirebaseOptions = FirebaseOptionsFactory;

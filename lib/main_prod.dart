@@ -9,10 +9,15 @@ import 'core/app/di/injection.dart';
 import 'core/config/flavor_config.dart';
 import 'firebase_options.dart';
 
-/// Default entrypoint - uses production flavor.
+/// Production flavor entrypoint.
 ///
-/// For development with device preview, use [main_dev.dart] instead.
-/// For explicit production builds, use [main_prod.dart].
+/// Run with: `flutter run --flavor prod -t lib/main_prod.dart`
+///
+/// Uses:
+/// - Production Firebase project
+/// - Error-only logging
+/// - No debug tools
+/// - Optimized timeouts
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

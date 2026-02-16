@@ -33,6 +33,18 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Environment variables and secrets
+.env.dev
+.env.prod
+.env.*.local
+dart_defines.*.json
+*.secrets.json
+
+# Android signing and keys
+android/key.properties
+android/app/*.jks
+android/app/*.keystore
+
 # Symbolication related
 app.*.symbols
 
