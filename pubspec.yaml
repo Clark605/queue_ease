@@ -28,6 +28,7 @@ dependencies:
   intl: ^0.20.2
   uuid: ^4.5.1
   cupertino_icons: ^1.0.8
+  flutter_dotenv: ^5.1.0
 
   # Local storage
   shared_preferences: ^2.3.3
@@ -64,6 +65,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - .env.dev
+    - .env.prod
 
   # fonts:
   #   - family: Inter

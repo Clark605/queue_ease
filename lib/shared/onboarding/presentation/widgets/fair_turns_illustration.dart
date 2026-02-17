@@ -39,6 +39,7 @@ class FairTurnsIllustration extends StatelessWidget {
                 horizontal: constraints.maxWidth * 0.06,
               ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Completed item (faded).
@@ -68,12 +69,12 @@ class FairTurnsIllustration extends StatelessWidget {
                     scale: 0.95,
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
 
                   // Active card (hero).
                   _ActiveHeroCard(),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
 
                   // Next/waiting item.
                   _TimelineCard(

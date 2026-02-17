@@ -80,6 +80,73 @@ TBD: Add a demo link here (example: https://youtu.be/REPLACE_ME)
 - Dart SDK (^3.9.0)
 - Android Studio / Xcode for device builds
 
+### Running Flavors
+
+QueueEase supports separate development and production environments (flavors) with different configurations:
+
+**Development Flavor:**
+- Uses Firebase dev project (`ease-queue-dev`)
+- Enables device preview in debug mode
+- Verbose logging enabled
+- Debug overlays and tools
+
+```bash
+flutter run --flavor dev -t lib/main_dev.dart
+```
+
+**Production Flavor:**
+- Uses Firebase production project (`ease-queue`)
+- Error-only logging
+- No debug tools
+- Optimized for release builds
+
+```bash
+flutter run --flavor prod -t lib/main_prod.dart
+```
+
+**VS Code Launch Configurations:**
+
+You can also use the pre-configured launch options in VS Code:
+- **Dev** - Runs development flavor with device preview
+- **Prod** - Runs production flavor
+
+### Firebase App Distribution with Fastlane
+
+QueueEase uses Fastlane to automate distribution of builds to Firebase App Distribution for testing.
+
+
+
+**CI/CD Automation:**
+
+Builds are automatically distributed via GitHub Actions:
+- **Dev builds**: Automatically distributed when code is pushed to `develop` branch
+- **Prod builds**: Automatically distributed when code is pushed to `main` branch
+
+**Required GitHub Secrets:**
+- `FIREBASE_TOKEN`: Firebase CLI authentication token
+- `FIREBASE_APP_ID_DEV`: Firebase app ID for dev flavor
+- `FIREBASE_APP_ID_PROD`: Firebase app ID for prod flavor
+
+**Troubleshooting:**
+
+- **"Firebase token required" error**: Make sure `FIREBASE_TOKEN` environment variable is set
+- **Firebase permission error**: Verify you have owner/editor permissions on the Firebase project
+- **Tester group not found**: Create the "developers" group in Firebase Console > App Distribution > Testers
+
+### Environment Configuration
+
+The app uses `.env` files for environment-specific configuration:
+
+1. Copy `.env.example` to create your environment files:
+   ```bash
+   cp .env.example .env.dev
+   cp .env.example .env.prod
+   ```
+
+2. Update the values in `.env.dev` and `.env.prod` with your actual API keys and configuration.
+
+**Note:** `.env.dev` and `.env.prod` are git-ignored to protect sensitive data. Never commit these files.
+
 ### Install and run
 
 ```bash

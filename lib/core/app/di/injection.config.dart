@@ -1,5 +1,5 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 // **************************************************************************
 // InjectableConfigGenerator
@@ -12,6 +12,8 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../config/config_module.dart' as _i580;
+import '../../config/flavor_config.dart' as _i722;
 import '../../services/onboarding_service.dart' as _i461;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -21,7 +23,11 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final configModule = _$ConfigModule();
+    gh.lazySingleton<_i722.FlavorConfig>(() => configModule.config);
     gh.lazySingleton<_i461.OnboardingService>(() => _i461.OnboardingService());
     return this;
   }
 }
+
+class _$ConfigModule extends _i580.ConfigModule {}
