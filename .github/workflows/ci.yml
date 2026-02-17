@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Create placeholder env files
+        run: |
+          touch .env.dev
+          touch .env.prod
+        # Required for flutter analyze (env files are gitignored)
+
       - name: Check code formatting
         run: dart format --set-exit-if-changed .
         # Fails if any file needs formatting
