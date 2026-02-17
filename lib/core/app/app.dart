@@ -24,7 +24,7 @@ class App extends StatelessWidget {
       title: config.appName,
       theme: AppTheme.light,
       routerConfig: _router,
-      debugShowCheckedModeBanner: !config.enableDebugOverlays,
+      debugShowCheckedModeBanner: config.enableDebugOverlays,
       // DevicePreview config (only applies if wrapped in main_dev.dart)
       locale: enablePreview ? DevicePreview.locale(context) : null,
       builder: enablePreview ? DevicePreview.appBuilder : null,
