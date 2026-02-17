@@ -39,7 +39,7 @@ class FlavorConfig {
     required this.appName,
     required this.bundleId,
     required this.enableDevicePreview,
-    required this.enableDebugOverlays,
+    required this.displayDebugIndicators,
     required this.bookingLinkDomain,
     required this.apiTimeout,
     required this.logLevel,
@@ -58,8 +58,8 @@ class FlavorConfig {
   /// Whether to enable device_preview in debug mode
   final bool enableDevicePreview;
 
-  /// Whether to enable debug overlays (performance, etc.)
-  final bool enableDebugOverlays;
+  /// Whether to enable debug indicators (e.g. debug banner)
+  final bool displayDebugIndicators;
 
   /// Base domain for booking links (QR codes)
   final String bookingLinkDomain;
@@ -110,7 +110,7 @@ class FlavorConfig {
       appName: 'QueueEase Dev',
       bundleId: 'com.queueease.app.dev',
       enableDevicePreview: true,
-      enableDebugOverlays: true,
+      displayDebugIndicators: true,
       bookingLinkDomain: 'dev-book.queueease.com',
       apiTimeout: Duration(seconds: 10),
       logLevel: LogLevel.verbose,
@@ -128,7 +128,7 @@ class FlavorConfig {
       appName: 'QueueEase',
       bundleId: 'com.queueease.app',
       enableDevicePreview: false,
-      enableDebugOverlays: false,
+      displayDebugIndicators: false,
       bookingLinkDomain: 'book.queueease.com',
       apiTimeout: Duration(seconds: 3),
       logLevel: LogLevel.error,

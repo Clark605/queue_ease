@@ -46,13 +46,15 @@ class FirebaseOptionsFactory {
   static FirebaseOptions get currentPlatform => getOptions(Flavor.prod);
 
   static FirebaseOptions _getDevOptions() {
-    // TODO: Replace with actual dev Firebase project config in Step 6
-    // For now, using prod config as placeholder
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return _androidDev;
       case TargetPlatform.iOS:
-        return _iosDev;
+        throw UnsupportedError(
+          'iOS dev Firebase configuration is not yet set up. '
+          'Please configure the iOS dev app in Firebase Console and '
+          'run `flutterfire configure` to generate the proper options.',
+        );
       default:
         throw UnsupportedError(
           'FirebaseOptions are not configured for $defaultTargetPlatform in dev flavor',
@@ -98,16 +100,6 @@ class FirebaseOptionsFactory {
     messagingSenderId: '811891961988',
     projectId: 'ease-queue-dev',
     storageBucket: 'ease-queue-dev.firebasestorage.app',
-  );
-
-  static const FirebaseOptions _iosDev = FirebaseOptions(
-    apiKey:
-        'AIzaSyBFqoyb-phsY_tlc5FZctp4yhuziH8OrqA', // Placeholder - update when iOS dev app is created
-    appId: '1:836631105553:ios:a5158afe99340b356ca1b0', // Placeholder
-    messagingSenderId: '811891961988',
-    projectId: 'ease-queue-dev',
-    storageBucket: 'ease-queue-dev.firebasestorage.app',
-    iosBundleId: 'com.queueease.app.dev',
   );
 }
 

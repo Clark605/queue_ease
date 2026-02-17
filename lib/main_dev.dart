@@ -1,5 +1,6 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,11 +33,13 @@ Future<void> main() async {
       options: FirebaseOptionsFactory.getOptions(FlavorConfig.instance.flavor),
     );
 
-    // Crashlytics disabled in dev flavor for faster debugging
+    // Explicitly disable Crashlytics in dev flavor for faster debugging
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
 
     debugPrint(
       '✅ Firebase initialized successfully for ${FlavorConfig.instance.flavor.name} flavor',
     );
+    debugPrint('🔧 Crashlytics disabled in dev flavor');
   } on PlatformException catch (e) {
     debugPrint('⚠️ Firebase initialization failed: ${e.message}');
     debugPrint(
