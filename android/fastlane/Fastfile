@@ -1,0 +1,94 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+default_platform(:android)
+
+platform :android do
+  desc "Build and distribute dev flavor to Firebase App Distribution"
+  lane :distribute_dev do |options|
+    # Get release notes from options or git log
+    release_notes = options[:release_notes] || ENV['RELEASE_NOTES'] || last_git_commit[:message]
+    firebase_token = options[:firebase_token] || ENV['FIREBASE_TOKEN']
+    firebase_app_id = ENV['FIREBASE_APP_ID_DEV'] || "1:811891961988:android:f732635ea023c08a9692d1"
+
+    if firebase_token.nil? || firebase_token.empty?
+      UI.user_error!("Firebase token is required. Set FIREBASE_TOKEN environment variable or pass firebase_token parameter.")
+    end
+
+    
+      # Build dev flavor APK
+      UI.message("🔨 Building dev flavor APK...")
+      sh("flutter", "clean") # Clean previous builds to avoid conflicts
+      sh("flutter", "build", "apk", "--release", "--flavor", "dev", "-t", "lib/main_dev.dart")
+      
+      apk_path = "../build/app/outputs/flutter-apk/app-dev-release.apk"
+      
+
+
+      UI.success("✅ APK built successfully at #{apk_path}")
+
+      # Distribute to Firebase App Distribution
+      UI.message("🚀 Distributing to Firebase App Distribution (dev)...")
+      firebase_app_distribution(
+        app: firebase_app_id,
+        groups: "developers",
+        release_notes: release_notes,
+        android_artifact_type: "APK",
+        android_artifact_path: apk_path,
+        firebase_cli_token: firebase_token
+      )
+      
+      UI.success("🎉 Dev build distributed successfully!")
+    
+  end
+
+  desc "Build and distribute prod flavor to Firebase App Distribution"
+  lane :distribute_prod do |options|
+    # Get release notes from options or git log
+    release_notes = options[:release_notes] || ENV['RELEASE_NOTES'] || last_git_commit[:message]
+    firebase_token = options[:firebase_token] || ENV['FIREBASE_TOKEN']
+    firebase_app_id = ENV['FIREBASE_APP_ID_PROD'] || "1:836631105553:android:add75ab3601be0066ca1b0"
+
+    if firebase_token.nil? || firebase_token.empty?
+      UI.user_error!("Firebase token is required. Set FIREBASE_TOKEN environment variable or pass firebase_token parameter.")
+    end
+
+    
+      # Build prod flavor APK
+      UI.message("🔨 Building prod flavor APK...")
+      sh("flutter", "build", "apk", "--release", "--flavor", "prod", "-t", "lib/main_prod.dart")
+      
+      apk_path = "../build/app/outputs/flutter-apk/app-prod-release.apk"
+      
+
+      UI.success("✅ APK built successfully at #{apk_path}")
+
+      # Distribute to Firebase App Distribution
+      UI.message("🚀 Distributing to Firebase App Distribution (prod)...")
+      firebase_app_distribution(
+        app: firebase_app_id,
+        groups: "developers",
+        release_notes: release_notes,
+        android_artifact_type: "APK",
+        android_artifact_path: apk_path,
+        firebase_cli_token: firebase_token
+      )
+      
+      UI.success("🎉 Prod build distributed successfully!")
+    
+  end
+
+  # Error handling
+  error do |lane, exception|
+    UI.error("❌ Error in lane '#{lane}': #{exception.message}")
+  end
+end

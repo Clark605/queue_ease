@@ -110,6 +110,29 @@ You can also use the pre-configured launch options in VS Code:
 - **Dev** - Runs development flavor with device preview
 - **Prod** - Runs production flavor
 
+### Firebase App Distribution with Fastlane
+
+QueueEase uses Fastlane to automate distribution of builds to Firebase App Distribution for testing.
+
+
+
+**CI/CD Automation:**
+
+Builds are automatically distributed via GitHub Actions:
+- **Dev builds**: Automatically distributed when code is pushed to `develop` branch
+- **Prod builds**: Automatically distributed when code is pushed to `main` branch
+
+**Required GitHub Secrets:**
+- `FIREBASE_TOKEN`: Firebase CLI authentication token
+- `FIREBASE_APP_ID_DEV`: Firebase app ID for dev flavor
+- `FIREBASE_APP_ID_PROD`: Firebase app ID for prod flavor
+
+**Troubleshooting:**
+
+- **"Firebase token required" error**: Make sure `FIREBASE_TOKEN` environment variable is set
+- **Firebase permission error**: Verify you have owner/editor permissions on the Firebase project
+- **Tester group not found**: Create the "developers" group in Firebase Console > App Distribution > Testers
+
 ### Environment Configuration
 
 The app uses `.env` files for environment-specific configuration:
