@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:queue_ease/core/app/app.dart';
 import 'package:queue_ease/core/app/di/injection.dart';
+import 'package:queue_ease/core/config/flavor_config.dart';
 import 'package:queue_ease/core/services/onboarding_service.dart';
 
 import '../../firebase_mocks.dart';
@@ -23,6 +24,9 @@ void main() {
 
       // Clear SharedPreferences before running tests.
       SharedPreferences.setMockInitialValues({});
+
+      // Initialize flavor configuration for tests
+      FlavorConfig.initialize(FlavorConfig.dev());
 
       // Reset GetIt to avoid registration errors when tests run in isolation
       await getIt.reset();

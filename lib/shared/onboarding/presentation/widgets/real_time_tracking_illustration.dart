@@ -48,42 +48,45 @@ class RealTimeTrackingIllustration extends StatelessWidget {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 10,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(4),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 10,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              _QueueItem(
-                                number: '#4',
-                                isActive: false,
-                                isFaded: true,
-                              ),
-                              const SizedBox(height: 8),
-                              _QueueItem(
-                                number: '#5',
-                                isActive: true,
-                                isFaded: false,
-                              ),
-                              const SizedBox(height: 8),
-                              _QueueItem(
-                                number: '#6',
-                                isActive: false,
-                                isFaded: false,
-                              ),
-                              const SizedBox(height: 8),
-                              _QueueItem(
-                                number: '#7',
-                                isActive: false,
-                                isFaded: false,
-                              ),
-                            ],
+                                const SizedBox(height: 8),
+                                _QueueItem(
+                                  number: '#4',
+                                  isActive: false,
+                                  isFaded: true,
+                                ),
+                                const SizedBox(height: 6),
+                                _QueueItem(
+                                  number: '#5',
+                                  isActive: true,
+                                  isFaded: false,
+                                ),
+                                const SizedBox(height: 6),
+                                _QueueItem(
+                                  number: '#6',
+                                  isActive: false,
+                                  isFaded: false,
+                                ),
+                                const SizedBox(height: 6),
+                                _QueueItem(
+                                  number: '#7',
+                                  isActive: false,
+                                  isFaded: false,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
