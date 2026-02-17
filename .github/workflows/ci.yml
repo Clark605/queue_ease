@@ -1,17 +1,30 @@
+# Continuous Integration Workflow
+# 
+# Purpose: Validates code quality on all pull requests to develop and main branches
+# Ensures code meets standards before merging by running:
+# - Code formatting checks (Dart format)
+# - Static analysis (Flutter analyze)
+# - Unit and widget tests
+#
+# Trigger: Automatically runs on pull requests targeting develop or main branches
+
 name: CI
 
 on:
   pull_request:
     branches: [develop, main]
 
-
 jobs:
   ci:
+    name: Code Quality Checks
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
@@ -19,11 +32,14 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Check formatting
+      - name: Check code formatting
         run: dart format --set-exit-if-changed .
+        # Fails if any file needs formatting
 
-      - name: Analyze
+      - name: Run static analysis
         run: flutter analyze
+        # Checks for errors, warnings, and lints
 
-      - name: Run tests
+      - name: Run unit and widget tests
         run: flutter test
+        # Executes all tests in test/ directory
