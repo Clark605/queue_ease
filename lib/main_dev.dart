@@ -1,6 +1,5 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +32,7 @@ Future<void> main() async {
       options: FirebaseOptionsFactory.getOptions(FlavorConfig.instance.flavor),
     );
 
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    // Crashlytics disabled in dev flavor for faster debugging
 
     debugPrint(
       '✅ Firebase initialized successfully for ${FlavorConfig.instance.flavor.name} flavor',
@@ -50,14 +49,8 @@ Future<void> main() async {
   configureDependencies(environment: FlavorConfig.instance.flavor.name);
 
   if (kDebugMode && FlavorConfig.instance.enableDevicePreview) {
-    runApp(
-      DevicePreview(
-        enabled: true,
-        builder: (context) => App(),
-      ),
-    );
+    runApp(DevicePreview(enabled: true, builder: (context) => App()));
   } else {
     runApp(App());
   }
 }
-
