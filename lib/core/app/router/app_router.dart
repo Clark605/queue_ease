@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../admin/dashboard/presentation/pages/admin_dashboard_page.dart';
 import '../../../customer/entry/presentation/pages/customer_home_page.dart';
 import '../../../shared/auth/presentation/pages/login_page.dart';
+import '../../../shared/auth/presentation/pages/sign_up_page.dart';
 import '../../../shared/onboarding/presentation/pages/onboarding_page.dart';
 import '../di/injection.dart';
 import '../../services/onboarding_service.dart';
@@ -12,6 +13,7 @@ import '../../services/onboarding_service.dart';
 abstract final class Routes {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
+  static const String signUp = '/signup';
   static const String adminDashboard = '/a/dashboard';
   static const String customerHome = '/c/home';
 }
@@ -54,6 +56,10 @@ GoRouter createRouter() {
       GoRoute(
         path: Routes.login,
         builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: Routes.signUp,
+        builder: (context, state) => const SignUpPage(),
       ),
       // Admin routes
       GoRoute(
