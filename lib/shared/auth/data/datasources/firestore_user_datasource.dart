@@ -47,7 +47,9 @@ class FirestoreUserDatasource {
         if (orgName != null) 'orgName': orgName,
       };
       await _users.doc(uid).set(data);
-      _logger.info('FirestoreUserDatasource: new user profile created uid=$uid');
+      _logger.info(
+        'FirestoreUserDatasource: new user profile created uid=$uid',
+      );
 
       return UserEntity(
         uid: uid,
@@ -92,11 +94,7 @@ class FirestoreUserDatasource {
       }
       return _fromDoc(doc);
     } on FirebaseException catch (e, st) {
-      _logger.error(
-        'FirestoreUserDatasource: getUser failed uid=$uid',
-        e,
-        st,
-      );
+      _logger.error('FirestoreUserDatasource: getUser failed uid=$uid', e, st);
       throw DatabaseException(
         'Failed to retrieve user profile.',
         stackTrace: st,

@@ -8,6 +8,8 @@ class UserEntity extends Equatable {
     required this.email,
     required this.role,
     this.displayName,
+    this.phone,
+    this.orgName,
   });
 
   final String uid;
@@ -15,6 +17,12 @@ class UserEntity extends Equatable {
   final UserRole role;
   final String? displayName;
 
+  /// Optional phone number (collected during sign-up).
+  final String? phone;
+
+  /// Optional organisation name for admin accounts.
+  final String? orgName;
+
   @override
-  List<Object?> get props => [uid, email, role, displayName];
+  List<Object?> get props => [uid, email, role, displayName, phone, orgName];
 }
