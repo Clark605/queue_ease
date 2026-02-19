@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/app/router/app_router.dart';
 import '../../../../core/app/theme/app_colors.dart';
 import '../../../../core/app/theme/app_text_styles.dart';
 import '../../domain/entities/user_role.dart';
+import '../../presentation/cubit/auth_cubit.dart';
+import '../../presentation/cubit/auth_state.dart';
 import '../widgets/auth_divider.dart';
 import '../widgets/auth_footer_panel.dart';
 import '../widgets/auth_header.dart';
@@ -44,218 +47,261 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _onSignUp() {
     if (!_formKey.currentState!.validate()) return;
-    // TODO: Dispatch SignUpSubmitted event to AuthBloc
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Auth implementation coming soon')),
+    context.read<AuthCubit>().signUpWithEmailPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      role: _selectedRole,
+      displayName: _nameController.text.trim(),
+      phone: _phoneController.text.trim().isEmpty
+          ? null
+          : _phoneController.text.trim(),
+      orgName: _selectedRole == UserRole.admin
+          ? _orgNameController.text.trim()
+          : null,
     );
   }
 
   void _onGoogleSignUp() {
-    // TODO: Dispatch GoogleSignInRequested event to AuthBloc
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Google Sign-Up coming soon')));
+    context.read<AuthCubit>().signInWithGoogle();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const AuthHeader(),
-                    const SizedBox(height: 32),
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+        // Authenticated → router redirect handles navigation.
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
 
-                    // ── Role selector ──────────────────────────────────────
-                    AuthRoleSelector(
-                      value: _selectedRole,
-                      onChanged: (role) => setState(() => _selectedRole = role),
-                    ),
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 32,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const AuthHeader(),
+                        const SizedBox(height: 32),
 
-                    const SizedBox(height: 24),
-
-                    // ── Full name ──────────────────────────────────────────
-                    AuthTextField(
-                      controller: _nameController,
-                      label: 'Full Name',
-                      hintText: 'John Smith',
-                      keyboardType: TextInputType.name,
-                      textInputAction: TextInputAction.next,
-                      prefixIcon: const Icon(Icons.badge_outlined),
-                      autofillHints: const [AutofillHints.name],
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Please enter your name'
-                          : null,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Email ──────────────────────────────────────────────
-                    AuthTextField(
-                      controller: _emailController,
-                      label: 'Email',
-                      hintText: 'name@example.com',
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      prefixIcon: const Icon(Icons.mail_outline_rounded),
-                      autofillHints: const [AutofillHints.email],
-                      validator: (v) {
-                        if (v == null || v.trim().isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!v.contains('@')) return 'Enter a valid email';
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Password ───────────────────────────────────────────
-                    PasswordField(
-                      controller: _passwordController,
-                      label: 'Password',
-                      hintText: 'Min. 8 characters',
-                      textInputAction: TextInputAction.next,
-                      autofillHints: const [AutofillHints.newPassword],
-                      validator: (v) {
-                        if (v == null || v.isEmpty) {
-                          return 'Please enter a password';
-                        }
-                        if (v.length < 8) {
-                          return 'Password must be at least 8 characters';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Confirm password ───────────────────────────────────
-                    PasswordField(
-                      controller: _confirmPasswordController,
-                      label: 'Confirm Password',
-                      hintText: 'Re-enter your password',
-                      textInputAction: TextInputAction.next,
-                      validator: (v) {
-                        if (v == null || v.isEmpty) {
-                          return 'Please confirm your password';
-                        }
-                        if (v != _passwordController.text) {
-                          return 'Passwords do not match';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Phone ──────────────────────────────────────────────
-                    AuthTextField(
-                      controller: _phoneController,
-                      label: 'Phone Number',
-                      hintText: '+1 234 567 8900',
-                      keyboardType: TextInputType.phone,
-                      textInputAction: _selectedRole == UserRole.admin
-                          ? TextInputAction.next
-                          : TextInputAction.done,
-                      prefixIcon: const Icon(Icons.phone_outlined),
-                      autofillHints: const [AutofillHints.telephoneNumber],
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'[\d\s\+\-\(\)]'),
+                        // ── Role selector ──────────────────────────────────────────
+                        AuthRoleSelector(
+                          value: _selectedRole,
+                          onChanged: isLoading
+                              ? null
+                              : (role) => setState(() => _selectedRole = role),
                         ),
-                      ],
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Please enter your phone number'
-                          : null,
-                    ),
 
-                    // ── Organization name (admin only, animated) ───────────
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut,
-                      alignment: Alignment.topCenter,
-                      child: _selectedRole == UserRole.admin
-                          ? Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: AuthTextField(
-                                controller: _orgNameController,
-                                label: 'Organization Name',
-                                hintText: 'Your clinic or business name',
-                                keyboardType: TextInputType.name,
-                                textInputAction: TextInputAction.done,
-                                prefixIcon: const Icon(Icons.store_outlined),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                    ? 'Please enter your organization name'
-                                    : null,
+                        const SizedBox(height: 24),
+
+                        // ── Full name ────────────────────────────────────────────
+                        AuthTextField(
+                          controller: _nameController,
+                          label: 'Full Name',
+                          hintText: 'John Smith',
+                          keyboardType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                          prefixIcon: const Icon(Icons.badge_outlined),
+                          autofillHints: const [AutofillHints.name],
+                          enabled: !isLoading,
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Please enter your name'
+                              : null,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // ── Email ──────────────────────────────────────────────────────
+                        AuthTextField(
+                          controller: _emailController,
+                          label: 'Email',
+                          hintText: 'name@example.com',
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          prefixIcon: const Icon(Icons.mail_outline_rounded),
+                          autofillHints: const [AutofillHints.email],
+                          enabled: !isLoading,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            if (!v.contains('@')) {
+                              return 'Enter a valid email';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // ── Password ───────────────────────────────────────────────
+                        PasswordField(
+                          controller: _passwordController,
+                          label: 'Password',
+                          hintText: 'Min. 8 characters',
+                          textInputAction: TextInputAction.next,
+                          enabled: !isLoading,
+                          autofillHints: const [AutofillHints.newPassword],
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return 'Please enter a password';
+                            }
+                            if (v.length < 8) {
+                              return 'Password must be at least 8 characters';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // ── Confirm password ─────────────────────────────────────
+                        PasswordField(
+                          controller: _confirmPasswordController,
+                          label: 'Confirm Password',
+                          hintText: 'Re-enter your password',
+                          textInputAction: TextInputAction.next,
+                          enabled: !isLoading,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return 'Please confirm your password';
+                            }
+                            if (v != _passwordController.text) {
+                              return 'Passwords do not match';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // ── Phone ──────────────────────────────────────────────────
+                        AuthTextField(
+                          controller: _phoneController,
+                          label: 'Phone Number',
+                          hintText: '+1 234 567 8900',
+                          keyboardType: TextInputType.phone,
+                          textInputAction: _selectedRole == UserRole.admin
+                              ? TextInputAction.next
+                              : TextInputAction.done,
+                          prefixIcon: const Icon(Icons.phone_outlined),
+                          autofillHints: const [AutofillHints.telephoneNumber],
+                          enabled: !isLoading,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[\d\s\+\-\(\)]'),
+                            ),
+                          ],
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Please enter your phone number'
+                              : null,
+                        ),
+
+                        // ── Organization name (admin only, animated) ──────────
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          alignment: Alignment.topCenter,
+                          child: _selectedRole == UserRole.admin
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: AuthTextField(
+                                    controller: _orgNameController,
+                                    label: 'Organization Name',
+                                    hintText: 'Your clinic or business name',
+                                    keyboardType: TextInputType.name,
+                                    textInputAction: TextInputAction.done,
+                                    prefixIcon: const Icon(
+                                      Icons.store_outlined,
+                                    ),
+                                    enabled: !isLoading,
+                                    validator: (v) =>
+                                        (v == null || v.trim().isEmpty)
+                                        ? 'Please enter your organization name'
+                                        : null,
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // ── Sign-Up button ────────────────────────────────────────
+                        SizedBox(
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: isLoading ? null : _onSignUp,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // ── Sign-Up button ─────────────────────────────────────
-                    SizedBox(
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _onSignUp,
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 2,
-                          shadowColor: AppColors.primary.withValues(
-                            alpha: 0.25,
-                          ),
-                        ),
-                        child: Text(
-                          'Create Account',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            color: AppColors.onPrimary,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.4,
+                              elevation: 2,
+                              shadowColor: AppColors.primary.withValues(
+                                alpha: 0.25,
+                              ),
+                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 22,
+                                    width: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'Create Account',
+                                    style: AppTextStyles.bodyLarge.copyWith(
+                                      color: AppColors.onPrimary,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.4,
+                                    ),
+                                  ),
                           ),
                         ),
-                      ),
+
+                        const SizedBox(height: 24),
+                        const AuthDivider(),
+                        const SizedBox(height: 24),
+
+                        // ── Google ───────────────────────────────────────────────────
+                        GoogleSignInButton(
+                          label: 'Continue with Google',
+                          onPressed: isLoading ? null : _onGoogleSignUp,
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        AuthFooterPanel(
+                          message: 'Already have an account?',
+                          actionLabel: 'Login',
+                          onAction: () => context.go(Routes.login),
+                        ),
+
+                        const SizedBox(height: 16),
+                      ],
                     ),
-
-                    const SizedBox(height: 24),
-                    const AuthDivider(),
-                    const SizedBox(height: 24),
-
-                    // ── Google ─────────────────────────────────────────────
-                    GoogleSignInButton(
-                      label: 'Continue with Google',
-                      onPressed: _onGoogleSignUp,
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    AuthFooterPanel(
-                      message: 'Already have an account?',
-                      actionLabel: 'Login',
-                      onAction: () => context.go(Routes.login),
-                    ),
-
-                    const SizedBox(height: 16),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
