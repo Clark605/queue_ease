@@ -1,4 +1,4 @@
-﻿{
+{
   "project_info": {
     "project_number": "811891961988",
     "project_id": "ease-queue-dev",
@@ -12,7 +12,20 @@
           "package_name": "com.queueease.app.dev"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "811891961988-4s66bk4al4ospfj208ubdadc4m2q1jpg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.queueease.app.dev",
+            "certificate_hash": "187fd9b376c6b9cedfc3f61de3903c0b17f639ad"
+          }
+        },
+        {
+          "client_id": "811891961988-id1hlr77r12pa9gbmfasq1giur2hfksc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCTL05OIbysTMI9CcXR5nIp1h7giGevX9E"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "811891961988-id1hlr77r12pa9gbmfasq1giur2hfksc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
