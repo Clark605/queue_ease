@@ -4,12 +4,16 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:talker_bloc_logger/talker_bloc_logger.dart';
 
 import 'core/app/app.dart';
 import 'core/app/di/injection.dart';
 import 'core/config/flavor_config.dart';
+import 'core/utils/app_logger.dart';
 import 'firebase_options.dart';
+import 'shared/auth/presentation/cubit/auth_cubit.dart';
 
 /// Development flavor entrypoint.
 ///
@@ -18,7 +22,7 @@ import 'firebase_options.dart';
 /// Enables:
 /// - Device preview in debug mode
 /// - Development Firebase project
-/// - Verbose logging
+/// - Verbose logging via Talker (with BLoC observer)
 /// - Debug overlays
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,11 +39,6 @@ Future<void> main() async {
 
     // Explicitly disable Crashlytics in dev flavor for faster debugging
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-
-    debugPrint(
-      '✅ Firebase initialized successfully for ${FlavorConfig.instance.flavor.name} flavor',
-    );
-    debugPrint('🔧 Crashlytics disabled in dev flavor');
   } on PlatformException catch (e) {
     debugPrint('⚠️ Firebase initialization failed: ${e.message}');
     debugPrint(
@@ -51,9 +50,25 @@ Future<void> main() async {
 
   configureDependencies(environment: FlavorConfig.instance.flavor.name);
 
-  if (kDebugMode && FlavorConfig.instance.enableDevicePreview) {
-    runApp(DevicePreview(enabled: true, builder: (context) => App()));
-  } else {
-    runApp(App());
-  }
+  final logger = getIt<AppLogger>();
+
+  // Wire BLoC observer so every event, transition and error is logged.
+  Bloc.observer = TalkerBlocObserver(
+    talker: logger.talker,
+    settings: const TalkerBlocLoggerSettings(
+      printEventFullData: false,
+      printStateFullData: true,
+    ),
+  );
+
+  // Catch async errors that escape Flutter's zone.
+  PlatformDispatcher.instance.onError = (error, stack) {
+    logger.critical('Unhandled async error', error, stack);
+    return true;
+  };
+
+  logger.info('App started — ${FlavorConfig.instance.flavor.name} flavor');
+
+  await getIt<AuthCubit>().checkAuthStatus();
+  runApp(DevicePreview(builder: (context) => App()));
 }
