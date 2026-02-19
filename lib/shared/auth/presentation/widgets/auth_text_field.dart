@@ -24,6 +24,7 @@ class AuthTextField extends StatelessWidget {
     this.autofillHints,
     this.inputFormatters,
     this.focusNode,
+    this.enabled = true,
   });
 
   final TextEditingController controller;
@@ -49,6 +50,7 @@ class AuthTextField extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final List<TextInputFormatter>? inputFormatters;
   final FocusNode? focusNode;
+  final bool enabled;
 
   static OutlineInputBorder _border(Color color, {double width = 1.0}) =>
       OutlineInputBorder(
@@ -73,6 +75,7 @@ class AuthTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           focusNode: focusNode,
+          enabled: enabled,
           keyboardType: keyboardType,
           textInputAction: textInputAction,
           obscureText: obscureText,
@@ -119,6 +122,7 @@ class PasswordField extends StatefulWidget {
     this.validator,
     this.autofillHints,
     this.focusNode,
+    this.enabled = true,
   });
 
   final TextEditingController controller;
@@ -129,6 +133,7 @@ class PasswordField extends StatefulWidget {
   final String? Function(String?)? validator;
   final Iterable<String>? autofillHints;
   final FocusNode? focusNode;
+  final bool enabled;
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -148,6 +153,7 @@ class _PasswordFieldState extends State<PasswordField> {
       validator: widget.validator,
       autofillHints: widget.autofillHints,
       focusNode: widget.focusNode,
+      enabled: widget.enabled,
       obscureText: _obscure,
       prefixIcon: const Icon(Icons.lock_outline_rounded),
       suffixIcon: IconButton(

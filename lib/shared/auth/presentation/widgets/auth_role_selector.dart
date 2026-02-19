@@ -16,7 +16,7 @@ class AuthRoleSelector extends StatelessWidget {
   });
 
   final UserRole value;
-  final ValueChanged<UserRole> onChanged;
+  final ValueChanged<UserRole>? onChanged;
 
   static const _duration = Duration(milliseconds: 240);
   static const _curve = Curves.easeInOut;
@@ -74,7 +74,7 @@ class AuthRoleSelector extends StatelessWidget {
                       isSelected: isCustomer,
                       duration: _duration,
                       curve: _curve,
-                      onTap: () => onChanged(UserRole.customer),
+                      onTap: () => onChanged?.call(UserRole.customer),
                     ),
                     _Segment(
                       icon: Icons.store_rounded,
@@ -82,7 +82,7 @@ class AuthRoleSelector extends StatelessWidget {
                       isSelected: !isCustomer,
                       duration: _duration,
                       curve: _curve,
-                      onTap: () => onChanged(UserRole.admin),
+                      onTap: () => onChanged?.call(UserRole.admin),
                     ),
                   ],
                 ),
