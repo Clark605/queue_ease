@@ -50,3 +50,13 @@ final class AuthFailure extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+/// Emitted when a password reset email was successfully sent.
+final class PasswordResetEmailSent extends AuthState {
+  const PasswordResetEmailSent(this.email);
+
+  final String email;
+
+  @override
+  List<Object?> get props => [email];
+}

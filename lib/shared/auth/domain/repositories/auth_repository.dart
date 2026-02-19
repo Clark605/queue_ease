@@ -32,4 +32,7 @@ abstract class AuthRepository {
 
   /// Signs out from Firebase and clears the cached role.
   Future<void> signOut();
+
+  /// Sends a password reset email to the provided email address.
+  Future<void> sendPasswordResetEmail({required String email});
 }

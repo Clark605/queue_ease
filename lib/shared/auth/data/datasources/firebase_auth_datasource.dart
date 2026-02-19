@@ -145,4 +145,30 @@ class FirebaseAuthDatasource {
       );
     }
   }
+
+  /// Sends a password reset email to the provided email address.
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    _logger.debug('FirebaseAuthDatasource: sendPasswordResetEmail → $email');
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e, st) {
+      _logger.warning(
+        'FirebaseAuthDatasource: sendPasswordResetEmail failed',
+        e,
+        st,
+      );
+      throw AuthException.fromFirebase(e.code, stackTrace: st);
+    } catch (e, st) {
+      _logger.error(
+        'FirebaseAuthDatasource: sendPasswordResetEmail unexpected error',
+        e,
+        st,
+      );
+      throw UnknownException(
+        'An unexpected error occurred while sending password reset email.',
+        cause: e,
+        stackTrace: st,
+      );
+    }
+  }
 }

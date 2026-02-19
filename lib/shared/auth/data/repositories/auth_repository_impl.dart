@@ -136,4 +136,11 @@ class AuthRepositoryImpl implements AuthRepository {
     await _sessionService.clearRole();
     _logger.debug('AuthRepository: session cleared');
   }
+
+  @override
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    _logger.info('AuthRepository: sendPasswordResetEmail → $email');
+    await _authDatasource.sendPasswordResetEmail(email: email);
+    _logger.debug('AuthRepository: password reset email sent');
+  }
 }

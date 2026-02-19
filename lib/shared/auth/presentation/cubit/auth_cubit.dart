@@ -133,4 +133,24 @@ class AuthCubit extends Cubit<AuthState> {
       emit(const AuthFailure('Something went wrong. Please try again.'));
     }
   }
+
+  /// Sends a password reset email to the specified email address.
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    _logger.info('AuthCubit: sendPasswordResetEmail → $email');
+    emit(const AuthLoading());
+    try {
+      await _authRepository.sendPasswordResetEmail(email: email);
+      emit(PasswordResetEmailSent(email));
+    } on AppException catch (e, st) {
+      _logger.warning('AuthCubit: sendPasswordResetEmail failed', e, st);
+      emit(AuthFailure(e.message));
+    } catch (e, st) {
+      _logger.error(
+        'AuthCubit: sendPasswordResetEmail unexpected error',
+        e,
+        st,
+      );
+      emit(const AuthFailure('Failed to send reset email. Please try again.'));
+    }
+  }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:queue_ease/shared/auth/presentation/cubit/auth_cubit.dart';
 
 import '../../../../core/app/theme/app_text_styles.dart';
 
@@ -13,9 +15,7 @@ class AdminDashboardPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              // TODO: Implement logout
-            },
+            onPressed: () => context.read<AuthCubit>().signOut(),
           ),
         ],
       ),

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +11,7 @@ import '../widgets/auth_divider.dart';
 import '../widgets/auth_footer_panel.dart';
 import '../widgets/auth_header.dart';
 import '../widgets/auth_text_field.dart';
+import '../widgets/forgot_password_bottom_sheet.dart';
 import '../widgets/google_sign_in_button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -45,34 +45,18 @@ class _LoginPageState extends State<LoginPage> {
     context.read<AuthCubit>().signInWithGoogle();
   }
 
-  Future<void> _onForgotPassword() async {
-    final email = _emailController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Enter your email address first, then tap Forgot password.',
-          ),
-        ),
-      );
-      return;
-    }
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password reset email sent to $email')),
-        );
-      }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not send reset email. Please try again.'),
-          ),
-        );
-      }
-    }
+  void _onForgotPassword() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => ForgotPasswordBottomSheet(
+        initialEmail: _emailController.text.trim(),
+      ),
+    );
   }
 
   @override
@@ -139,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                           enabled: !isLoading,
                           autofillHints: const [AutofillHints.password],
                           labelSuffix: TextButton(
-                            onPressed: isLoading ? null : _onForgotPassword,
+                            onPressed: _onForgotPassword,
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,
