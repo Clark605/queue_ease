@@ -1,7 +1,7 @@
 name: queue_ease
 description: 'QueueEase - Smart queue management for businesses and customers.'
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.1.0+1
 
 environment:
   sdk: ^3.9.0

@@ -26,8 +26,12 @@ import 'shared/auth/presentation/cubit/auth_cubit.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load production environment variables
-  await dotenv.load(fileName: '.env.prod');
+  // Load production environment variables — file may be empty in CI.
+  try {
+    await dotenv.load(fileName: '.env.prod');
+  } catch (_) {
+    // Empty or missing .env.prod is expected in CI environments.
+  }
 
   FlavorConfig.initialize(FlavorConfig.prod());
 
