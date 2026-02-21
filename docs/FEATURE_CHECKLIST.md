@@ -281,21 +281,35 @@
 ### 9.1 Core Entities
 - ✅ UserEntity (uid, email, role, displayName, phone, orgId, createdAt)
 - ✅ UserRole enum (admin, customer)
-- ⏳ Organization entity
-- ⏳ Service entity
-- ⏳ WorkingHours entity
-- ⏳ Appointment entity
-- ⏳ Queue entity
-- ⏳ QueueEntry entity
+- ✅ OrganizationEntity (id, name, adminUid, bookingLinkSlug, isOpen, qrCodeUrl, address, logoUrl, description, createdAt)
+- ✅ ServiceEntity (id, orgId, name, durationMinutes, timeMarginMinutes, isActive, price, queueType, description, createdAt)
+- ✅ WorkingHoursEntity (orgId, dayOfWeek, isOpen, openTime, closeTime, breakStart, breakEnd)
+- ✅ AppointmentEntity (id, orgId, serviceId, customerId, customerName, customerPhone, scheduledAt, status, queuePosition, createdAt)
+- ✅ AppointmentStatus enum (booked, inQueue, serving, completed, noShow)
+- ✅ QueueEntity (id, orgId, date, orderedAppointmentIds, currentServingIndex, status, generatedAt)
+- ✅ QueueStatus enum (active, paused, closed)
+- ⏳ QueueEntry entity (deferred - Phase 5)
 
-### 9.2 Firestore Collections
+### 9.2 Firestore Data Models
 - ✅ Users collection (basic schema implemented in FirestoreUserDatasource)
-- ⏳ Organizations collection schema
-- ⏳ Services collection schema
-- ⏳ WorkingHours collection schema
-- ⏳ Appointments collection schema
-- ⏳ Queues collection schema
+- ✅ OrganizationModel with Firestore serialization (fromFirestore, toFirestore)
+- ✅ ServiceModel with Firestore serialization
+- ✅ WorkingHoursModel with Firestore serialization
+- ✅ AppointmentModel with Firestore serialization
+- ✅ QueueModel with Firestore serialization
 - ⏳ Notifications collection schema
+
+### 9.3 Entity & Model Tests
+- ✅ OrganizationEntity unit tests (equality, props)
+- ✅ ServiceEntity unit tests
+- ✅ WorkingHoursEntity unit tests
+- ✅ AppointmentEntity unit tests
+- ✅ QueueEntity unit tests
+- ✅ OrganizationModel unit tests (Firestore serialization round-trip)
+- ✅ ServiceModel unit tests
+- ✅ WorkingHoursModel unit tests
+- ✅ AppointmentModel unit tests
+- ✅ QueueModel unit tests
 
 ---
 
@@ -306,12 +320,21 @@
 - ✅ AuthCubit tests (auth_cubit_test.dart - comprehensive coverage)
 - ✅ Result type tests (result_test.dart)
 - ✅ AppException tests (app_exception_test.dart)
+- ✅ OrganizationEntity tests (organization_entity_test.dart)
+- ✅ ServiceEntity tests (service_entity_test.dart)
+- ✅ WorkingHoursEntity tests (working_hours_entity_test.dart)
+- ✅ AppointmentEntity tests (appointment_entity_test.dart)
+- ✅ QueueEntity tests (queue_entity_test.dart)
+- ✅ OrganizationModel tests (organization_model_test.dart)
+- ✅ ServiceModel tests (service_model_test.dart)
+- ✅ WorkingHoursModel tests (working_hours_model_test.dart)
+- ✅ AppointmentModel tests (appointment_model_test.dart)
+- ✅ QueueModel tests (queue_model_test.dart)
 - ⏳ Auth repository tests
 - ⏳ Service repository tests
 - ⏳ Booking repository tests
 - ⏳ Queue repository tests
 - ⏳ Business logic tests (conflict detection, time margin, etc.)
-- ⏳ Entity/model tests
 
 ### 10.2 Widget Tests
 - ⏳ Onboarding widget tests
@@ -375,13 +398,15 @@
 ## 13. Documentation
 
 - ✅ Product Requirements Document (PRD.md)
-- ✅ Feature checklist (this document)
+- ✅ Feature checklist (this document - FEATURE_CHECKLIST.md)
+- ✅ Project timeline with Gantt charts (PROJECT_TIMELINE.md)
+- ✅ Entity models specification (entities.md)
+- ✅ Architecture documentation (ARCHITECTURE.md - comprehensive)
 - ⏳ API documentation
-- ⏳ Architecture documentation
 - ⏳ User guide
 - ⏳ Admin guide
 - ⏳ Developer onboarding guide
-- ⏳ Code comments and inline documentation
+- ✅ Code comments and inline documentation (established standards)
 
 ---
 
@@ -427,9 +452,9 @@
 - [ ] App deployed to Firebase Hosting / App Stores (internal testing)
 
 ### Current Progress Summary
-**Completed:** ~25-30% (Core infrastructure complete, authentication fully implemented, onboarding complete, basic admin/customer dashboard pages)  
+**Completed:** ~35-40% (Core infrastructure complete, authentication fully implemented, onboarding complete, ALL domain entities & models complete with tests, basic admin/customer dashboard pages)  
 **In Progress:** 0%  
-**Pending:** ~70%
+**Pending:** ~60%
 
 **Key Achievements:**
 - ✅ Complete authentication system (email/password, Google Sign-In, password reset)
@@ -437,15 +462,19 @@
 - ✅ Comprehensive error handling and logging framework
 - ✅ Complete onboarding flow with custom illustrations
 - ✅ Clean architecture with DI and state management
-- ✅ Test coverage for auth and core error handling
+- ✅ ALL 5 core domain entities defined (Organization, Service, WorkingHours, Appointment, Queue)
+- ✅ ALL 5 Firestore models with serialization (fromFirestore/toFirestore)
+- ✅ Comprehensive test coverage (15+ test files covering entities, models, auth, error handling)
+- ✅ Complete architectural documentation
 
 **Critical Path Next Steps:**
-1. Define all Firestore entity models (Organization, Service, WorkingHours, Appointment, Queue)
+1. ~~Define all Firestore entity models~~ ✅ COMPLETE
 2. Implement Firestore security rules
-3. Build Service Management CRUD operations
-4. Build Working Hours configuration
-5. Implement booking flow with conflict prevention
-6. Build queue generation and management system
+3. Implement repositories for organization, service, working hours, appointment, queue
+4. Build Service Management CRUD operations (admin UI)
+5. Build Working Hours configuration (admin UI)
+6. Implement booking flow with conflict prevention
+7. Build queue generation and management system
 
 ---
 
@@ -456,11 +485,18 @@
 2. ✅ Router and navigation setup
 3. ✅ Error handling and logging framework
 4. ✅ Onboarding flow
+5. ✅ Define all domain entities (Organization, Service, WorkingHours, Appointment, Queue)
+6. ✅ Create all Firestore models with serialization
+7. ✅ Write comprehensive entity & model tests
 
-### Phase 2: Data Layer (Weeks 1-2)
-1. Define all Firestore entity models (Organization, Service, WorkingHours, Appointment, Queue)
-2. Set up Firestore security rules
-3. Implement repositories for all entities
+### Phase 2: Repository Layer & Security (Weeks 1-2)
+1. Set up Firestore security rules
+2. Implement OrganizationRepository (CRUD operations)
+3. Implement ServiceRepository (CRUD operations)
+4. Implement WorkingHoursRepository (CRUD operations)
+5. Implement AppointmentRepository (CRUD operations)
+6. Implement QueueRepository (CRUD operations)
+7. Write repository unit tests
 
 ### Phase 3: Admin Core (Weeks 2-3)
 4. Service management (CRUD)
@@ -500,18 +536,26 @@
 ## Notes
 
 - This checklist was updated on February 21, 2026 to reflect actual codebase state
-- Phase 1 (Foundation) is now COMPLETE including full authentication system
-- Authentication includes: email/password, Google Sign-In, password reset, RBAC, session persistence
+- Phase 1 (Foundation) is now COMPLETE including:
+  - Full authentication system (email/password, Google Sign-In, password reset, RBAC, session persistence)
+  - All domain entities (5) and Firestore models (5) with complete test coverage
+  - Comprehensive architecture documentation
 - All auth UI components are implemented with proper error handling
 - Clean architecture patterns established with DI, state management, and error handling
-- Estimated remaining MVP timeline: 6-7 weeks from current state (down from 8 weeks)
+- Estimated remaining MVP timeline: 5-6 weeks from current state (down from 8 weeks originally)
+- Domain layer is 100% complete - ready for repository implementation
 - Items marked with ✅ have confirmed implementation in the codebase
-- Items marked with ⏳ have folder structure but no implementation
+- Items marked with 🚧 are currently being worked on
+- Items marked with ⏳ have folder structure but no implementation or are planned
 - Regular updates to this checklist should be made as features progress
+
+**Development Velocity**: With data models and architecture fully established, feature development should accelerate significantly in the coming weeks.
 
 ---
 
 **For questions or updates, refer to:**
 - [PRD.md](PRD.md) - Product Requirements Document
 - [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) - Detailed timeline, work packages, and network diagrams
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Comprehensive architecture documentation
+- [entities.md](entities.md) - Entity models specification
 - [UI Screens](ui-screens/) - Design mockups
