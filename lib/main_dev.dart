@@ -70,5 +70,9 @@ Future<void> main() async {
   logger.info('App started — ${FlavorConfig.instance.flavor.name} flavor');
 
   await getIt<AuthCubit>().checkAuthStatus();
-  runApp(DevicePreview(builder: (context) => App()));
+
+  final useDevicePreview =
+      kDebugMode && FlavorConfig.instance.enableDevicePreview;
+
+  runApp(useDevicePreview ? DevicePreview(builder: (context) => App()) : App());
 }
