@@ -27,8 +27,7 @@ platform :android do
     
       # Build dev flavor APK
       UI.message("🔨 Building dev flavor APK...")
-      sh("flutter", "clean") # Clean previous builds to avoid conflicts
-      sh("flutter", "build", "apk", "--release", "--flavor", "dev", "-t", "lib/main_dev.dart")
+      sh("flutter", "build", "apk", "--release", "--flavor", "dev", "-t", "lib/main_dev.dart", "--no-tree-shake-icons")
       
       apk_path = "../build/app/outputs/flutter-apk/app-dev-release.apk"
       
@@ -65,7 +64,7 @@ platform :android do
     
       # Build prod flavor APK
       UI.message("🔨 Building prod flavor APK...")
-      sh("flutter", "build", "apk", "--release", "--flavor", "prod", "-t", "lib/main_prod.dart")
+      sh("flutter", "build", "apk", "--release", "--flavor", "prod", "-t", "lib/main_prod.dart", "--no-tree-shake-icons")
       
       apk_path = "../build/app/outputs/flutter-apk/app-prod-release.apk"
       
