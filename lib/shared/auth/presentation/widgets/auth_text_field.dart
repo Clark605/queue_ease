@@ -68,7 +68,7 @@ class AuthTextField extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: AppTextStyles.labelLarge),
-            if (labelSuffix != null) labelSuffix!,
+            ?labelSuffix,
           ],
         ),
         const SizedBox(height: 8),

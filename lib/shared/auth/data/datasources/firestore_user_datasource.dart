@@ -42,9 +42,9 @@ class FirestoreUserDatasource {
         'uid': uid,
         'email': email ?? '',
         'role': (role ?? UserRole.customer).name,
-        if (displayName != null) 'displayName': displayName,
-        if (phone != null) 'phone': phone,
-        if (orgName != null) 'orgName': orgName,
+        'displayName': ?displayName,
+        'phone': ?phone,
+        'orgName': ?orgName,
       };
       await _users.doc(uid).set(data);
       _logger.info(
