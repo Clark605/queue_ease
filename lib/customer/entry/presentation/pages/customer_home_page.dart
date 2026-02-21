@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/app/theme/app_text_styles.dart';
+import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 
 class CustomerHomePage extends StatelessWidget {
   const CustomerHomePage({super.key});
@@ -13,9 +15,7 @@ class CustomerHomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              // TODO: Implement logout
-            },
+            onPressed: () => context.read<AuthCubit>().signOut(),
           ),
         ],
       ),
