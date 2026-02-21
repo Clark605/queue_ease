@@ -53,9 +53,8 @@ class _LoginPageState extends State<LoginPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => ForgotPasswordBottomSheet(
-        initialEmail: _emailController.text.trim(),
-      ),
+      builder: (context) =>
+          ForgotPasswordBottomSheet(initialEmail: _emailController.text.trim()),
     );
   }
 
