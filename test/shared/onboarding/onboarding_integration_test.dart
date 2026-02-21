@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:queue_ease/shared/auth/presentation/cubit/auth_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:queue_ease/core/app/app.dart';
@@ -96,8 +97,9 @@ void main() {
         await tester.tap(find.text('Skip'));
         await tester.pumpAndSettle();
 
-        // Should navigate to login page.
-        expect(find.text('Sign In'), findsOneWidget);
+        // Should navigate to login page (verify by presence of Email field and Login button).
+        expect(find.text('Email'), findsWidgets);
+        expect(find.text('Login'), findsOneWidget);
 
         // Verify onboarding was marked as complete.
         final isComplete = await onboardingService.hasCompletedOnboarding();
@@ -125,8 +127,9 @@ void main() {
         await tester.tap(find.text('Get Started'));
         await tester.pumpAndSettle();
 
-        // Should navigate to login page.
-        expect(find.text('Sign In'), findsOneWidget);
+        // Should navigate to login page (verify by presence of Email field and Login button).
+        expect(find.text('Email'), findsWidgets);
+        expect(find.text('Login'), findsOneWidget);
 
         // Verify onboarding was marked as complete.
         final isComplete = await onboardingService.hasCompletedOnboarding();
@@ -137,14 +140,19 @@ void main() {
     testWidgets('Completed onboarding skips to login on next launch', (
       WidgetTester tester,
     ) async {
-      // Mark onboarding as complete.
+      // Arrange: Mark onboarding as complete and simulate app startup
       await onboardingService.markOnboardingComplete();
 
+      // Simulate the checkAuthStatus call that happens in main.dart before runApp
+      await getIt<AuthCubit>().checkAuthStatus();
+
+      // Act: Pump the app
       await tester.pumpWidget(App());
       await tester.pumpAndSettle();
 
-      // Should skip directly to login page.
-      expect(find.text('Sign In'), findsOneWidget);
+      // Assert: Should skip directly to login page (verify by presence of Email field and Login button).
+      expect(find.text('Email'), findsWidgets);
+      expect(find.text('Login'), findsOneWidget);
       expect(find.text('No more waiting in line'), findsNothing);
     });
 

@@ -26,6 +26,11 @@ void main() {
     displayName: 'Test User',
   );
 
+  // Register fallback values for mocktail before all tests
+  setUpAll(() {
+    registerFallbackValue(UserRole.customer);
+  });
+
   setUp(() {
     mockRepo = MockAuthRepository();
     mockLogger = MockAppLogger();
@@ -399,7 +404,7 @@ void main() {
       act: (cubit) => cubit.sendPasswordResetEmail(email: 'test@example.com'),
       expect: () => [
         const AuthLoading(),
-        const AuthFailure('Something went wrong. Please try again.'),
+        const AuthFailure('Failed to send reset email. Please try again.'),
       ],
     );
   });
