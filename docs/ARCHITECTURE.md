@@ -373,36 +373,51 @@ abstract interface class AuthRepository {
 
 **Rules**:
 - ✅ Implement domain repository interfaces
-- ✅ Models extend domain entities
+- ✅ Models are independent data classes (not entity subclasses) with their own fields
+- ✅ Models expose `toEntity()` to hand a clean domain type up to the repository
 - ✅ Datasources handle platform APIs
 - ✅ Map exceptions to `AppException` subtypes
 - ❌ No UI/presentation logic
+- ❌ Models do not extend domain entities (preserves layer boundary)
 
 **Example**:
 ```dart
-// Model (extends entity)
-class OrganizationModel extends OrganizationEntity {
+// Model (independent data class — does NOT extend entity)
+class OrganizationModel {
   const OrganizationModel({
-    required super.id,
-    required super.name,
-    required super.adminUid,
-    required super.bookingLinkSlug,
-    required super.isOpen,
-    required super.createdAt,
-    super.qrCodeUrl,
-    super.address,
-    super.logoUrl,
-    super.description,
+    required this.id,
+    required this.name,
+    required this.adminUid,
+    required this.bookingLinkSlug,
+    required this.isOpen,
+    required this.createdAt,
+    this.qrCodeUrl,
+    this.address,
+    this.logoUrl,
+    this.description,
   });
 
-  factory OrganizationModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  final String id;
+  final String name;
+  final String adminUid;
+  final String bookingLinkSlug;
+  final bool isOpen;
+  final DateTime createdAt;
+  final String? qrCodeUrl;
+  final String? address;
+  final String? logoUrl;
+  final String? description;
+
+  factory OrganizationModel.fromDoc(
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final data = doc.data()!;
     return OrganizationModel(
       id: doc.id,
       name: data['name'] as String,
       adminUid: data['adminUid'] as String,
       bookingLinkSlug: data['bookingLinkSlug'] as String,
-      isOpen: data['isOpen'] as bool,
+      isOpen: data['isOpen'] as bool? ?? false,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       qrCodeUrl: data['qrCodeUrl'] as String?,
       address: data['address'] as String?,
@@ -411,7 +426,7 @@ class OrganizationModel extends OrganizationEntity {
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
       'name': name,
       'adminUid': adminUid,
@@ -424,6 +439,20 @@ class OrganizationModel extends OrganizationEntity {
       'description': description,
     };
   }
+
+  /// Converts to a pure domain entity for use above the data layer.
+  OrganizationEntity toEntity() => OrganizationEntity(
+        id: id,
+        name: name,
+        adminUid: adminUid,
+        bookingLinkSlug: bookingLinkSlug,
+        isOpen: isOpen,
+        createdAt: createdAt,
+        qrCodeUrl: qrCodeUrl,
+        address: address,
+        logoUrl: logoUrl,
+        description: description,
+      );
 }
 
 // Repository implementation
@@ -854,14 +883,31 @@ test('should have correct equality', () {
 });
 ```
 
-**Model Tests**: Round-trip Firestore serialization
+**Model Tests**: Firestore deserialization, serialization, entity conversion, and round-trip
 
 ```dart
-test('fromFirestore -> toFirestore round trip', () {
-  final doc = FakeDocumentSnapshot(/* ... */);
-  final model = OrganizationModel.fromFirestore(doc);
-  final map = model.toFirestore();
-  expect(map['name'], equals('Test Org'));
+test('fromDoc -> toMap round trip', () {
+  final mockDoc = MockDocumentSnapshot();
+  when(() => mockDoc.id).thenReturn('org1');
+  when(() => mockDoc.data()).thenReturn({
+    'name': 'Test Clinic',
+    'adminUid': 'admin123',
+    'bookingLinkSlug': 'test-clinic',
+    'isOpen': true,
+    'createdAt': Timestamp.fromDate(testDate),
+  });
+
+  final model = OrganizationModel.fromDoc(mockDoc);
+  final map = model.toMap();
+
+  expect(map['name'], equals('Test Clinic'));
+});
+
+test('toEntity returns clean domain type', () {
+  final model = OrganizationModel(id: 'org1', name: 'Test Clinic', ...);
+  final entity = model.toEntity();
+  expect(entity, isA<OrganizationEntity>());
+  expect(entity.name, equals('Test Clinic'));
 });
 ```
 
