@@ -62,7 +62,6 @@ app.*.map.json
 /android/app/release
 
 # Speckit artifacts
-/specs/
 
 # node_modules and related
 test/firestore_rules/node_modules/
