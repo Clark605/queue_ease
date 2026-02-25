@@ -31,7 +31,7 @@
 - ✅ Firebase Authentication setup (FirebaseAuth, GoogleSignIn)
 - ✅ Firestore basic integration (FirestoreUserDatasource)
 - ✅ Firestore database structure (5 core entities with complete models)
-- ⏳ Firestore security rules (defined but not deployed)
+- ✅ Firestore security rules (78 tests passing, deployed to dev & prod)
 - ⏳ Cloud Functions setup
 - ⏳ Firebase Cloud Messaging (FCM) integration
 - ✅ Firebase Crashlytics integration (integrated with Talker logging)
