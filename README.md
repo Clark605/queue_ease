@@ -1,106 +1,474 @@
-# QueueEase
+# Queue Ease
 
 Smart queue and appointment management for small clinics and service-based businesses.
 
-![Version](https://img.shields.io/badge/version-1.0.0%2B1-blue)
-![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-%5E3.9.0-0175C2?logo=dart&logoColor=white)
+![Version](https://img.shields.io/badge/version-1.1.0%2B1-blue)
+![Flutter](https://img.shields.io/badge/Flutter-3.9.0%2B-02569B?logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.9.0%2B-0175C2?logo=dart&logoColor=white)
+![Status](https://img.shields.io/badge/status-in%20development-yellow)
+![Coverage](https://img.shields.io/badge/progress-35--40%25-orange)
 
-## What the project does
+---
 
-QueueEase helps businesses manage appointments and live queues while giving customers a real-time view of their position and estimated wait time. It supports separate admin and customer flows, enabling service setup, working hours, and queue operations for admins, while customers can book or join queues via a shareable link or QR code.
+## 📖 What the project does
+
+Queue Ease helps businesses manage appointments and live queues while giving customers a real-time view of their position and estimated wait time. It supports separate admin and customer flows, enabling service setup, working hours, and queue operations for admins, while customers can book or join queues via a shareable link or QR code.
+
+**Key Features:**
+- 🔐 Role-based authentication (Admin & Customer)
+- 📅 Appointment booking with conflict prevention
+- 📊 Live queue management and real-time updates
+- ⏱️ Automatic no-show detection with time margins
+- 📱 QR code and unique link generation for easy access
+- 🔔 Push notifications for queue status
+- 📈 Daily summary and analytics
 
 For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
 
-## Why the project is useful
+---
 
-- Reduces booking conflicts with structured scheduling rules.
-- Keeps customers informed with live queue status and ETA.
-- Streamlines daily operations for small businesses.
-- Supports role-based experiences for admins and customers.
+## 🎯 Current Project Status
 
-## A picture of whole app UI
+**Last Updated:** February 21, 2026  
+**Current Branch:** `feature/auth`
 
-![App UI](docs/ui-screens/app-ui.png)
+### ✅ Completed (Phase 1 - Foundation)
+- ✅ Complete authentication system (email/password, Google Sign-In, password reset)
+- ✅ Full RBAC with role-based routing (admin vs. customer)
+- ✅ Comprehensive error handling framework (Result type, AppException hierarchy)
+- ✅ Complete onboarding flow with custom illustrations
+- ✅ Clean architecture with dependency injection
+- ✅ ALL 5 core domain entities (Organization, Service, WorkingHours, Appointment, Queue)
+- ✅ ALL 5 Firestore models with complete serialization
+- ✅ 15+ unit tests covering entities, models, auth, and error handling
+- ✅ Comprehensive documentation (Architecture, PRD, Timeline)
 
-> Replace the image above with a full-app UI snapshot when available.
+### 🚧 Next Up (Phase 2 - Repository Layer)
+- Implement Firestore security rules
+- Create repositories for all domain entities
+- Build Service Management CRUD (admin UI)
+- Build Working Hours configuration (admin UI)
 
-UI references and screen mockups live in [docs/ui-screens](docs/ui-screens).
+**Overall Progress:** ~35-40% complete  
+**Estimated MVP Timeline:** 5-6 weeks remaining
 
-## Folder Structure
+---
 
-| Path | Purpose |
-| --- | --- |
-| [lib](lib) | Application source code |
-| [lib/admin](lib/admin) | Admin features (services, queue, dashboard, etc.) |
-| [lib/customer](lib/customer) | Customer booking and queue status flows |
-| [lib/core](lib/core) | App setup, DI, shared app logic |
-| [lib/shared](lib/shared) | Shared UI and feature modules |
-| [assets](assets) | Images, icons, and other assets |
-| [docs](docs) | Product docs and UI references |
-| [test](test) | Widget and unit tests |
-| [android](android) / [ios](ios) | Platform-specific build targets |
+## 🏗️ Architecture Overview
 
-## Technologies Used
+Queue Ease follows **Clean Architecture** principles with feature-based modular organization:
 
-- Flutter, Dart
-- Firebase (Auth, Firestore, Crashlytics)
-- State management with BLoC
-- Navigation with `go_router`
-- Dependency injection with `get_it` + `injectable`
-- Intl, UUID utilities
-- Testing: `flutter_test`, `bloc_test`, `mocktail`
+```
+┌─────────────────────────────────────────┐
+│         Presentation Layer              │
+│  (UI, Pages, Widgets, State Management) │
+└─────────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│          Domain Layer                   │
+│     (Entities, Repositories Interface)  │
+└─────────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│           Data Layer                    │
+│   (Models, Datasources, Repositories)   │
+└─────────────────────────────────────────┘
+```
 
-## GitHub workflow
+**Key Architectural Decisions:**
+- **State Management:** flutter_bloc (Cubit pattern)
+- **Dependency Injection:** GetIt + Injectable
+- **Navigation:** GoRouter with authentication guards
+- **Error Handling:** Sealed Result<T> type with structured exceptions
+- **Logging:** Talker with environment-specific verbosity
 
-This repository uses a simple feature-branch workflow:
+For comprehensive architecture details, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-1. Create a branch from `main` (example: `feature/queue-status-ui`).
-2. Commit focused changes.
-3. Open a pull request to `main`.
-4. Review, iterate, and merge.
+---
 
-## Skills learned
+## 📁 Project Structure
 
-- Building multi-role Flutter apps (admin + customer)
-- Real-time data flows for queues and appointments
-- Firebase Auth + Firestore integration
-- BLoC architecture and state management
-- Dependency injection and testable app structure
+```
+lib/
+├── core/                           # Shared infrastructure
+│   ├── app/                        # Application setup (DI, routing)
+│   ├── config/                     # Environment configuration
+│   ├── error/                      # Error handling framework
+│   ├── services/                   # Core services
+│   ├── utils/                      # Utilities (logger, validators)
+│   └── widgets/                    # Reusable UI components
+│
+├── shared/                         # Role-agnostic features
+│   ├── auth/                       # Authentication (✅ Complete)
+│   ├── onboarding/                 # First-time user flow (✅ Complete)
+│   ├── organization/               # Organization domain (🚧 Models complete)
+│   ├── booking/                    # Appointment domain (🚧 Models complete)
+│   └── queue/                      # Queue domain (🚧 Models complete)
+│
+├── admin/                          # Admin-specific features
+│   ├── dashboard/                  # Admin dashboard (✅ Basic UI)
+│   ├── services/                   # Service management (⏳ Planned)
+│   ├── working_hours/              # Hours configuration (⏳ Planned)
+│   ├── queue_management/           # Live queue control (⏳ Planned)
+│   ├── share_access/               # QR & link generation (⏳ Planned)
+│   └── daily_summary/              # Reports (⏳ Planned)
+│
+├── customer/                       # Customer-specific features
+│   ├── entry/                      # Customer home (✅ Basic UI)
+│   ├── booking_flow/               # Booking UI (⏳ Planned)
+│   └── queue_status/               # Queue tracking (⏳ Planned)
+│
+├── firebase_options.dart           # Firebase configuration
+├── main_dev.dart                   # Dev entrypoint
+└── main_prod.dart                  # Prod entrypoint
 
-## Video demo
+test/                               # Mirror of lib/ structure
+├── core/error/                     # Error handling tests (✅)
+└── shared/
+    ├── auth/                       # Auth tests (✅)
+    ├── organization/               # Entity & model tests (✅)
+    ├── booking/                    # Entity & model tests (✅)
+    └── queue/                      # Entity & model tests (✅)
 
-TBD: Add a demo link here (example: https://youtu.be/REPLACE_ME)
+docs/                               # Documentation
+├── ARCHITECTURE.md                 # Comprehensive architecture guide (✅)
+├── PRD.md                          # Product requirements (✅)
+├── FEATURE_CHECKLIST.md            # Implementation tracking (✅)
+├── PROJECT_TIMELINE.md             # Timeline & Gantt charts (✅)
+├── entities.md                     # Domain model specs (✅)
+└── README.md                       # Documentation index (✅)
+```
 
-## How users can get started
+**Legend:** ✅ Complete | 🚧 In Progress | ⏳ Planned
+
+For detailed documentation, see [docs/](docs/) folder.
+
+---
+
+## 🛠️ Technologies Used
+
+### Core Framework
+- **Flutter** 3.9.0+ - Cross-platform UI framework
+- **Dart** 3.9.0+ - Programming language
+
+### State Management & Architecture
+- **flutter_bloc** 9.1.1 - State management (Cubit pattern)
+- **Equatable** 2.0.7 - Value equality for domain entities
+
+### Backend & Services
+- **Firebase Core** 4.4.0 - Firebase integration
+- **Firebase Auth** 6.1.4 - Authentication
+- **Cloud Firestore** 6.1.2 - NoSQL database
+- **Firebase Crashlytics** 5.0.7 - Crash reporting
+- **Google Sign-In** 7.2.0 - OAuth authentication
+
+### Navigation & Routing
+- **GoRouter** 17.1.0 - Declarative routing with guards
+
+### Dependency Injection
+- **GetIt** 9.2.0 - Service locator
+- **Injectable** 2.5.0 - Code generation for DI
+
+### Utilities
+- **Intl** 0.20.2 - Internationalization and date formatting
+- **UUID** 4.5.1 - Unique ID generation
+- **flutter_dotenv** 5.1.0 - Environment variables
+
+### Local Storage
+- **SharedPreferences** 2.3.3 - Key-value persistence
+
+### UI Components
+- **smooth_page_indicator** 2.0.1 - Page indicators
+
+### Logging & Debugging
+- **Talker** 4.9.3 - Advanced logging
+- **Talker Flutter** 4.9.3 - Flutter-specific logger
+- **Talker BLoC Logger** 4.9.3 - BLoC event/state logging
+- **Device Preview** 1.3.1 - Multi-device testing (dev only)
+
+### Testing
+- **flutter_test** - Unit and widget testing
+- **bloc_test** 10.0.0 - BLoC testing utilities
+- **mocktail** 1.0.4 - Mocking framework
+
+### Build Tools
+- **build_runner** 2.4.15 - Code generation
+- **injectable_generator** 2.7.0 - DI code generation
+- **flutter_native_splash** 2.4.5 - Splash screen generation
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Flutter SDK (3.x)
-- Dart SDK (^3.9.0)
-- Android Studio / Xcode for device builds
+- **Flutter SDK** 3.9.0 or higher
+- **Dart SDK** 3.9.0 or higher
+- **Android Studio** / **Xcode** for device builds
+- **Firebase Account** (for backend services)
+- **Git** for version control
 
-### Running Flavors
+### Installation
 
-QueueEase supports separate development and production environments (flavors) with different configurations:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Clark605/queue_ease.git
+   cd queue_ease
+   ```
 
-**Development Flavor:**
-- Uses Firebase dev project (`ease-queue-dev`)
-- Enables device preview in debug mode
-- Verbose logging enabled
-- Debug overlays and tools
+2. **Install dependencies:**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Generate dependency injection code:**
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+4. **Configure environment variables:**
+   
+   Copy the example environment files:
+   ```bash
+   cp .env.example .env.dev
+   cp .env.example .env.prod
+   ```
+   
+   Update `.env.dev` and `.env.prod` with your actual configuration.
+   
+   **Note:** `.env.dev` and `.env.prod` are git-ignored to protect sensitive data.
+
+5. **Firebase setup:**
+   
+   Ensure Firebase is configured for your project:
+   - Add `google-services.json` (Android) to `android/app/`
+   - Add `GoogleService-Info.plist` (iOS) to `ios/Runner/`
+   - Update `firebase_options.dart` if needed
+
+### Running the App
+
+**Development Build (with debugging tools):**
 
 ```bash
 flutter run --flavor dev -t lib/main_dev.dart
 ```
 
-**Production Flavor:**
-- Uses Firebase production project (`ease-queue`)
-- Error-only logging
-- No debug tools
-- Optimized for release builds
+Features enabled in dev:
+- Device preview
+- Verbose logging
+- Debug overlays
+- In-app log viewer at `/debug/logs`
+
+**Production Build:**
 
 ```bash
+flutter run --flavor prod -t lib/main_prod.dart
+```
+
+Production optimizations:
+- Error-only logging
+- No debug tools
+- Performance optimizations
+
+**VS Code Launch Configurations:**
+
+Use the pre-configured launch options in `.vscode/launch.json`:
+- **Dev** - Development flavor
+- **Prod** - Production flavor
+
+---
+
+## 🧪 Testing
+
+### Run all tests:
+```bash
+flutter test
+```
+
+### Run specific test file:
+```bash
+flutter test test/shared/auth/auth_cubit_test.dart
+```
+
+### Run tests with coverage:
+```bash
+flutter test --coverage
+```
+
+### Current Test Coverage:
+- ✅ Auth: AuthCubit (comprehensive)
+- ✅ Core: Result type, AppException hierarchy
+- ✅ Entities: Organization, Service, WorkingHours, Appointment, Queue
+- ✅ Models: All 5 Firestore models with serialization round-trips
+- ✅ Onboarding: Integration test
+
+**Total Test Files:** 15+
+
+---
+
+## 📚 Documentation
+
+All documentation is located in the [docs/](docs/) folder:
+
+| Document | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Comprehensive technical architecture guide |
+| [PRD.md](docs/PRD.md) | Product requirements and specifications |
+| [FEATURE_CHECKLIST.md](docs/FEATURE_CHECKLIST.md) | Feature implementation tracking |
+| [PROJECT_TIMELINE.md](docs/PROJECT_TIMELINE.md) | Timeline, Gantt charts, milestones |
+| [entities.md](docs/entities.md) | Domain entity specifications |
+| [README.md](docs/README.md) | Documentation index |
+
+---
+
+## 🔄 GitHub Workflow
+
+This repository uses a feature-branch workflow:
+
+1. **Create a feature branch** from `main`:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Commit focused changes:**
+   ```bash
+   git add .
+   git commit -m "feat: add user authentication"
+   ```
+
+3. **Push and create a pull request:**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+4. **Review, iterate, and merge** to `main`
+
+**Branch Naming Convention:**
+- `feature/` - New features
+- `bugfix/` - Bug fixes
+- `refactor/` - Code refactoring
+- `docs/` - Documentation updates
+
+---
+
+## 🚢 Deployment
+
+### Firebase App Distribution with Fastlane
+
+Queue Ease uses Fastlane to automate distribution of builds to Firebase App Distribution for testing.
+
+**Manual Distribution:**
+
+```bash
+# Development build
+cd android
+fastlane android distribute_dev
+
+# Production build
+fastlane android distribute_prod
+```
+
+**CI/CD Automation:**
+
+Builds are automatically distributed via GitHub Actions:
+- **Dev builds:** Pushed to `develop` branch
+- **Prod builds:** Pushed to `main` branch
+
+**Required GitHub Secrets:**
+- `FIREBASE_TOKEN` - Firebase CLI authentication token
+- `FIREBASE_APP_ID_DEV` - Dev Firebase app ID
+- `FIREBASE_APP_ID_PROD` - Prod Firebase app ID
+
+**Troubleshooting:**
+- **"Firebase token required" error**: Make sure `FIREBASE_TOKEN` environment variable is set
+- **Firebase permission error**: Verify you have owner/editor permissions on the Firebase project
+- **Tester group not found**: Create the "developers" group in Firebase Console > App Distribution > Testers
+
+---
+
+## 🎓 Skills Learned
+
+- ✅ Building multi-role Flutter apps (admin + customer)
+- ✅ Implementing Clean Architecture in Flutter
+- ✅ Real-time data flows with Firestore
+- ✅ Firebase Auth integration (email/password, Google Sign-In)
+- ✅ Advanced state management with flutter_bloc
+- ✅ Dependency injection with GetIt + Injectable
+- ✅ Role-based access control (RBAC) with GoRouter
+- ✅ Structured error handling with Result types
+- ✅ Comprehensive testing strategies
+- ✅ Environment-based configuration (Dev/Prod flavors)
+
+---
+
+## 🎥 Demo
+
+> **Coming Soon:** Video demonstration of implemented features
+
+UI mockups and design references: [docs/ui-screens](docs/ui-screens/)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Write/update tests
+5. Update documentation
+6. Submit a pull request
+
+**Before submitting:**
+- Ensure all tests pass: `flutter test`
+- Follow established code conventions (see [ARCHITECTURE.md](docs/ARCHITECTURE.md))
+- Update relevant documentation
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 📞 Contact & Support
+
+**Repository:** [github.com/Clark605/queue_ease](https://github.com/Clark605/queue_ease)  
+**Current Branch:** `feature/auth`  
+**Issues:** [GitHub Issues](https://github.com/Clark605/queue_ease/issues)
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Phase 1: Foundation (COMPLETE)
+- Complete authentication system
+- Clean architecture setup
+- All domain entities & models
+- Comprehensive testing
+
+### 🚧 Phase 2: Repository Layer (In Progress)
+- Firestore security rules
+- Repository implementations
+- Admin service management UI
+- Working hours configuration UI
+
+### ⏳ Phase 3-8: Upcoming
+- Customer booking flow
+- Queue generation system
+- Real-time updates
+- Notifications
+- Testing & deployment
+
+**Estimated MVP Completion:** 5-6 weeks
+
+For detailed timeline, see [PROJECT_TIMELINE.md](docs/PROJECT_TIMELINE.md)
+
+---
+
+**Built with ❤️ using Flutter**
 flutter run --flavor prod -t lib/main_prod.dart
 ```
 
