@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:queue_ease/shared/booking/data/models/appointment_model.dart';
-import 'package:queue_ease/shared/booking/domain/entities/appointment_entity.dart'; // needed for toEntity() return type
 import 'package:queue_ease/shared/booking/domain/entities/appointment_status.dart';
 
 // ignore: subtype_of_sealed_class

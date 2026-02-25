@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:queue_ease/shared/organization/data/models/organization_model.dart';
-import 'package:queue_ease/shared/organization/domain/entities/organization_entity.dart'; // needed for toEntity() return type
 
 // ignore: subtype_of_sealed_class
 class MockDocumentSnapshot extends Mock
