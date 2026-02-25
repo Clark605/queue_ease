@@ -3,54 +3,80 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/queue_entity.dart';
 import '../../domain/entities/queue_status.dart';
 
-/// Mapper class for converting between [QueueEntity] and Firestore documents.
+/// Data model for [QueueEntity] with Firestore serialization.
 class QueueModel {
-  /// Converts a Firestore document to a [QueueEntity].
+  const QueueModel({
+    required this.id,
+    required this.orgId,
+    required this.date,
+    required this.orderedAppointmentIds,
+    required this.currentServingIndex,
+    required this.status,
+    required this.generatedAt,
+  });
+
+  final String id;
+  final String orgId;
+
+  /// Document ID in Firestore — formatted as "YYYY-MM-DD".
+  final String date;
+  final List<String> orderedAppointmentIds;
+  final int currentServingIndex;
+  final QueueStatus status;
+  final DateTime generatedAt;
+
+  /// Creates a [QueueModel] from a Firestore document.
   ///
   /// The [orgId] parameter is required since queues are stored in a
   /// subcollection and the parent org ID is not in the document itself.
-  /// The entity's [id] field is synthesized as "{orgId}_{date}" where
-  /// the date comes from [doc.id].
-  static QueueEntity fromDoc(
+  /// The [id] field is synthesized as "{orgId}_{date}" where the date
+  /// comes from [doc.id].
+  factory QueueModel.fromDoc(
     DocumentSnapshot<Map<String, dynamic>> doc, {
     required String orgId,
   }) {
     final data = doc.data()!;
-
-    // Parse queue status
     final statusValue = data['status'] as String? ?? QueueStatus.active.name;
     final status = QueueStatus.values.firstWhere(
       (s) => s.name == statusValue,
       orElse: () => QueueStatus.active,
     );
-
-    // Parse ordered appointment IDs
     final appointmentIds =
         (data['orderedAppointmentIds'] as List<dynamic>?)
             ?.map((e) => e as String)
             .toList() ??
         [];
 
-    return QueueEntity(
-      id: '${orgId}_${doc.id}', // Synthesized composite ID
+    return QueueModel(
+      id: '${orgId}_${doc.id}',
       orgId: orgId,
-      date: doc.id, // Document ID is the date
+      date: doc.id,
       orderedAppointmentIds: appointmentIds,
       currentServingIndex: data['currentServingIndex'] as int? ?? 0,
       status: status,
-      generatedAt:
-          (data['generatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      generatedAt: (data['generatedAt'] as Timestamp).toDate(),
     );
   }
 
-  /// Converts a [QueueEntity] to a Firestore map.
-  static Map<String, dynamic> toMap(QueueEntity entity) {
+  /// Converts this model to a Firestore map.
+  Map<String, dynamic> toMap() {
     return {
-      'orgId': entity.orgId,
-      'orderedAppointmentIds': entity.orderedAppointmentIds,
-      'currentServingIndex': entity.currentServingIndex,
-      'status': entity.status.name,
-      'generatedAt': Timestamp.fromDate(entity.generatedAt),
+      'orgId': orgId,
+      'orderedAppointmentIds': orderedAppointmentIds,
+      'currentServingIndex': currentServingIndex,
+      'status': status.name,
+      'generatedAt': Timestamp.fromDate(generatedAt),
     };
   }
+
+  /// Converts this model to a domain [QueueEntity].
+  QueueEntity toEntity() => QueueEntity(
+    id: id,
+    orgId: orgId,
+    date: date,
+    orderedAppointmentIds: orderedAppointmentIds,
+    currentServingIndex: currentServingIndex,
+    status: status,
+    generatedAt: generatedAt,
+  );
 }

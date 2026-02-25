@@ -2,20 +2,44 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../domain/entities/organization_entity.dart';
 
-/// Mapper class for converting between [OrganizationEntity] and Firestore documents.
+/// Data model for [OrganizationEntity] with Firestore serialization.
 class OrganizationModel {
-  /// Converts a Firestore document to an [OrganizationEntity].
-  static OrganizationEntity fromDoc(
+  const OrganizationModel({
+    required this.id,
+    required this.name,
+    required this.adminUid,
+    required this.bookingLinkSlug,
+    required this.isOpen,
+    required this.createdAt,
+    this.qrCodeUrl,
+    this.address,
+    this.logoUrl,
+    this.description,
+  });
+
+  final String id;
+  final String name;
+  final String adminUid;
+  final String bookingLinkSlug;
+  final bool isOpen;
+  final DateTime createdAt;
+  final String? qrCodeUrl;
+  final String? address;
+  final String? logoUrl;
+  final String? description;
+
+  /// Creates an [OrganizationModel] from a Firestore document.
+  factory OrganizationModel.fromDoc(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
     final data = doc.data()!;
-    return OrganizationEntity(
+    return OrganizationModel(
       id: doc.id,
-      name: data['name'] as String? ?? '',
-      adminUid: data['adminUid'] as String? ?? '',
-      bookingLinkSlug: data['bookingLinkSlug'] as String? ?? '',
+      name: data['name'] as String,
+      adminUid: data['adminUid'] as String,
+      bookingLinkSlug: data['bookingLinkSlug'] as String,
       isOpen: data['isOpen'] as bool? ?? false,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
       qrCodeUrl: data['qrCodeUrl'] as String?,
       address: data['address'] as String?,
       logoUrl: data['logoUrl'] as String?,
@@ -23,18 +47,32 @@ class OrganizationModel {
     );
   }
 
-  /// Converts an [OrganizationEntity] to a Firestore map.
-  static Map<String, dynamic> toMap(OrganizationEntity entity) {
+  /// Converts this model to a Firestore map.
+  Map<String, dynamic> toMap() {
     return {
-      'name': entity.name,
-      'adminUid': entity.adminUid,
-      'bookingLinkSlug': entity.bookingLinkSlug,
-      'qrCodeUrl': entity.qrCodeUrl,
-      'address': entity.address,
-      'isOpen': entity.isOpen,
-      'logoUrl': entity.logoUrl,
-      'description': entity.description,
-      'createdAt': Timestamp.fromDate(entity.createdAt),
+      'name': name,
+      'adminUid': adminUid,
+      'bookingLinkSlug': bookingLinkSlug,
+      'qrCodeUrl': qrCodeUrl,
+      'address': address,
+      'isOpen': isOpen,
+      'logoUrl': logoUrl,
+      'description': description,
+      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
+
+  /// Converts this model to a domain [OrganizationEntity].
+  OrganizationEntity toEntity() => OrganizationEntity(
+    id: id,
+    name: name,
+    adminUid: adminUid,
+    bookingLinkSlug: bookingLinkSlug,
+    isOpen: isOpen,
+    createdAt: createdAt,
+    qrCodeUrl: qrCodeUrl,
+    address: address,
+    logoUrl: logoUrl,
+    description: description,
+  );
 }
