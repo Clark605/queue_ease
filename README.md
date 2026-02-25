@@ -137,11 +137,22 @@ docs/                               # Documentation
 ├── PROJECT_TIMELINE.md             # Timeline & Gantt charts (✅)
 ├── entities.md                     # Domain model specs (✅)
 └── README.md                       # Documentation index (✅)
+
+.specify/                           # Project governance & specs
+├── memory/
+│   └── constitution.md             # Development principles & standards (✅)
+└── templates/                      # Spec templates
 ```
 
 **Legend:** ✅ Complete | 🚧 In Progress | ⏳ Planned
 
-For detailed documentation, see [docs/](docs/) folder.
+**📋 Key Documents:**
+- **[Constitution](.specify/memory/constitution.md)** - Core development principles and standards (Code Quality, Testing, UX, Performance)
+- **[Architecture](docs/ARCHITECTURE.md)** - Technical implementation details
+- **[PRD](docs/PRD.md)** - Product requirements and MVP scope
+- **[Entities](docs/ENTITIES.md)** - Domain model specifications
+
+For complete documentation, see [docs/](docs/) folder.
 
 ---
 
