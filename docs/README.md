@@ -143,89 +143,17 @@ Video demonstrations and GIFs showcasing implemented features.
 
 ---
 
-## 🎯 Current Project Status
-
-**Last Updated**: February 21, 2026
-
-### ✅ Completed (Phase 1 - Foundation)
-- Complete authentication system (email/password, Google Sign-In, password reset)
-- Full RBAC with role-based routing
-- Comprehensive error handling and logging framework
-- Complete onboarding flow with custom illustrations
-- Clean architecture with DI and state management
-- ALL 5 core domain entities defined
-- ALL 5 Firestore models with serialization
-- 15+ test files covering entities, models, auth, error handling
-- Complete architectural documentation
-
-### 📊 Progress Summary
-- **Overall Completion**: ~35-40%
-- **Remaining MVP Timeline**: 5-6 weeks
-- **Current Branch**: `feature/auth`
-
-### 🎯 Next Up (Phase 2 - Repository Layer)
-1. Implement Firestore security rules
-2. Create repositories for all domain entities
-3. Build Service Management CRUD (admin UI)
-4. Build Working Hours configuration (admin UI)
-
----
-
-## 🏗️ Architecture Quick Reference
-
-### Project Structure
-```
-lib/
-├── core/           # Shared infrastructure (DI, routing, error handling, logging)
-├── shared/         # Role-agnostic domain logic (auth, organization, booking, queue)
-├── admin/          # Admin-specific features
-└── customer/       # Customer-specific features
-```
-
-### Layer Flow
-```
-Presentation (UI, Cubit/BLoC)
-    ↓
-Domain (Entities, Repository Interfaces)
-    ↓
-Data (Models, Datasources, Repository Implementations)
-```
-
-### Key Technologies
-- **Framework**: Flutter 3.9.0+
-- **State Management**: flutter_bloc (Cubit)
-- **DI**: GetIt + Injectable
-- **Navigation**: GoRouter
-- **Backend**: Firebase (Auth, Firestore, Crashlytics)
-- **Testing**: flutter_test, bloc_test, mocktail
-
----
-
-## 📖 Documentation Standards
-
-### Maintaining Documentation
-
-When implementing new features:
-
-1. **Update FEATURE_CHECKLIST.md** - Mark items as complete
-2. **Update ARCHITECTURE.md** - Document architectural decisions
-3. **Add entity specs to entities.md** - For new domain models
-4. **Update PROJECT_TIMELINE.md** - Adjust timeline if needed
-5. **Write inline code documentation** - Follow established patterns
-
-### Doc Review Cycle
-- Review and update after each major feature
-- Weekly progress updates to FEATURE_CHECKLIST.md
-- Monthly comprehensive doc review
-
----
-
-## 🔗 Quick Links
+## � Quick Links
 
 ### Repository
 - **GitHub**: [Clark605/queue_ease](https://github.com/Clark605/queue_ease)
-- **Current Branch**: `feature/auth`
-- **Main Branch**: `main`
+- **Current Branch**: develop
+- **Default Branch**: main
+
+### Project Status
+- **Progress**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for current status
+- **Feature Status**: See [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) for implementation details
+- **Next Steps**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for Phase 2 priorities
 
 ### Firebase Console
 - **Project**: queue-ease (Dev & Prod environments)
@@ -238,7 +166,30 @@ When implementing new features:
 
 ---
 
-## 📝 Document Conventions
+## 🎯 Getting Started Guide
+
+### For New Developers
+1. **Start with** [Constitution (../.specify/memory/constitution.md)](../.specify/memory/constitution.md) - Project governance and principles (MUST READ)
+2. **Then read** [ARCHITECTURE.md](ARCHITECTURE.md) - Understand the technical architecture
+3. **Review** [PRD.md](PRD.md) - Understand the product and user needs
+4. **Check** [ENTITIES.md](ENTITIES.md) - Understand the domain model
+5. **See status** [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) - What's already implemented
+
+### For .specify Agent Development
+- **Primary Context**: `../.specify/memory/agent.md` - Complete project context, structure, and standards
+- **Governance**: `../.specify/memory/constitution.md` - All development must align with 6 core principles
+- **Templates**: `../.specify/templates/` - Use spec, plan, and task templates for new features
+
+### For Feature Implementation
+1. **Check requirements** in [PRD.md](PRD.md)
+2. **Verify compliance** with [Constitution](../.specify/memory/constitution.md)
+3. **Follow patterns** in [ARCHITECTURE.md](ARCHITECTURE.md)
+4. **Reference domain models** in [ENTITIES.md](ENTITIES.md)
+5. **Update status** in [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) when complete
+
+---
+
+## 📝 Documentation Conventions
 
 ### Status Indicators
 - ✅ **Completed** - Feature fully implemented and tested
@@ -246,34 +197,14 @@ When implementing new features:
 - ⏳ **Pending** - Not started yet
 - 📋 **Planned** - Post-MVP / Future enhancement
 
-### File Naming
-- `UPPERCASE.md` - Major documentation files
-- `lowercase.md` - Supporting documentation
-- `kebab-case.md` - Multi-word files
-
----
-
-## ❓ Getting Help
-
-### For New Developers
-1. Start with [ARCHITECTURE.md](ARCHITECTURE.md) - Understand the system design
-2. Read [PRD.md](PRD.md) - Understand the product
-3. Review [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) - See what's implemented
-4. Check [entities.md](entities.md) - Understand the data model
-
-### For Project Planning
-1. Check [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) - Current schedule
-2. Review [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) - Implementation status
-3. Update estimates as needed
-
-### For Feature Implementation
-1. Confirm requirements in [PRD.md](PRD.md)
-2. Check architecture guidelines in [ARCHITECTURE.md](ARCHITECTURE.md)
-3. Verify data models in [entities.md](entities.md)
-4. Update [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) when complete
+### Update Process
+- Review and update docs after each major feature
+- Keep [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) current (weekly)
+- Update [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) when schedule changes
+- Monthly comprehensive documentation review
 
 ---
 
 **Document Maintained By**: Development Team  
-**Last Updated**: February 21, 2026  
+**Last Updated**: February 25, 2026  
 **Version**: 1.1.0+1

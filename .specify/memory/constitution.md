@@ -21,7 +21,8 @@ NEW SECTIONS:
 
 PROJECT CONTEXT INTEGRATED:
   ✅ 5 core domain entities: Organization, Service, WorkingHours, Appointment, Queue
-  ✅ Result<T> monad with AppException hierarchy (Auth, Database, Validation, Storage, Unknown)
+  ✅ Result<T> monad with sealed AppException hierarchy - extensible via core file
+  ✅ Exception hierarchy: 5 current types (Auth, Database, Validation, Storage, Unknown), more addable
   ✅ Cubit pattern for state management (bloc_test required)
   ✅ MVP scope: 5-6 weeks remaining, no payments/multi-branch
   ✅ Critical business logic: Time margin enforcement, auto no-show detection
@@ -58,7 +59,8 @@ All code MUST adhere to Clean Architecture principles with strict layer separati
 - **Data Layer** implements domain repository interfaces; never directly accessed by presentation
   - Firestore models handle serialization: `fromDoc()`, `toMap()`, `toEntity()` methods required
   - Round-trip conversion MUST preserve data integrity (test coverage mandatory)
-  - Exception mapping: translate Firebase/platform errors into `AppException` subtypes
+  - Exception mapping: translate Firebase/platform errors into `AppException` subtypes (sealed hierarchy with 5 final subtypes)
+  - Return `Result<T>` from all async operations for explicit error handling
 - **Presentation Layer** depends only on domain abstractions via dependency injection
   - Use Cubit pattern (not full BLoC) with `bloc_test` for testing
   - UI never imports data layer or Firebase directly
@@ -67,7 +69,7 @@ All code MUST adhere to Clean Architecture principles with strict layer separati
 - Dart effective patterns and lint rules (`analysis_options.yaml`) are NON-NEGOTIABLE
   - `prefer_single_quotes: true`, `camel_case_types: true`, exclude generated files (*.g.dart, *.config.dart)
 
-**Rationale**: Clean architecture ensures testability, maintainability, and long-term flexibility. Layer violations create technical debt that compounds exponentially in Flutter projects. The 5 domain entities represent core business concepts that must remain stable as Firebase or UI frameworks evolve.
+**Rationale**: Clean architecture ensures testability, maintainability, and long-term flexibility. Layer violations create technical debt that compounds exponentially in Flutter projects. The 5 domain entities represent core business concepts that must remain stable as Firebase or UI frameworks evolve. Sealed exception hierarchy enables compile-time exhaustive checking while allowing controlled extension as new error types are discovered during development.
 
 ### II. Flexibility & Extensibility
 
@@ -87,7 +89,8 @@ Test-first development is MANDATORY for all production code:
 - **Unit Tests**: Required for ALL domain entities, repository interfaces, business logic (target: 80%+ coverage)
   - Entity tests MUST verify: `Equatable` value equality, differing fields not equal, `props` includes all fields
   - Model tests MUST verify: `fromDoc()` parsing, `toMap()` serialization, `toEntity()` conversion, round-trip preservation
-  - Exception mapping tests MUST cover all `AppException` subtypes (AuthException, DatabaseException, ValidationException, StorageException, UnknownException)
+  - Exception mapping tests MUST cover ALL `AppException` subtypes (current: AuthException, DatabaseException, ValidationException, StorageException, UnknownException)
+  - Use exhaustive pattern matching in tests - compiler will catch when new exception types added
 - **Widget Tests**: Required for ALL reusable components and pages (target: 70%+ coverage)
   - Test user interactions (taps, text input, navigation)
   - Test loading/error/success states
@@ -237,12 +240,21 @@ Application MUST meet quantifiable performance benchmarks for real-time operatio
   - Use `Result.guard(() => async operation)` to wrap calls
   - Handle exhaustively with `.when(success: ..., failure: ...)` or pattern matching
   - Transform with `.map()`, unwrap with `.getOrNull()` or `.getOrElse(fallback)`
-- **AppException Hierarchy**: 5 sealed subtypes for structured error handling
-  - `AuthException` - Firebase Auth errors (with optional code field)
-  - `DatabaseException` - Firestore or remote data errors
-  - `StorageException` - SharedPreferences or local storage errors
-  - `ValidationException` - Client-side validation failures (with optional field)
-  - `UnknownException` - Catch-all for unexpected errors (with cause field)
+- **AppException Hierarchy**: Sealed class with final subtypes (open for extension via core file)
+  - Base class is `sealed` - new exception types added only to `lib/core/error/app_exception.dart`
+  - All subtypes are `final` - cannot be subclassed outside the core file
+  - **Exhaustive Pattern Matching**: Compiler enforces handling all defined cases
+  - **Current 5 exception types**:
+    - `AuthException` - Firebase Auth errors (with optional code field)
+    - `DatabaseException` - Firestore or remote data errors
+    - `StorageException` - SharedPreferences or local storage errors
+    - `ValidationException` - Client-side validation failures (with optional field)
+    - `UnknownException` - Catch-all for unexpected errors (with cause field)
+  - **Adding New Exception Types**:
+    - New types (e.g., `NetworkException`, `PermissionException`) MUST be added to core file
+    - Requires MINOR version bump (backward compatible addition)
+    - All existing pattern matches MUST be updated (compiler will enforce)
+    - Update tests to cover new exception type
 - **Exception Mapping**: Data layer MUST catch platform exceptions and rethrow as AppException
   - Example: `on FirebaseAuthException catch (e) => throw AuthException.fromFirebase(e.code)`
   - Presentation layer NEVER handles Firebase exceptions directly
@@ -268,7 +280,7 @@ Application MUST meet quantifiable performance benchmarks for real-time operatio
    - Status enum: `booked`, `inQueue`, `serving`, `completed`, `noShow`
 5. **QueueEntity** - Daily queue with ordered appointments
    - Firestore path: `organizations/{orgId}/queues/{date}` (date is doc ID in "yyyy-MM-dd" format)
-   - Fields: composite `id` (orgId-date), `orgId`, `date`, `orderedAppointmentIds`, `status`, `createdAt`
+   - Fields: composite `id` (orgId-date), `orgId`, `date`, `orderedAppointmentIds`, `currentServingIndex`, `status`, `generatedAt`
    - Status enum: `active`, `paused`, `closed`
 
 ### Time Margin Policy (BUSINESS-CRITICAL)
