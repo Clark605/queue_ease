@@ -176,8 +176,7 @@ Video demonstrations and GIFs showcasing implemented features.
 5. **See status** [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) - What's already implemented
 
 ### For .specify Agent Development
-- **Primary Context**: `../.specify/memory/agent.md` - Complete project context, structure, and standards
-- **Governance**: `../.specify/memory/constitution.md` - All development must align with 6 core principles
+- **Primary Context and Governance**: `../.specify/memory/constitution.md` - Complete project context, structure, and standards. All development must align with 6 core principles
 - **Templates**: `../.specify/templates/` - Use spec, plan, and task templates for new features
 
 ### For Feature Implementation
