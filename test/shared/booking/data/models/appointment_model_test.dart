@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:queue_ease/shared/booking/data/models/appointment_model.dart';
-import 'package:queue_ease/shared/booking/domain/entities/appointment_entity.dart';
+import 'package:queue_ease/shared/booking/domain/entities/appointment_entity.dart'; // needed for toEntity() return type
 import 'package:queue_ease/shared/booking/domain/entities/appointment_status.dart';
 
 // ignore: subtype_of_sealed_class
@@ -14,7 +14,7 @@ void main() {
     final testDate = DateTime(2026, 2, 21, 10, 0);
     final testTimestamp = Timestamp.fromDate(testDate);
 
-    test('fromDoc converts Firestore document to AppointmentEntity', () {
+    test('fromDoc converts Firestore document to AppointmentModel', () {
       final mockDoc = MockDocumentSnapshot();
       when(() => mockDoc.id).thenReturn('appt1');
       when(() => mockDoc.data()).thenReturn({
@@ -28,18 +28,18 @@ void main() {
         'createdAt': testTimestamp,
       });
 
-      final entity = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
+      final model = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
 
-      expect(entity.id, 'appt1');
-      expect(entity.orgId, 'org1');
-      expect(entity.serviceId, 'service1');
-      expect(entity.customerId, 'customer1');
-      expect(entity.customerName, 'John Doe');
-      expect(entity.customerPhone, '+1234567890');
-      expect(entity.scheduledAt, testDate);
-      expect(entity.status, AppointmentStatus.booked);
-      expect(entity.queuePosition, 5);
-      expect(entity.createdAt, testDate);
+      expect(model.id, 'appt1');
+      expect(model.orgId, 'org1');
+      expect(model.serviceId, 'service1');
+      expect(model.customerId, 'customer1');
+      expect(model.customerName, 'John Doe');
+      expect(model.customerPhone, '+1234567890');
+      expect(model.scheduledAt, testDate);
+      expect(model.status, AppointmentStatus.booked);
+      expect(model.queuePosition, 5);
+      expect(model.createdAt, testDate);
     });
 
     test('fromDoc handles all appointment statuses', () {
@@ -55,9 +55,9 @@ void main() {
           'createdAt': testTimestamp,
         });
 
-        final entity = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
+        final model = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
 
-        expect(entity.status, status);
+        expect(model.status, status);
       }
     });
 
@@ -73,10 +73,10 @@ void main() {
         'createdAt': testTimestamp,
       });
 
-      final entity = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
+      final model = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
 
-      expect(entity.customerPhone, isNull);
-      expect(entity.queuePosition, isNull);
+      expect(model.customerPhone, isNull);
+      expect(model.queuePosition, isNull);
     });
 
     test('fromDoc defaults to booked status for unknown status', () {
@@ -91,13 +91,13 @@ void main() {
         'createdAt': testTimestamp,
       });
 
-      final entity = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
+      final model = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
 
-      expect(entity.status, AppointmentStatus.booked);
+      expect(model.status, AppointmentStatus.booked);
     });
 
-    test('toMap converts AppointmentEntity to Firestore map', () {
-      final entity = AppointmentEntity(
+    test('toMap converts AppointmentModel to Firestore map', () {
+      final model = AppointmentModel(
         id: 'appt1',
         orgId: 'org1',
         serviceId: 'service1',
@@ -110,7 +110,7 @@ void main() {
         createdAt: testDate,
       );
 
-      final map = AppointmentModel.toMap(entity);
+      final map = model.toMap();
 
       expect(map['orgId'], 'org1');
       expect(map['serviceId'], 'service1');
@@ -121,6 +121,34 @@ void main() {
       expect(map['status'], 'inQueue');
       expect(map['queuePosition'], 5);
       expect(map['createdAt'], testTimestamp);
+    });
+
+    test('toEntity converts AppointmentModel to AppointmentEntity', () {
+      final model = AppointmentModel(
+        id: 'appt1',
+        orgId: 'org1',
+        serviceId: 'service1',
+        customerId: 'customer1',
+        customerName: 'John Doe',
+        customerPhone: '+1234567890',
+        scheduledAt: testDate,
+        status: AppointmentStatus.inQueue,
+        queuePosition: 5,
+        createdAt: testDate,
+      );
+
+      final entity = model.toEntity();
+
+      expect(entity.id, model.id);
+      expect(entity.orgId, model.orgId);
+      expect(entity.serviceId, model.serviceId);
+      expect(entity.customerId, model.customerId);
+      expect(entity.customerName, model.customerName);
+      expect(entity.customerPhone, model.customerPhone);
+      expect(entity.scheduledAt, model.scheduledAt);
+      expect(entity.status, model.status);
+      expect(entity.queuePosition, model.queuePosition);
+      expect(entity.createdAt, model.createdAt);
     });
 
     test('round-trip conversion preserves data', () {
@@ -137,18 +165,18 @@ void main() {
         'createdAt': testTimestamp,
       });
 
-      final entity = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
-      final map = AppointmentModel.toMap(entity);
+      final model = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
+      final map = model.toMap();
 
-      expect(map['orgId'], entity.orgId);
-      expect(map['serviceId'], entity.serviceId);
-      expect(map['customerId'], entity.customerId);
-      expect(map['customerName'], entity.customerName);
-      expect(map['customerPhone'], entity.customerPhone);
-      expect(map['scheduledAt'], Timestamp.fromDate(entity.scheduledAt));
-      expect(map['status'], entity.status.name);
-      expect(map['queuePosition'], entity.queuePosition);
-      expect(map['createdAt'], Timestamp.fromDate(entity.createdAt));
+      expect(map['orgId'], model.orgId);
+      expect(map['serviceId'], model.serviceId);
+      expect(map['customerId'], model.customerId);
+      expect(map['customerName'], model.customerName);
+      expect(map['customerPhone'], model.customerPhone);
+      expect(map['scheduledAt'], Timestamp.fromDate(model.scheduledAt));
+      expect(map['status'], model.status.name);
+      expect(map['queuePosition'], model.queuePosition);
+      expect(map['createdAt'], Timestamp.fromDate(model.createdAt));
     });
   });
 }
