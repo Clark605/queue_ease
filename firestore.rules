@@ -1,0 +1,56 @@
+rules_version = '2';
+
+/**
+ * Firestore Security Rules for QueueEase
+ * 
+ * Purpose: Protect organization data, appointments, queues, and user profiles
+ * with role-based access control (RBAC) and data validation.
+ * 
+ * Collections:
+ * - users: User profiles with PII protection
+ * - organizations: Organization data owned by admin users
+ *   - services (subcollection): Services offered by organizations
+ *   - working_hours (subcollection): Organization operating hours
+ *   - appointments (subcollection): Customer appointments
+ *   - queues (subcollection): Queue entries for walk-in customers
+ * 
+ * Roles:
+ * - admin: Can manage own organization and its subcollections
+ * - customer: Can read organization data, create appointments/queues for self
+ * 
+ * Created: 2026-02-25
+ * Feature: 001-firestore-security-rules
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // =============================================================================
+    // HELPER FUNCTIONS (To be implemented in Phase 2)
+    // =============================================================================
+    
+    // TODO: Implement isAuthenticated()
+    // TODO: Implement getUserRole()
+    // TODO: Implement isAdmin()
+    // TODO: Implement ownsOrganization(orgId)
+    // TODO: Implement isValidEnum(value, allowedValues)
+    // TODO: Implement hasRequiredFields(required)
+    // TODO: Implement hasOnlyAllowedFields(allowedFields)
+    
+    // =============================================================================
+    // COLLECTION RULES (To be implemented in Phase 3-7)
+    // =============================================================================
+    
+    // TODO: Implement users collection rules (Phase 5 - User Story 3)
+    // TODO: Implement organizations collection rules (Phase 3 - User Story 1)
+    // TODO: Implement services subcollection rules (Phase 3 - User Story 1)
+    // TODO: Implement working_hours subcollection rules (Phase 3 - User Story 1)
+    // TODO: Implement appointments subcollection rules (Phase 4 - User Story 2)
+    // TODO: Implement queues subcollection rules (Phase 4 - User Story 2)
+    
+    // Default deny all access (fail-safe)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
