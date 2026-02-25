@@ -7,12 +7,17 @@
 
 import {
   initializeTestEnvironment,
-  RulesTestEnvironment,
   assertSucceeds,
   assertFails,
 } from '@firebase/rules-unit-testing';
+import type { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Firebase test environment singleton
@@ -22,10 +27,10 @@ let testEnv: RulesTestEnvironment | null = null;
 /**
  * Initialize Firebase Emulator test environment
  * 
- * @param projectId - Firebase project ID for testing
+ * @param projectId - Firebase project ID for testing (defaults to dev project)
  * @returns Initialized test environment
  */
-export async function setupTestEnvironment(projectId: string = 'queue-ease-test'): Promise<RulesTestEnvironment> {
+export async function setupTestEnvironment(projectId: string = 'ease-queue-dev'): Promise<RulesTestEnvironment> {
   if (testEnv) {
     return testEnv;
   }
@@ -39,7 +44,7 @@ export async function setupTestEnvironment(projectId: string = 'queue-ease-test'
     firestore: {
       rules,
       host: 'localhost',
-      port: 8080,
+      port: 9080,
     },
   });
 
@@ -222,8 +227,8 @@ export const TestData = {
    */
   workingHours: (dayOfWeek: number, overrides?: Partial<any>) => ({
     dayOfWeek,
-    startTime: '09:00',
-    endTime: '17:00',
+    openTime: '09:00',
+    closeTime: '17:00',
     isOpen: true,
     createdAt: new Date(),
     updatedAt: new Date(),

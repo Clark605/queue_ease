@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Firebase Security Rules test suite for QueueEase",
   "private": true,
+  "type": "module",
   "scripts": {
-    "test": "mocha --require ts-node/register --extensions ts --timeout 10000 '**/*.test.ts'",
-    "test:watch": "mocha --require ts-node/register --extensions ts --timeout 10000 --watch '**/*.test.ts'",
+    "test": "node --loader ts-node/esm --no-warnings=ExperimentalWarning node_modules/mocha/bin/mocha.js --extensions ts --timeout 10000 '**/*.test.ts'",
+    "test:watch": "node --loader ts-node/esm --no-warnings=ExperimentalWarning node_modules/mocha/bin/mocha.js --extensions ts --timeout 10000 --watch '**/*.test.ts'",
     "test:coverage": "nyc mocha --require ts-node/register --extensions ts --timeout 10000 '**/*.test.ts'"
   },
   "keywords": [
