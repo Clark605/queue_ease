@@ -26,27 +26,277 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // =============================================================================
-    // HELPER FUNCTIONS (To be implemented in Phase 2)
+    // HELPER FUNCTIONS
     // =============================================================================
     
-    // TODO: Implement isAuthenticated()
-    // TODO: Implement getUserRole()
-    // TODO: Implement isAdmin()
-    // TODO: Implement ownsOrganization(orgId)
-    // TODO: Implement isValidEnum(value, allowedValues)
-    // TODO: Implement hasRequiredFields(required)
-    // TODO: Implement hasOnlyAllowedFields(allowedFields)
+    /**
+     * Check if user is authenticated
+     * @returns true if request has valid authentication
+     */
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    /**
+     * Get the role of the authenticated user from their user document
+     * @returns user role string ('admin' or 'customer') or null if not found
+     */
+    function getUserRole() {
+      return isAuthenticated() 
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+    
+    /**
+     * Check if the authenticated user has admin role
+     * @returns true if user role is 'admin'
+     */
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    /**
+     * Check if the authenticated user owns the specified organization
+     * @param orgId - Organization document ID to check ownership
+     * @returns true if user is admin and owns the organization
+     */
+    function ownsOrganization(orgId) {
+      return isAuthenticated() 
+        && isAdmin() 
+        && get(/databases/$(database)/documents/organizations/$(orgId)).data.adminUid == request.auth.uid;
+    }
+    
+    /**
+     * Validate that a value is one of the allowed enum values
+     * @param value - Value to validate
+     * @param allowedValues - List of allowed enum values
+     * @returns true if value is in allowedValues list
+     */
+    function isValidEnum(value, allowedValues) {
+      return value in allowedValues;
+    }
+    
+    /**
+     * Validate that incoming document has all required fields
+     * @param required - List of required field names
+     * @returns true if all required fields are present in request.resource.data
+     */
+    function hasRequiredFields(required) {
+      return request.resource.data.keys().hasAll(required);
+    }
+    
+    /**
+     * Validate that incoming document only contains allowed fields (no unexpected fields)
+     * @param allowedFields - List of allowed field names
+     * @returns true if all fields in request.resource.data are in allowedFields list
+     */
+    function hasOnlyAllowedFields(allowedFields) {
+      return request.resource.data.keys().hasOnly(allowedFields);
+    }
+
+    /**
+     * Ensure `createdAt` is not modified on updates
+     */
+    function createdAtNotModified() {
+      return !(request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt']));
+    }
     
     // =============================================================================
-    // COLLECTION RULES (To be implemented in Phase 3-7)
+    // COLLECTION RULES
     // =============================================================================
     
-    // TODO: Implement users collection rules (Phase 5 - User Story 3)
-    // TODO: Implement organizations collection rules (Phase 3 - User Story 1)
-    // TODO: Implement services subcollection rules (Phase 3 - User Story 1)
-    // TODO: Implement working_hours subcollection rules (Phase 3 - User Story 1)
-    // TODO: Implement appointments subcollection rules (Phase 4 - User Story 2)
-    // TODO: Implement queues subcollection rules (Phase 4 - User Story 2)
+    // -------------------------------------------------------------------------
+    // ORGANIZATIONS COLLECTION (User Story 1)
+    // -------------------------------------------------------------------------
+    match /organizations/{orgId} {
+      // T029: Anyone authenticated can read organization data (public info for booking)
+      allow read: if isAuthenticated();
+      
+      // T030: Admin can create organization with matching adminUid
+      allow create: if isAuthenticated()
+        && isAdmin()
+        && request.resource.data.adminUid == request.auth.uid
+        // Required fields and types
+        && request.resource.data.keys().hasAll(['adminUid','name','bookingLinkSlug','isOpen','createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.bookingLinkSlug is string
+        && request.resource.data.bookingLinkSlug.size() <= 50
+        && request.resource.data.isOpen is bool
+        && request.resource.data.createdAt is timestamp
+        // Only allowed fields
+        && hasOnlyAllowedFields(['adminUid','name','bookingLinkSlug','isOpen','description','address','phoneNumber','email','createdAt','updatedAt']);
+      
+      // T031: Only organization owner can update/delete
+      allow update: if isAuthenticated()
+        && ownsOrganization(orgId)
+        // createdAt must be immutable and adminUid cannot change
+        && createdAtNotModified()
+        && request.resource.data.adminUid == resource.data.adminUid
+        && hasOnlyAllowedFields(['adminUid','name','bookingLinkSlug','isOpen','description','address','phoneNumber','email','createdAt','updatedAt']);
+
+      allow delete: if isAuthenticated() && ownsOrganization(orgId);
+      
+      // -------------------------------------------------------------------------
+      // SERVICES SUBCOLLECTION (User Story 1)
+      // -------------------------------------------------------------------------
+      match /services/{serviceId} {
+        // T032: Anyone authenticated can read services (public catalog)
+        allow read: if isAuthenticated();
+        
+        // T033: Only organization owner can create services with validation
+        allow create: if isAuthenticated()
+          && ownsOrganization(orgId)
+          && request.resource.data.keys().hasAll(['orgId','name','durationMinutes','isActive','createdAt'])
+          && request.resource.data.orgId == orgId
+          && request.resource.data.name is string
+          && request.resource.data.name.size() <= 100
+          && request.resource.data.durationMinutes is int
+          && request.resource.data.durationMinutes >= 5
+          && request.resource.data.durationMinutes <= 480
+          && request.resource.data.isActive is bool
+          && request.resource.data.createdAt is timestamp
+          && hasOnlyAllowedFields(['orgId','name','durationMinutes','timeMarginMinutes','price','description','queueType','isActive','createdAt','updatedAt']);
+
+        allow update: if isAuthenticated()
+          && ownsOrganization(orgId)
+          && createdAtNotModified()
+          && request.resource.data.orgId == resource.data.orgId
+          && hasOnlyAllowedFields(['orgId','name','durationMinutes','timeMarginMinutes','price','description','queueType','isActive','createdAt','updatedAt']);
+
+        allow delete: if isAuthenticated() && ownsOrganization(orgId);
+      }
+      
+      // -------------------------------------------------------------------------
+      // WORKING HOURS SUBCOLLECTION (User Story 1)
+      // -------------------------------------------------------------------------
+      match /working_hours/{dayOfWeek} {
+        // T034: Anyone authenticated can read working hours (public info)
+        allow read: if isAuthenticated();
+        
+        // T035: Only organization owner can write, with dayOfWeek validation
+        allow create: if isAuthenticated()
+          && ownsOrganization(orgId)
+          && int(dayOfWeek) >= 0
+          && int(dayOfWeek) <= 6
+          && request.resource.data.dayOfWeek == int(dayOfWeek)
+          && request.resource.data.keys().hasAll(['orgId','dayOfWeek','isOpen','createdAt'])
+          && request.resource.data.orgId == orgId
+          && request.resource.data.dayOfWeek is int
+          && request.resource.data.isOpen is bool
+          && request.resource.data.createdAt is timestamp
+          // If open, require times in HH:mm format
+          && (request.resource.data.isOpen == false || (
+            request.resource.data.keys().hasAll(['openTime','closeTime'])
+            && request.resource.data.openTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
+            && request.resource.data.closeTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
+          ))
+          && hasOnlyAllowedFields(['orgId','dayOfWeek','isOpen','openTime','closeTime','createdAt','updatedAt']);
+
+        allow update: if isAuthenticated()
+          && ownsOrganization(orgId)
+          && request.resource.data.dayOfWeek == resource.data.dayOfWeek
+          && createdAtNotModified()
+          && hasOnlyAllowedFields(['orgId','dayOfWeek','isOpen','openTime','closeTime','createdAt','updatedAt']);
+
+        allow delete: if isAuthenticated() && ownsOrganization(orgId);
+      }
+      
+      // -------------------------------------------------------------------------
+      // APPOINTMENTS SUBCOLLECTION (User Story 2 - Phase 4)
+      // -------------------------------------------------------------------------
+      match /appointments/{appointmentId} {
+        // T049: Customer can read own appointment OR organization owner can read all
+        allow read: if isAuthenticated()
+          && (request.auth.uid == resource.data.customerId
+              || ownsOrganization(orgId));
+        
+        // T050: Customer can create appointment with matching customerId and validation
+        allow create: if isAuthenticated()
+          && request.resource.data.customerId == request.auth.uid
+          && request.resource.data.orgId == orgId
+          && request.resource.data.keys().hasAll(['orgId','customerId','serviceId','scheduledAt','status','createdAt'])
+          && request.resource.data.orgId == orgId
+          && request.resource.data.customerId is string
+          && request.resource.data.serviceId is string
+          && request.resource.data.scheduledAt is timestamp
+          && request.resource.data.status in ['booked','inQueue','serving','completed','noShow']
+          && request.resource.data.createdAt is timestamp
+          // scheduledAt must be in the future
+          && request.resource.data.scheduledAt > request.time
+          && hasOnlyAllowedFields(['orgId','customerId','serviceId','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
+
+        // T051: Only organization owner can update/delete appointments; createdAt immutable
+        allow update: if isAuthenticated()
+          && ownsOrganization(orgId)
+          && createdAtNotModified()
+          && hasOnlyAllowedFields(['orgId','customerId','serviceId','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
+
+        allow delete: if isAuthenticated() && ownsOrganization(orgId);
+      }
+      
+      // -------------------------------------------------------------------------
+      // QUEUES SUBCOLLECTION (User Story 2 - Phase 4)
+      // -------------------------------------------------------------------------
+      match /queues/{queueId} {
+        // T052: Customer can read own queue entry OR organization owner can read all
+        allow read: if isAuthenticated()
+          && (request.auth.uid == resource.data.customerId
+              || ownsOrganization(orgId));
+        
+        // T053: Customer can create queue entry with matching customerId and validation
+        allow create: if isAuthenticated()
+          && request.resource.data.customerId == request.auth.uid
+          && request.resource.data.orgId == orgId
+          && request.resource.data.keys().hasAll(['orgId','customerId','serviceId','queueNumber','status','joinedAt','createdAt'])
+          && request.resource.data.orgId == orgId
+          && request.resource.data.customerId is string
+          && request.resource.data.serviceId is string
+          && request.resource.data.queueNumber is int
+          && request.resource.data.status in ['active','paused','closed']
+          && request.resource.data.joinedAt is timestamp
+          && request.resource.data.createdAt is timestamp
+          && hasOnlyAllowedFields(['orgId','customerId','serviceId','queueNumber','status','estimatedWaitMinutes','joinedAt','createdAt','updatedAt']);
+
+        // T054: Only organization owner can update/delete queue entries; createdAt immutable
+        allow update: if isAuthenticated()
+          && ownsOrganization(orgId)
+          && createdAtNotModified()
+          && hasOnlyAllowedFields(['orgId','customerId','serviceId','queueNumber','status','estimatedWaitMinutes','joinedAt','createdAt','updatedAt']);
+
+        allow delete: if isAuthenticated() && ownsOrganization(orgId);
+      }
+    }
+    
+    // -------------------------------------------------------------------------
+    // USERS COLLECTION (User Story 3 - Phase 5)
+    // -------------------------------------------------------------------------
+    match /users/{userId} {
+      // T063: User can only read their own document (PII protection)
+      allow read: if isAuthenticated()
+        && request.auth.uid == userId;
+      
+      // T064: User can create own document on first-time sign-up
+      // Must match document ID and have valid uid field
+      // T093: Role must be 'admin' or 'customer' only
+      allow create: if isAuthenticated()
+        && request.auth.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.role is string
+        && request.resource.data.role in ['admin', 'customer'];
+      
+      // T065: User can only update their own document
+      // Immutable fields (uid, createdAt) cannot be modified
+      // Role must remain 'admin' or 'customer' if changed
+      allow update: if isAuthenticated()
+        && request.auth.uid == userId
+        && request.resource.data.uid == resource.data.uid
+        && createdAtNotModified()
+        && (!('role' in request.resource.data) || (request.resource.data.role is string && request.resource.data.role in ['admin', 'customer']));
+      
+      // T066: No one can delete user documents (soft delete via update instead)
+      allow delete: if false;
+    }
     
     // Default deny all access (fail-safe)
     match /{document=**} {
