@@ -10,6 +10,26 @@
 - 🚧 **In Progress** - Currently being developed
 - ⏳ **Pending** - Not started yet
 - 📋 **Planned** - Post-MVP / Future enhancement
+- ❌ **Removed** - Excluded from implementation
+
+---
+
+## 🔧 Architectural Decisions
+
+### Firebase Spark Plan Limitations
+**Decision**: Queue Ease will NOT use Cloud Functions due to Firebase Spark (free) plan limitations.
+
+**Alternatives Implemented**:
+1. **Queue Generation**: Client-side auto-generation when admin opens queue management (vs. scheduled Cloud Function)
+2. **No-Show Detection**: Client-side logic triggered by admin viewing queue (vs. Cloud Function cron job)
+3. **Notifications**: FCM push notifications sent from Flutter client (admin app) when queue changes (vs. Cloud Function triggers)
+
+**Trade-offs**:
+- ✅ **Benefits**: Zero backend costs, simpler deployment, no vendor lock-in
+- ✅ **No Limitations**: Full push notification support using FCM (works even when app is terminated)
+- ✅ **Implementation**: Admin app sends FCM messages when updating queue status; Customer apps receive via FCM
+
+**Future Upgrade Path**: If needed post-MVP, can migrate to Blaze plan and implement Cloud Functions for scheduled tasks and more complex backend logic.
 
 ---
 
@@ -32,8 +52,8 @@
 - ✅ Firestore basic integration (FirestoreUserDatasource)
 - ✅ Firestore database structure (5 core entities with complete models)
 - ✅ Firestore security rules (78 tests passing, deployed to dev & prod)
-- ⏳ Cloud Functions setup
-- ⏳ Firebase Cloud Messaging (FCM) integration
+- ❌ **Cloud Functions** - **REMOVED** (Spark plan limitation - using client-side alternatives)
+- ⏳ Firebase Cloud Messaging (FCM) integration (FREE on Spark plan)
 - ✅ Firebase Crashlytics integration (integrated with Talker logging)
 
 ---
@@ -231,12 +251,12 @@
 - ⏳ Appointment status management (booked, in_queue, serving, completed, no_show)
 
 ### 6.2 Queue System
-- ⏳ Daily queue auto-generation from appointments
+- ⏳ Daily queue auto-generation from appointments (client-side on admin app launch)
 - ⏳ Queue ordering algorithm
 - ⏳ Queue position calculation
 - ⏳ Estimated wait time calculation
-- ⏳ Time margin enforcement (server-side)
-- ⏳ Automatic no-show detection
+- ⏳ Time margin enforcement (client-side with Firestore rules validation)
+- ⏳ Automatic no-show detection (client-side triggered by admin viewing queue)
 - ⏳ Queue advancement logic
 
 ### 6.3 Time Management
@@ -261,18 +281,21 @@
 
 ## 8. Notifications
 
-### 8.1 Push Notifications
-- ⏳ FCM setup and token management
-- ⏳ "Turn approaching" notification
-- ⏳ "It's your turn" notification
-- ⏳ "Appointment delayed" notification
-- ⏳ "Missed turn" notification
+### 8.1 Push Notifications (FCM - Client-Triggered)
+- ⏳ Firebase Cloud Messaging (FCM) setup
+- ⏳ FCM token management and storage in Firestore
+- ⏳ Admin app sends FCM when updating queue status (next, skip, no-show)
+- ⏳ "Turn approaching" notification (sent when 2-3 customers before)
+- ⏳ "It's your turn" notification (sent when current serving index matches)
+- ⏳ "Appointment delayed" notification (sent by admin if delays occur)
+- ⏳ "Missed turn" notification (sent when marked no-show)
 - ⏳ Notification permission handling
-- ⏳ Cloud Functions for notification triggers
+- ⏳ FCM message handling (foreground, background, terminated states)
+- **Implementation**: Admin Flutter app uses `firebase_messaging` package to send notifications via FCM REST API or Admin SDK
 
 ### 8.2 In-App Notifications
 - ⏳ In-app notification UI
-- ⏳ Notification history
+- ⏳ Notification history (stored in Firestore)
 - ⏳ Notification preferences
 
 ---
@@ -441,12 +464,12 @@
 - [ ] Admin can generate and share booking QR code/link
 - [ ] Customers can access booking via QR/link
 - [ ] Customers can book appointments with conflict prevention
-- [ ] Daily queue auto-generates from appointments
+- [ ] Daily queue auto-generates from appointments (client-side when admin opens app)
 - [ ] Admin can manage queue in real-time (next, skip, no-show)
 - [ ] Customers can see their queue position and wait time
 - [ ] Real-time updates work across all users
-- [ ] Time margin policy enforced (auto no-show)
-- [ ] Notifications sent for turn approaching/missed
+- [ ] Time margin policy enforced (client-side with auto no-show detection)
+- [ ] FCM push notifications sent for turn approaching/missed (works even when app terminated)
 - [ ] Basic daily summary available
 - [ ] App is stable with no critical bugs
 - [ ] Core features tested (unit + integration)
@@ -511,19 +534,20 @@
 10. Conflict prevention logic
 
 ### Phase 5: Queue System (Weeks 4-5)
-11. Queue generation from appointments
+11. Client-side queue generation from appointments (triggered by admin app)
 12. Admin queue management interface
 13. Customer queue status view
 14. Real-time updates implementation
+15. Client-side no-show detection logic
 
 ### Phase 6: Business Logic (Week 5-6)
-15. Time margin enforcement
-16. Automatic no-show detection
+15. Time margin enforcement (client-side)
+16. Automatic no-show detection (client-side)
 17. Wait time estimation
 
 ### Phase 7: Notifications & Polish (Week 6-7)
-18. FCM integration
-19. Notification triggers (Cloud Functions)
+18. FCM integration (firebase_messaging package)
+19. Client-side FCM notification sending from admin app
 20. UI/UX polish and error handling
 
 ### Phase 8: Testing & Deployment (Week 7-8)
@@ -536,18 +560,22 @@
 
 ## Notes
 
-- This checklist was updated on February 25, 2026 to reflect actual codebase state
-- Phase 1 (Foundation) is now COMPLETE including:
+- This checklist was updated on **February 26, 2026** to reflect:
+  - **Removed Cloud Functions** due to Firebase Spark plan limitations
+  - **Client-side architecture** for queue generation, no-show detection, and notifications
+  - All alternatives documented in "Architectural Decisions" section
+- Phase 1 (Foundation) is COMPLETE including:
   - Full authentication system (email/password, Google Sign-In, password reset, RBAC, session persistence)
   - All domain entities (5) and Firestore models (5) with complete test coverage
   - Comprehensive architecture documentation
 - All auth UI components are implemented with proper error handling
 - Clean architecture patterns established with DI, state management, and error handling
-- Estimated remaining MVP timeline: 5-6 weeks from current state (down from 8 weeks originally)
+- Estimated remaining MVP timeline: 5-6 weeks from current state
 - Domain layer is 100% complete - ready for repository implementation
 - Items marked with ✅ have confirmed implementation in the codebase
 - Items marked with 🚧 are currently being worked on
 - Items marked with ⏳ have folder structure but no implementation or are planned
+- Items marked with ❌ are removed from the plan
 - Regular updates to this checklist should be made as features progress
 
 **Development Velocity**: With data models and architecture fully established, feature development should accelerate significantly in the coming weeks.
