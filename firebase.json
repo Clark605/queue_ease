@@ -3,6 +3,7 @@
     "rules": "firestore.rules"
   },
   "emulators": {
+    "singleProjectMode": false,
     "firestore": {
       "host": "localhost",
       "port": 9080

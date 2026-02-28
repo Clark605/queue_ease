@@ -397,4 +397,30 @@ describe('Queues Subcollection Tests (US2)', () => {
 
     await assertFails(queueDoc.set(invalidQueueData));
   });
+
+  // Issue 2 fix: list queries must work for org owner
+  it('should allow organization owner to list all queue entries (collection query)', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const queuesCol = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('queues');
+
+    await assertSucceeds(queuesCol.get());
+  });
+
+  it('should deny customer from listing all queue entries (collection query)', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+    await createTestUser('customer1', 'customer');
+
+    const customerContext = getAuthenticatedContext('customer1');
+    const queuesCol = customerContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('queues');
+
+    await assertFails(queuesCol.get());
+  });
 });

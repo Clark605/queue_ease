@@ -281,4 +281,68 @@ describe('Users Collection Tests (US3)', () => {
     const userDoc = user2Context.firestore().collection('users').doc('user2');
     await assertFails(userDoc.set(invalidUserData));
   });
+
+  // Issue 1 fix: role must be immutable after creation (privilege escalation prevention)
+  it('should deny customer from changing own role to admin (privilege escalation)', async () => {
+    await createTestUser('customer1', 'customer');
+
+    const customerContext = getAuthenticatedContext('customer1');
+    const userDoc = customerContext.firestore().collection('users').doc('customer1');
+
+    await assertFails(userDoc.update({ role: 'admin' }));
+  });
+
+  it('should deny admin from changing own role to customer', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const userDoc = adminContext.firestore().collection('users').doc('admin1');
+
+    await assertFails(userDoc.update({ role: 'customer' }));
+  });
+
+  // Issue 5 fix: user create must have required fields and reject unexpected fields
+  it('should deny user from creating profile without required email field', async () => {
+    const user1Context = getAuthenticatedContext('user1');
+
+    const missingEmailData = {
+      uid: 'user1',
+      role: 'customer',
+      displayName: 'User 1',
+      createdAt: new Date(),
+      // email is missing
+    };
+
+    const userDoc = user1Context.firestore().collection('users').doc('user1');
+    await assertFails(userDoc.set(missingEmailData));
+  });
+
+  it('should deny user from creating profile without required createdAt field', async () => {
+    const user1Context = getAuthenticatedContext('user1');
+
+    const missingCreatedAtData = {
+      uid: 'user1',
+      email: 'user1@test.com',
+      role: 'customer',
+      // createdAt is missing
+    };
+
+    const userDoc = user1Context.firestore().collection('users').doc('user1');
+    await assertFails(userDoc.set(missingCreatedAtData));
+  });
+
+  it('should deny user from creating profile with unexpected fields', async () => {
+    const user1Context = getAuthenticatedContext('user1');
+
+    const unexpectedFieldData = {
+      uid: 'user1',
+      email: 'user1@test.com',
+      role: 'customer',
+      createdAt: new Date(),
+      adminSecretField: 'should be rejected',  // Unexpected field
+    };
+
+    const userDoc = user1Context.firestore().collection('users').doc('user1');
+    await assertFails(userDoc.set(unexpectedFieldData));
+  });
 });

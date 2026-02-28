@@ -396,4 +396,120 @@ describe('Appointments Subcollection Tests (US2)', () => {
 
     await assertFails(apptDoc.set(invalidAppointmentData));
   });
+
+  // Issue 2 fix: list queries must work for org owner
+  it('should allow organization owner to list all appointments (collection query)', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const appointmentsCol = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('appointments');
+
+    await assertSucceeds(appointmentsCol.get());
+  });
+
+  it('should deny customer from listing all appointments (collection query)', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+    await createTestUser('customer1', 'customer');
+
+    const customerContext = getAuthenticatedContext('customer1');
+    const appointmentsCol = customerContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('appointments');
+
+    await assertFails(appointmentsCol.get());
+  });
+
+  // Issue 3 fix: appointment updates must enforce immutable identity fields and re-validate types
+  it('should deny appointment update that changes customerId', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+    await createTestUser('customer1', 'customer');
+    await createTestUser('customer2', 'customer');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const appointmentData = TestData.appointment('customer1', 'service1', { orgId: 'org1' });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('appointments').doc('appt1')
+        .set(appointmentData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const apptDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('appointments').doc('appt1');
+
+    await assertFails(apptDoc.update({ customerId: 'customer2' }));
+  });
+
+  it('should deny appointment update that changes serviceId', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+    await createTestUser('customer1', 'customer');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const appointmentData = TestData.appointment('customer1', 'service1', { orgId: 'org1' });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('appointments').doc('appt1')
+        .set(appointmentData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const apptDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('appointments').doc('appt1');
+
+    await assertFails(apptDoc.update({ serviceId: 'different-service' }));
+  });
+
+  it('should deny appointment update with invalid status enum', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+    await createTestUser('customer1', 'customer');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const appointmentData = TestData.appointment('customer1', 'service1', { orgId: 'org1' });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('appointments').doc('appt1')
+        .set(appointmentData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const apptDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('appointments').doc('appt1');
+
+    await assertFails(apptDoc.update({ status: 'invalid_status' }));
+  });
+
+  it('should allow appointment update with valid status enum', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+    await createTestUser('customer1', 'customer');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const appointmentData = TestData.appointment('customer1', 'service1', { orgId: 'org1' });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('appointments').doc('appt1')
+        .set(appointmentData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const apptDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('appointments').doc('appt1');
+
+    await assertSucceeds(apptDoc.update({ status: 'serving' }));
+  });
 });

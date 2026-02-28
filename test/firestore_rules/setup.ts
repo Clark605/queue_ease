@@ -27,10 +27,10 @@ let testEnv: RulesTestEnvironment | null = null;
 /**
  * Initialize Firebase Emulator test environment
  * 
- * @param projectId - Firebase project ID for testing (defaults to dev project)
+ * @param projectId - Firebase project ID for testing (defaults to test-only project)
  * @returns Initialized test environment
  */
-export async function setupTestEnvironment(projectId: string = 'ease-queue-dev'): Promise<RulesTestEnvironment> {
+export async function setupTestEnvironment(projectId: string = 'queue-ease-test'): Promise<RulesTestEnvironment> {
   if (testEnv) {
     return testEnv;
   }

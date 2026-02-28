@@ -147,13 +147,16 @@ service cloud.firestore {
         // T033: Only organization owner can create services with validation
         allow create: if isAuthenticated()
           && ownsOrganization(orgId)
-          && request.resource.data.keys().hasAll(['orgId','name','durationMinutes','isActive','createdAt'])
+          && request.resource.data.keys().hasAll(['orgId','name','durationMinutes','timeMarginMinutes','isActive','createdAt'])
           && request.resource.data.orgId == orgId
           && request.resource.data.name is string
           && request.resource.data.name.size() <= 100
           && request.resource.data.durationMinutes is int
           && request.resource.data.durationMinutes >= 5
           && request.resource.data.durationMinutes <= 480
+          && request.resource.data.timeMarginMinutes is int
+          && request.resource.data.timeMarginMinutes >= 0
+          && request.resource.data.timeMarginMinutes <= 60
           && request.resource.data.isActive is bool
           && request.resource.data.createdAt is timestamp
           && hasOnlyAllowedFields(['orgId','name','durationMinutes','timeMarginMinutes','price','description','queueType','isActive','createdAt','updatedAt']);
@@ -195,8 +198,15 @@ service cloud.firestore {
 
         allow update: if isAuthenticated()
           && ownsOrganization(orgId)
+          && request.resource.data.orgId == orgId
           && request.resource.data.dayOfWeek == resource.data.dayOfWeek
           && createdAtNotModified()
+          // If open, re-enforce HH:mm time format on update
+          && (request.resource.data.isOpen == false || (
+            request.resource.data.keys().hasAll(['openTime','closeTime'])
+            && request.resource.data.openTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
+            && request.resource.data.closeTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
+          ))
           && hasOnlyAllowedFields(['orgId','dayOfWeek','isOpen','openTime','closeTime','createdAt','updatedAt']);
 
         allow delete: if isAuthenticated() && ownsOrganization(orgId);
@@ -206,10 +216,15 @@ service cloud.firestore {
       // APPOINTMENTS SUBCOLLECTION (User Story 2 - Phase 4)
       // -------------------------------------------------------------------------
       match /appointments/{appointmentId} {
-        // T049: Customer can read own appointment OR organization owner can read all
-        allow read: if isAuthenticated()
+        // T049: Customer can get own appointment OR organization owner can get any
+        // NOTE: Split get/list because resource.data is unavailable during list queries
+        allow get: if isAuthenticated()
           && (request.auth.uid == resource.data.customerId
               || ownsOrganization(orgId));
+
+        // T049-list: Only organization owner can list/query all appointments
+        allow list: if isAuthenticated()
+          && ownsOrganization(orgId);
         
         // T050: Customer can create appointment with matching customerId and validation
         allow create: if isAuthenticated()
@@ -230,6 +245,17 @@ service cloud.firestore {
         allow update: if isAuthenticated()
           && ownsOrganization(orgId)
           && createdAtNotModified()
+          // Immutable identity fields must not change
+          && request.resource.data.orgId == orgId
+          && resource.data.orgId == request.resource.data.orgId
+          && resource.data.customerId == request.resource.data.customerId
+          && resource.data.serviceId == request.resource.data.serviceId
+          // Re-validate core field types on update
+          && request.resource.data.customerId is string
+          && request.resource.data.serviceId is string
+          && request.resource.data.scheduledAt is timestamp
+          // Re-validate status enum on update
+          && request.resource.data.status in ['booked','inQueue','serving','completed','noShow']
           && hasOnlyAllowedFields(['orgId','customerId','serviceId','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
 
         allow delete: if isAuthenticated() && ownsOrganization(orgId);
@@ -239,10 +265,15 @@ service cloud.firestore {
       // QUEUES SUBCOLLECTION (User Story 2 - Phase 4)
       // -------------------------------------------------------------------------
       match /queues/{queueId} {
-        // T052: Customer can read own queue entry OR organization owner can read all
-        allow read: if isAuthenticated()
+        // T052: Customer can get own queue entry OR organization owner can get any
+        // NOTE: Split get/list because resource.data is unavailable during list queries
+        allow get: if isAuthenticated()
           && (request.auth.uid == resource.data.customerId
               || ownsOrganization(orgId));
+
+        // T052-list: Only organization owner can list/query all queues
+        allow list: if isAuthenticated()
+          && ownsOrganization(orgId);
         
         // T053: Customer can create queue entry with matching customerId and validation
         allow create: if isAuthenticated()
@@ -283,16 +314,23 @@ service cloud.firestore {
         && request.auth.uid == userId
         && request.resource.data.uid == userId
         && request.resource.data.role is string
-        && request.resource.data.role in ['admin', 'customer'];
+        && request.resource.data.role in ['admin', 'customer']
+        // Required fields and type checks
+        && hasRequiredFields(['uid', 'email', 'role', 'createdAt'])
+        && request.resource.data.email is string
+        && request.resource.data.createdAt is timestamp
+        // Reject unexpected fields
+        && hasOnlyAllowedFields(['uid','email','displayName','role','phone','orgId','createdAt','updatedAt']);
       
       // T065: User can only update their own document
-      // Immutable fields (uid, createdAt) cannot be modified
-      // Role must remain 'admin' or 'customer' if changed
+      // Immutable fields (uid, createdAt, role) cannot be modified
+      // Role is immutable after creation to prevent privilege escalation
       allow update: if isAuthenticated()
         && request.auth.uid == userId
         && request.resource.data.uid == resource.data.uid
         && createdAtNotModified()
-        && (!('role' in request.resource.data) || (request.resource.data.role is string && request.resource.data.role in ['admin', 'customer']));
+        // Role is immutable - prevents self-escalation (e.g., customer → admin)
+        && request.resource.data.role == resource.data.role;
       
       // T066: No one can delete user documents (soft delete via update instead)
       allow delete: if false;

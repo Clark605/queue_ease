@@ -274,4 +274,69 @@ describe('Working Hours Subcollection Tests (US1)', () => {
 
     await assertFails(hoursDoc.set(invalidHoursData));
   });
+
+  // Issue 4 fix: working hours update must enforce orgId and re-validate time format
+  it('should deny working hours update with invalid time format', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const hoursData = TestData.workingHours(1, { orgId: 'org1', isOpen: true });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('working_hours').doc('1')
+        .set(hoursData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const hoursDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('working_hours').doc('1');
+
+    // Update isOpen:true with invalid time format should fail
+    await assertFails(hoursDoc.update({ isOpen: true, openTime: '9am', closeTime: '5pm' }));
+  });
+
+  it('should allow working hours update with valid time format', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const hoursData = TestData.workingHours(1, { orgId: 'org1', isOpen: true });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('working_hours').doc('1')
+        .set(hoursData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const hoursDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('working_hours').doc('1');
+
+    await assertSucceeds(hoursDoc.update({ openTime: '08:30', closeTime: '18:00' }));
+  });
+
+  it('should deny working hours update that changes orgId', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const hoursData = TestData.workingHours(1, { orgId: 'org1', isOpen: false });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('working_hours').doc('1')
+        .set(hoursData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const hoursDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('working_hours').doc('1');
+
+    await assertFails(hoursDoc.update({ orgId: 'org2' }));
+  });
 });

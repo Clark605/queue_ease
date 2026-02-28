@@ -299,4 +299,58 @@ describe('Services Subcollection Tests (US1)', () => {
 
     await assertFails(svcDoc.set(invalidServiceData));
   });
+
+  // Issue 6 fix: timeMarginMinutes is required on service create
+  it('should deny creating service without timeMarginMinutes', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const adminContext = getAuthenticatedContext('admin1');
+
+    // Explicitly omit timeMarginMinutes
+    const serviceDataNoMargin = {
+      orgId: 'org1',
+      name: 'No Margin Service',
+      durationMinutes: 30,
+      isActive: true,
+      createdAt: new Date(),
+      // timeMarginMinutes intentionally missing
+    };
+
+    const svcDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('services').doc('svc_no_margin');
+
+    await assertFails(svcDoc.set(serviceDataNoMargin));
+  });
+
+  it('should deny creating service with timeMarginMinutes out of range', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const adminContext = getAuthenticatedContext('admin1');
+
+    const tooHighMargin = TestData.service({ orgId: 'org1', timeMarginMinutes: 61 });
+    const negativeMargin = TestData.service({ orgId: 'org1', timeMarginMinutes: -1 });
+
+    const docA = adminContext.firestore().collection('organizations').doc('org1').collection('services').doc('sA');
+    const docB = adminContext.firestore().collection('organizations').doc('org1').collection('services').doc('sB');
+
+    await assertFails(docA.set(tooHighMargin));
+    await assertFails(docB.set(negativeMargin));
+  });
+
+  it('should allow creating service with timeMarginMinutes of 0', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const serviceData = TestData.service({ orgId: 'org1', timeMarginMinutes: 0 });
+
+    const svcDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('services').doc('svc_zero_margin');
+
+    await assertSucceeds(svcDoc.set(serviceData));
+  });
 });
