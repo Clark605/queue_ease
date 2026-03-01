@@ -1,6 +1,6 @@
 # Queue Ease - Feature Implementation Checklist
 
-**Last Updated:** February 25, 2026  
+**Last Updated:** March 1, 2026  
 **Project:** Appointment & Queue Manager (Queue Ease)
 
 ---
@@ -124,7 +124,19 @@
 - ⏳ Quick actions panel
 - ⏳ Daily statistics display
 
-### 4.2 Service Management
+### 4.2 Organization Setup (MVP - Sprint 2)
+- ✅ Organization entity/model definition (complete with Firestore serialization)
+- ⏳ Organization repository implementation (OrganizationRepository)
+- ⏳ Modify signup flow to create Organization document
+- ⏳ Update user schema to include organizationId field
+- ⏳ Organization profile view screen (admin UI)
+- ⏳ Organization profile edit screen (admin UI)
+- ⏳ Organization validation logic
+- ⏳ Organization state management (Cubit)
+- ⏳ Organization repository unit tests
+- ⏳ Signup + organization creation integration tests
+
+### 4.3 Service Management
 - ✅ Service entity/model definition (complete with Firestore serialization)
 - ⏳ Service repository implementation
 - ⏳ Service list page
@@ -136,16 +148,16 @@
 - ⏳ Service state management (Cubit)
 - ⏳ Firestore CRUD operations for services
 
-### 4.3 Working Hours Setup
+### 4.4 Working Hours Setup
 - ✅ Working hours entity/model definition (complete with Firestore serialization)
 - ⏳ Working hours repository implementation
-- ⏳ Working hours configuration page
+- ⏳ working hours configuration page
 - ⏳ Daily schedule setup UI
 - ⏳ Break time configuration UI
 - ⏳ Special hours/holidays
 - ⏳ Working hours state management (Cubit)
 
-### 4.4 Queue Management (Live Queue)
+### 4.5 Queue Management (Live Queue)
 - ✅ Queue entity/model definition (complete with Firestore serialization)
 - ⏳ Queue repository implementation
 - ⏳ Today's queue view page
@@ -158,7 +170,7 @@
 - ⏳ Real-time queue updates
 - ⏳ Queue state management (Cubit)
 
-### 4.5 Share Access (QR & Link)
+### 4.6 Share Access (QR & Link)
 - ⏳ QR code generation for organization
 - ⏳ Unique booking link generation
 - ⏳ QR code display page
@@ -166,7 +178,7 @@
 - ⏳ Download QR code option
 - ⏳ Link customization
 
-### 4.6 Daily Summary
+### 4.7 Daily Summary
 - ⏳ Daily summary page
 - ⏳ Total appointments served count
 - ⏳ Average waiting time calculation
@@ -448,7 +460,7 @@
 - 📋 Custom branding per organization
 
 ### 14.2 Extended Settings
-- 📋 Organization profile management
+- 📋 Advanced organization settings (multi-branch, custom branding)
 - 📋 Advanced notification preferences
 - 📋 Custom queue behavior rules
 - 📋 Holiday calendar management
@@ -460,6 +472,8 @@
 ## MVP Completion Criteria
 
 ### Definition of Done
+- [ ] Admin signup creates organization automatically
+- [ ] Admin can view and edit their organization profile
 - [ ] Admin can manage services and working hours
 - [ ] Admin can generate and share booking QR code/link
 - [ ] Customers can access booking via QR/link
