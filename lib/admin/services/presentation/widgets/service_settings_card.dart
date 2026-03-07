@@ -27,21 +27,23 @@ class ServiceSettingsCard extends StatelessWidget {
               children: [
                 Text(
                   'Service Active',
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(fontWeight: FontWeight.w500),
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Customers can book this service',
-                  style: AppTextStyles.bodySmall
-                      .copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
           ),
           Switch(
             value: isActive,
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
             onChanged: onChanged,
           ),
         ],

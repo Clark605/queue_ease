@@ -67,8 +67,9 @@ class ServiceListTile extends StatelessWidget {
                 children: [
                   Text(
                     service.name,
-                    style: AppTextStyles.bodyLarge
-                        .copyWith(fontWeight: FontWeight.w600),
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -76,8 +77,9 @@ class ServiceListTile extends StatelessWidget {
                   Text(
                     '${service.durationMinutes} mins \u2022 '
                     '${service.timeMarginMinutes} mins margin',
-                    style: AppTextStyles.bodySmall
-                        .copyWith(color: AppColors.onSurfaceVariant),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -85,7 +87,7 @@ class ServiceListTile extends StatelessWidget {
             const SizedBox(width: 4),
             Switch(
               value: service.isActive,
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
               onChanged: (_) => onToggle(),
             ),
             PopupMenuButton<String>(
@@ -102,8 +104,11 @@ class ServiceListTile extends StatelessWidget {
                   value: 'edit',
                   child: Row(
                     children: [
-                      const Icon(Icons.edit_outlined,
-                          size: 18, color: AppColors.primary),
+                      const Icon(
+                        Icons.edit_outlined,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 8),
                       const Text('Edit'),
                     ],
@@ -113,11 +118,13 @@ class ServiceListTile extends StatelessWidget {
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete_outline_rounded,
-                          size: 18, color: Colors.red[600]),
+                      Icon(
+                        Icons.delete_outline_rounded,
+                        size: 18,
+                        color: Colors.red[600],
+                      ),
                       const SizedBox(width: 8),
-                      Text('Delete',
-                          style: TextStyle(color: Colors.red[600])),
+                      Text('Delete', style: TextStyle(color: Colors.red[600])),
                     ],
                   ),
                 ),
