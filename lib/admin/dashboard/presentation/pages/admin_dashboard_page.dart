@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:queue_ease/shared/auth/presentation/cubit/auth_cubit.dart';
 
+import '../../../../core/app/router/app_router.dart';
 import '../../../../core/app/theme/app_text_styles.dart';
 
 class AdminDashboardPage extends StatelessWidget {
@@ -31,18 +33,30 @@ class AdminDashboardPage extends StatelessWidget {
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                children: const [
+                children: [
+                  _DashboardCard(
+                    icon: Icons.business,
+                    label: 'Organization',
+                    onTap: () => context.push(Routes.adminOrgProfile),
+                  ),
                   _DashboardCard(
                     icon: Icons.medical_services_outlined,
                     label: 'Services',
+                    onTap: () => context.push(Routes.adminServices),
                   ),
-                  _DashboardCard(
+                  const _DashboardCard(
                     icon: Icons.access_time,
                     label: 'Working Hours',
                   ),
-                  _DashboardCard(icon: Icons.queue, label: 'Queue'),
-                  _DashboardCard(icon: Icons.qr_code, label: 'Share Access'),
-                  _DashboardCard(icon: Icons.bar_chart, label: 'Daily Summary'),
+                  const _DashboardCard(icon: Icons.queue, label: 'Queue'),
+                  const _DashboardCard(
+                    icon: Icons.qr_code,
+                    label: 'Share Access',
+                  ),
+                  const _DashboardCard(
+                    icon: Icons.bar_chart,
+                    label: 'Daily Summary',
+                  ),
                 ],
               ),
             ),
@@ -54,18 +68,27 @@ class AdminDashboardPage extends StatelessWidget {
 }
 
 class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.icon, required this.label});
+  const _DashboardCard({required this.icon, required this.label, this.onTap});
 
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
-        onTap: () {
-          // TODO: Navigate to sub-feature
-        },
+        onTap:
+            onTap ??
+            () {
+              // Show coming soon message for unimplemented features
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('$label - Coming soon'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
         borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
