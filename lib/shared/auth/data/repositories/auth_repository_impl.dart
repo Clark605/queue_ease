@@ -104,7 +104,6 @@ class AuthRepositoryImpl implements AuthRepository {
       role: role,
       displayName: displayName,
       phone: phone,
-      orgName: orgName,
     );
     await _sessionService.saveRole(profile.role);
     _logger.debug('AuthRepository: new user profile persisted uid=$uid');

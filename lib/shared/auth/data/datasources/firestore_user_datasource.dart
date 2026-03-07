@@ -5,6 +5,7 @@ import '../../../../core/error/app_exception.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/user_role.dart';
+import '../models/user_model.dart';
 
 /// Reads and writes user profile documents at `users/{uid}`.
 @lazySingleton
@@ -27,7 +28,6 @@ class FirestoreUserDatasource {
     UserRole? role,
     String? displayName,
     String? phone,
-    String? orgName,
   }) async {
     _logger.debug('FirestoreUserDatasource: createOrGet → uid=$uid');
     try {
@@ -38,27 +38,20 @@ class FirestoreUserDatasource {
         return _fromDoc(doc);
       }
 
-      final data = {
-        'uid': uid,
-        'email': email ?? '',
-        'role': (role ?? UserRole.customer).name,
-        'displayName': ?displayName,
-        'phone': ?phone,
-        'orgName': ?orgName,
-      };
-      await _users.doc(uid).set(data);
-      _logger.info(
-        'FirestoreUserDatasource: new user profile created uid=$uid',
-      );
-
-      return UserEntity(
+      final model = UserModel(
         uid: uid,
         email: email ?? '',
         role: role ?? UserRole.customer,
         displayName: displayName,
         phone: phone,
-        orgName: orgName,
       );
+
+      await _users.doc(uid).set(model.toJson());
+      _logger.info(
+        'FirestoreUserDatasource: new user profile created uid=$uid',
+      );
+
+      return model.toEntity();
     } on FirebaseException catch (e, st) {
       _logger.error(
         'FirestoreUserDatasource: createOrGet failed uid=$uid',
@@ -113,20 +106,76 @@ class FirestoreUserDatasource {
     }
   }
 
+  /// Updates the [organizationId] field on the user document for [uid].
+  ///
+  /// Called atomically inside [FirestoreOrganizationDatasource.create]'s
+  /// [WriteBatch]; may also be called standalone during missing-org recovery.
+  Future<void> updateOrganizationId(
+    String uid,
+    String organizationId,
+  ) async {
+    _logger.debug(
+      'FirestoreUserDatasource: updateOrganizationId → uid=$uid '
+      'orgId=$organizationId',
+    );
+    try {
+      await _users.doc(uid).update({'organizationId': organizationId});
+    } on FirebaseException catch (e, st) {
+      _logger.error(
+        'FirestoreUserDatasource: updateOrganizationId failed uid=$uid',
+        e,
+        st,
+      );
+      throw DatabaseException(
+        'Failed to link organization to user profile.',
+        stackTrace: st,
+      );
+    } catch (e, st) {
+      _logger.error(
+        'FirestoreUserDatasource: updateOrganizationId unexpected error uid=$uid',
+        e,
+        st,
+      );
+      throw UnknownException(
+        'An unexpected error occurred while updating user profile.',
+        cause: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  /// Marks the first-time tutorial as completed for [uid].
+  Future<void> markTutorialCompleted(String uid) async {
+    _logger.debug(
+      'FirestoreUserDatasource: markTutorialCompleted → uid=$uid',
+    );
+    try {
+      await _users.doc(uid).update({'tutorialCompleted': true});
+    } on FirebaseException catch (e, st) {
+      _logger.error(
+        'FirestoreUserDatasource: markTutorialCompleted failed uid=$uid',
+        e,
+        st,
+      );
+      throw DatabaseException(
+        'Failed to update tutorial status.',
+        stackTrace: st,
+      );
+    } catch (e, st) {
+      _logger.error(
+        'FirestoreUserDatasource: markTutorialCompleted unexpected uid=$uid',
+        e,
+        st,
+      );
+      throw UnknownException(
+        'An unexpected error occurred while saving tutorial progress.',
+        cause: e,
+        stackTrace: st,
+      );
+    }
+  }
+
   UserEntity _fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data()!;
-    final roleValue = data['role'] as String? ?? UserRole.customer.name;
-    final role = UserRole.values.firstWhere(
-      (r) => r.name == roleValue,
-      orElse: () => UserRole.customer,
-    );
-    return UserEntity(
-      uid: doc.id,
-      email: data['email'] as String? ?? '',
-      role: role,
-      displayName: data['displayName'] as String?,
-      phone: data['phone'] as String?,
-      orgName: data['orgName'] as String?,
-    );
+    return UserModel.fromFirestore(doc).toEntity();
   }
 }
