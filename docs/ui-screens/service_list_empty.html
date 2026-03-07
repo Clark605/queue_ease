@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Services Management - QueueEase</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#136dec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-status-bar {
+            height: 44px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex flex-col min-h-screen max-w-[430px] mx-auto bg-background-light dark:bg-background-dark shadow-2xl relative overflow-hidden">
+<!-- iOS Status Bar Placeholder -->
+<div class="ios-status-bar flex justify-between items-center px-6 w-full bg-white dark:bg-slate-900">
+<span class="text-xs font-bold">9:41</span>
+<div class="flex gap-1.5 items-center">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[18px]">battery_full</span>
+</div>
+</div>
+<!-- Top App Bar -->
+<header class="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+<button class="flex items-center text-primary">
+<span class="material-symbols-outlined text-2xl">chevron_left</span>
+<span class="text-base">Back</span>
+</button>
+<h1 class="text-lg font-semibold absolute left-1/2 -translate-x-1/2">Services</h1>
+<button class="text-primary">
+<span class="material-symbols-outlined text-2xl">more_horiz</span>
+</button>
+</header>
+<!-- Main Content (Empty State) -->
+<main class="flex-1 flex flex-col items-center justify-center px-8 text-center bg-[#F5F5F5] dark:bg-background-dark">
+<div class="mb-8 flex flex-col items-center">
+<!-- Medical Bag Icon / Illustration Container -->
+<div class="w-32 h-32 mb-6 flex items-center justify-center bg-slate-200/50 dark:bg-slate-800/50 rounded-full">
+<span class="material-symbols-outlined text-[64px] text-slate-400 dark:text-slate-600">
+                        medical_services
+                    </span>
+</div>
+<!-- Headline -->
+<h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-3">
+                    No services yet
+                </h2>
+<!-- Subtitle -->
+<p class="text-slate-500 dark:text-slate-400 text-base leading-relaxed max-w-[280px]">
+                    Add your first service to start accepting bookings
+                </p>
+</div>
+<!-- Primary Action Button -->
+<button class="w-full max-w-[240px] bg-primary hover:bg-primary/90 text-white font-semibold py-4 rounded-lg transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-xl">add</span>
+<span>Add Service</span>
+</button>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="flex border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 pb-8 pt-3">
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] fill-current" style="font-variation-settings: 'FILL' 1">medical_services</span>
+<span class="text-[10px] font-medium">Services</span>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-[24px]">calendar_today</span>
+<span class="text-[10px] font-medium">Bookings</span>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</nav>
+<!-- Home Indicator -->
+<div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></div>
+</div>
+</body></html>
