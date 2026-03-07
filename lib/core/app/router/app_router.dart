@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
-import '../../../admin/dashboard/presentation/pages/admin_dashboard_page.dart';
+import '../../../admin/organization/presentation/cubit/organization_cubit.dart';
+import '../../../admin/organization/presentation/pages/organization_profile_edit_page.dart';
+import '../../../admin/organization/presentation/pages/organization_profile_page.dart';
+import '../../../admin/organization/presentation/pages/organization_setup_page.dart';
+import '../../../admin/presentation/pages/admin_main_page.dart';
+import '../../../admin/services/presentation/cubit/service_cubit.dart';
+import '../../../admin/services/presentation/pages/service_form_page.dart';
 import '../../../customer/entry/presentation/pages/customer_home_page.dart';
 import '../../../shared/auth/domain/entities/user_role.dart';
 import '../../../shared/auth/presentation/cubit/auth_cubit.dart';
@@ -10,6 +17,7 @@ import '../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../shared/auth/presentation/pages/login_page.dart';
 import '../../../shared/auth/presentation/pages/sign_up_page.dart';
 import '../../../shared/onboarding/presentation/pages/onboarding_page.dart';
+import '../../../shared/organization/domain/entities/service_entity.dart';
 import '../../config/flavor_config.dart';
 import '../../services/onboarding_service.dart';
 import '../../utils/app_logger.dart';
@@ -22,6 +30,11 @@ abstract final class Routes {
   static const String login = '/login';
   static const String signUp = '/signup';
   static const String adminDashboard = '/a/dashboard';
+  static const String adminSetup = '/a/setup';
+  static const String adminOrgProfile = '/a/org/profile';
+  static const String adminOrgEdit = '/a/org/edit';
+  static const String adminServices = '/a/services';
+  static const String adminServiceForm = '/a/services/form';
   static const String customerHome = '/c/home';
 
   // Dev-only
@@ -69,9 +82,25 @@ GoRouter createRouter(AuthCubit authCubit) {
 
         // Redirect away from auth / onboarding screens.
         if (isAuthScreen || isOnboarding) {
-          return user.role == UserRole.admin
-              ? Routes.adminDashboard
-              : Routes.customerHome;
+          if (user.role == UserRole.admin) {
+            return user.organizationId == null
+                ? Routes.adminSetup
+                : Routes.adminDashboard;
+          }
+          return Routes.customerHome;
+        }
+
+        // Missing-org guard: redirect admins without an org to setup screen.
+        if (user.role == UserRole.admin &&
+            user.organizationId == null &&
+            location != Routes.adminSetup) {
+          return Routes.adminSetup;
+        }
+        // Prevent admins who have completed setup from re-visiting setup screen.
+        if (user.role == UserRole.admin &&
+            user.organizationId != null &&
+            location == Routes.adminSetup) {
+          return Routes.adminDashboard;
         }
 
         // Cross-role access guard.
@@ -119,7 +148,60 @@ GoRouter createRouter(AuthCubit authCubit) {
       // Admin routes
       GoRoute(
         path: Routes.adminDashboard,
-        builder: (context, state) => const AdminDashboardPage(),
+        builder: (context, state) => const AdminMainPage(),
+      ),
+      GoRoute(
+        path: Routes.adminSetup,
+        builder: (context, state) => const OrganizationSetupPage(),
+      ),
+      GoRoute(
+        path: Routes.adminOrgProfile,
+        builder: (context, state) => BlocProvider(
+          create: (context) {
+            final cubit = getIt<OrganizationCubit>();
+            final authState = context.read<AuthCubit>().state;
+            if (authState is Authenticated &&
+                authState.user.organizationId != null) {
+              cubit.watchOrganization(authState.user.organizationId!);
+            }
+            return cubit;
+          },
+          child: const OrganizationProfilePage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.adminOrgEdit,
+        builder: (context, state) => BlocProvider(
+          create: (context) {
+            final cubit = getIt<OrganizationCubit>();
+            final authState = context.read<AuthCubit>().state;
+            if (authState is Authenticated &&
+                authState.user.organizationId != null) {
+              cubit.watchOrganization(authState.user.organizationId!);
+            }
+            return cubit;
+          },
+          child: const OrganizationProfileEditPage(),
+        ),
+      ),
+      // Service management routes
+      GoRoute(
+        path: Routes.adminServiceForm,
+        builder: (context, state) {
+          final service = state.extra as ServiceEntity?;
+          return BlocProvider(
+            create: (context) {
+              final cubit = getIt<ServiceCubit>();
+              final authState = context.read<AuthCubit>().state;
+              if (authState is Authenticated &&
+                  authState.user.organizationId != null) {
+                cubit.watchServices(authState.user.organizationId!);
+              }
+              return cubit;
+            },
+            child: ServiceFormPage(service: service),
+          );
+        },
       ),
       // Customer routes
       GoRoute(
