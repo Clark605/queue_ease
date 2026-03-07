@@ -1,0 +1,135 @@
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../core/error/app_exception.dart';
+import '../../../../core/error/result.dart';
+import '../../../../core/utils/app_logger.dart';
+import '../../../../shared/organization/domain/entities/service_entity.dart';
+import '../../../../shared/organization/domain/repositories/service_repository.dart';
+import 'service_state.dart';
+
+/// Manages service list state and CRUD operations for an organization.
+///
+/// Provides real-time streaming of the service list via [watchServices]
+/// and mutation operations via [createService], [updateService], and
+/// [deleteService].
+///
+/// The stream subscription is automatically cancelled when the cubit is closed.
+@injectable
+class ServiceCubit extends Cubit<ServiceState> {
+  ServiceCubit(this._serviceRepository, this._logger)
+    : super(const ServiceInitial());
+
+  final ServiceRepository _serviceRepository;
+  final AppLogger _logger;
+
+  StreamSubscription<List<ServiceEntity>>? _servicesSubscription;
+
+  /// Watches the service list for [orgId] in real-time.
+  ///
+  /// Emits [ServiceLoading] initially, then [ServiceLoaded] on each update.
+  /// Any previous subscription is cancelled before starting a new one.
+  Future<void> watchServices(String orgId) async {
+    _logger.info('ServiceCubit: watchServices → $orgId');
+    emit(const ServiceLoading());
+
+    await _servicesSubscription?.cancel();
+
+    _servicesSubscription = _serviceRepository
+        .watchServices(orgId)
+        .listen(
+          (services) {
+            _logger.debug(
+              'ServiceCubit: received update → ${services.length} services',
+            );
+            emit(ServiceLoaded(services));
+          },
+          onError: (error, stackTrace) {
+            _logger.error(
+              'ServiceCubit: watchServices stream error',
+              error,
+              stackTrace,
+            );
+            emit(
+              ServiceError(
+                error is AppException
+                    ? error.message
+                    : 'Failed to load services',
+              ),
+            );
+          },
+        );
+  }
+
+  /// Creates a new service under the given organization.
+  ///
+  /// Emits [ServiceLoading] then [ServiceOperationSuccess] on success, or
+  /// [ServiceError] on failure. The real-time stream will re-emit
+  /// [ServiceLoaded] with the updated list automatically.
+  Future<void> createService(ServiceEntity service) async {
+    _logger.info('ServiceCubit: createService → ${service.name}');
+    emit(const ServiceLoading());
+
+    final result = await _serviceRepository.createService(service);
+    switch (result) {
+      case Success():
+        _logger.info('ServiceCubit: createService success');
+        emit(const ServiceOperationSuccess());
+      case Failure(:final exception):
+        _logger.error('ServiceCubit: createService failed', exception);
+        emit(ServiceError(exception.message));
+    }
+  }
+
+  /// Updates an existing service.
+  ///
+  /// Emits [ServiceLoading] then [ServiceOperationSuccess] on success, or
+  /// [ServiceError] on failure.
+  Future<void> updateService(ServiceEntity service) async {
+    _logger.info('ServiceCubit: updateService → ${service.id}');
+    emit(const ServiceLoading());
+
+    final result = await _serviceRepository.updateService(service);
+    switch (result) {
+      case Success():
+        _logger.info('ServiceCubit: updateService success');
+        emit(const ServiceOperationSuccess());
+      case Failure(:final exception):
+        _logger.error('ServiceCubit: updateService failed', exception);
+        emit(ServiceError(exception.message));
+    }
+  }
+
+  /// Permanently deletes a service by [serviceId] under [orgId].
+  ///
+  /// Emits [ServiceLoading] then [ServiceOperationSuccess] on success, or
+  /// [ServiceError] on failure.
+  Future<void> deleteService({
+    required String orgId,
+    required String serviceId,
+  }) async {
+    _logger.info('ServiceCubit: deleteService → $serviceId');
+    emit(const ServiceLoading());
+
+    final result = await _serviceRepository.deleteService(
+      orgId: orgId,
+      serviceId: serviceId,
+    );
+    switch (result) {
+      case Success():
+        _logger.info('ServiceCubit: deleteService success');
+        emit(const ServiceOperationSuccess());
+      case Failure(:final exception):
+        _logger.error('ServiceCubit: deleteService failed', exception);
+        emit(ServiceError(exception.message));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _servicesSubscription?.cancel();
+    return super.close();
+  }
+}
