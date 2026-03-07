@@ -184,7 +184,7 @@ GoRouter createRouter(AuthCubit authCubit) {
           child: const OrganizationProfileEditPage(),
         ),
       ),
-      // Service management routes
+
       GoRoute(
         path: Routes.adminServiceForm,
         builder: (context, state) {

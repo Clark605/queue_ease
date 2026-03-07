@@ -105,8 +105,8 @@
 
 **Purpose**: Wire all cubits at the right scope, run final build_runner, validate the full smoke-test checklist.
 
-- [ ] T032 Provide `OrganizationCubit`, `ServiceCubit`, and `TutorialCubit` via `MultiBlocProvider` at the admin dashboard route level (or router-level `BlocProvider.value` for cubits shared across admin routes); ensure `watchOrganization` and `watchServices` are called after dashboard mounts in lib/core/app/router/app_router.dart (or admin dashboard scaffold)
-- [ ] T033 Run final `flutter pub run build_runner build --delete-conflicting-outputs` and walk through the full smoke-test checklist in [quickstart.md Step 12](quickstart.md#step-12--manual-smoke-test-checklist) (15-item manual verification covering sign-up, tutorial, org profile, service CRUD, and missing-org redirect)
+- [X] T032 Provide `OrganizationCubit`, `ServiceCubit`, and `TutorialCubit` via `MultiBlocProvider` at the admin dashboard route level (or router-level `BlocProvider.value` for cubits shared across admin routes); ensure `watchOrganization` and `watchServices` are called after dashboard mounts in lib/core/app/router/app_router.dart (or admin dashboard scaffold)
+- [X] T033 Run final `flutter pub run build_runner build --delete-conflicting-outputs` and walk through the full smoke-test checklist in [quickstart.md Step 12](quickstart.md#step-12--manual-smoke-test-checklist) (15-item manual verification covering sign-up, tutorial, org profile, service CRUD, and missing-org redirect)
 
 ---
 
