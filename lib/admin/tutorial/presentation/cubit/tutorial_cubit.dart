@@ -37,9 +37,7 @@ class TutorialCubit extends Cubit<TutorialState> {
       );
       emit(const TutorialHidden());
     } else {
-      _logger.info(
-        'TutorialCubit: starting tutorial for uid=${user.uid}',
-      );
+      _logger.info('TutorialCubit: starting tutorial for uid=${user.uid}');
       emit(const TutorialActive(TutorialStep.confirmProfile));
     }
   }
@@ -56,9 +54,7 @@ class TutorialCubit extends Cubit<TutorialState> {
     final nextIndex = steps.indexOf(current.step) + 1;
 
     if (nextIndex < steps.length) {
-      _logger.debug(
-        'TutorialCubit: advance → ${steps[nextIndex]}',
-      );
+      _logger.debug('TutorialCubit: advance → ${steps[nextIndex]}');
       emit(TutorialActive(steps[nextIndex]));
     } else {
       await _complete();
@@ -75,9 +71,7 @@ class TutorialCubit extends Cubit<TutorialState> {
     if (_uid != null) {
       try {
         await _userDatasource.markTutorialCompleted(_uid!);
-        _logger.info(
-          'TutorialCubit: tutorial completed for uid=$_uid',
-        );
+        _logger.info('TutorialCubit: tutorial completed for uid=$_uid');
       } catch (e, st) {
         _logger.error(
           'TutorialCubit: failed to persist tutorial completion',
