@@ -153,4 +153,28 @@ class AuthCubit extends Cubit<AuthState> {
       emit(const AuthFailure('Failed to send reset email. Please try again.'));
     }
   }
+
+  /// Re-fetches the current user profile from the data layer and emits a
+  /// fresh [Authenticated] state.
+  ///
+  /// Call this after any operation that modifies the user's profile (e.g.
+  /// completing organization setup) to ensure the router and UI see the
+  /// updated [UserEntity].
+  Future<void> refreshCurrentUser() async {
+    _logger.info('AuthCubit: refreshCurrentUser');
+    try {
+      final user = await _authRepository.getCurrentUser();
+      if (user != null) {
+        emit(Authenticated(user));
+        _logger.debug(
+          'AuthCubit: refreshCurrentUser → uid=${user.uid} '
+          'orgId=${user.organizationId}',
+        );
+      } else {
+        emit(const Unauthenticated());
+      }
+    } catch (e, st) {
+      _logger.error('AuthCubit: refreshCurrentUser error', e, st);
+    }
+  }
 }
