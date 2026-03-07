@@ -39,64 +39,64 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
     return Stack(
       children: [
         Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 1,
-        centerTitle: true,
-        title: Text(
-          'Dashboard',
-          style: AppTextStyles.headlineSmall.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: AppColors.outline.withValues(alpha: 0.4),
-            height: 1,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome, Admin',
-              style: AppTextStyles.headlineMedium.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Manage your organization',
-              style: AppTextStyles.bodyLarge.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Quick Stats Section
-            _buildQuickStats(context),
-
-            const SizedBox(height: 24),
-
-            // Quick Actions Section
-            Text(
-              'Quick Actions',
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            backgroundColor: AppColors.surface,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 1,
+            centerTitle: true,
+            title: Text(
+              'Dashboard',
               style: AppTextStyles.headlineSmall.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
-            _buildQuickActions(context),
-          ],
-        ),
-      ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1),
+              child: Container(
+                color: AppColors.outline.withValues(alpha: 0.4),
+                height: 1,
+              ),
+            ),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome, Admin',
+                  style: AppTextStyles.headlineMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Manage your organization',
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Quick Stats Section
+                _buildQuickStats(context),
+
+                const SizedBox(height: 24),
+
+                // Quick Actions Section
+                Text(
+                  'Quick Actions',
+                  style: AppTextStyles.headlineSmall.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildQuickActions(context),
+              ],
+            ),
+          ),
         ),
         const TutorialOverlay(),
       ],
