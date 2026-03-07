@@ -9,7 +9,8 @@ class UserEntity extends Equatable {
     required this.role,
     this.displayName,
     this.phone,
-    this.orgName,
+    this.organizationId,
+    this.tutorialCompleted = false,
   });
 
   final String uid;
@@ -20,9 +21,22 @@ class UserEntity extends Equatable {
   /// Optional phone number (collected during sign-up).
   final String? phone;
 
-  /// Optional organisation name for admin accounts.
-  final String? orgName;
+  /// Reference to the [Organization] document owned by this admin account.
+  /// `null` for customer accounts or admins who have not yet completed setup.
+  final String? organizationId;
+
+  /// Whether this admin has completed (or skipped) the first-time tutorial.
+  /// Always `false` for customer accounts.
+  final bool tutorialCompleted;
 
   @override
-  List<Object?> get props => [uid, email, role, displayName, phone, orgName];
+  List<Object?> get props => [
+    uid,
+    email,
+    role,
+    displayName,
+    phone,
+    organizationId,
+    tutorialCompleted,
+  ];
 }
