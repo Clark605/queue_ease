@@ -48,17 +48,20 @@ class OrganizationModel {
   }
 
   /// Converts this model to a Firestore map.
+  ///
+  /// Null optional fields are omitted so they never appear in
+  /// `request.resource.data.keys()` during security rule evaluation.
   Map<String, dynamic> toMap() {
     return {
       'name': name,
       'adminUid': adminUid,
       'bookingLinkSlug': bookingLinkSlug,
-      'qrCodeUrl': qrCodeUrl,
-      'address': address,
       'isOpen': isOpen,
-      'logoUrl': logoUrl,
-      'description': description,
       'createdAt': Timestamp.fromDate(createdAt),
+      if (qrCodeUrl != null) 'qrCodeUrl': qrCodeUrl,
+      if (address != null) 'address': address,
+      if (logoUrl != null) 'logoUrl': logoUrl,
+      if (description != null) 'description': description,
     };
   }
 
