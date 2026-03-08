@@ -20,18 +20,7 @@ class ServiceListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ServiceCubit, ServiceState>(
-      listener: (context, state) {
-        if (state is ServiceError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red[600],
-            ),
-          );
-        }
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: AppColors.surface,
@@ -91,8 +80,7 @@ class ServiceListPage extends StatelessWidget {
           label: const Text('Add Service'),
           onPressed: () => context.push(Routes.adminServiceForm),
         ),
-      ),
-    );
+      );
   }
 }
 

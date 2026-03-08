@@ -73,6 +73,8 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ServiceCubit, ServiceState>(
+      listenWhen: (previous, current) =>
+          current is ServiceOperationSuccess || current is ServiceMutationError,
       listener: _onStateChange,
       child: BlocBuilder<ServiceCubit, ServiceState>(
         builder: (context, state) {
@@ -109,14 +111,20 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                           ? () => setState(() => _duration += _durationStep)
                           : null,
                       onMarginDecrement: _margin > _marginMin
-                          ? () => setState(() => _margin =
-                              (_margin - _marginStep)
-                                  .clamp(_marginMin, _marginMax))
+                          ? () => setState(
+                              () => _margin = (_margin - _marginStep).clamp(
+                                _marginMin,
+                                _marginMax,
+                              ),
+                            )
                           : null,
                       onMarginIncrement: _margin < _marginMax
-                          ? () => setState(() => _margin =
-                              (_margin + _marginStep)
-                                  .clamp(_marginMin, _marginMax))
+                          ? () => setState(
+                              () => _margin = (_margin + _marginStep).clamp(
+                                _marginMin,
+                                _marginMax,
+                              ),
+                            )
                           : null,
                     ),
                     const SizedBox(height: 16),
@@ -143,13 +151,19 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
     if (state is ServiceOperationSuccess) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_isEditMode
-              ? 'Service updated successfully'
-              : 'Service added successfully'),
+          content: Text(
+            _isEditMode
+                ? 'Service updated successfully'
+                : 'Service added successfully',
+          ),
+          duration: const Duration(milliseconds: 1500),
         ),
       );
-      context.pop();
-    } else if (state is ServiceError) {
+      // Delay pop to allow user to see the SnackBar
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) context.pop();
+      });
+    } else if (state is ServiceMutationError) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(state.message),
@@ -192,29 +206,33 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
         : _descriptionController.text.trim();
 
     if (_isEditMode) {
-      context.read<ServiceCubit>().updateService(ServiceEntity(
-            id: widget.service!.id,
-            orgId: widget.service!.orgId,
-            name: name,
-            durationMinutes: _duration,
-            timeMarginMinutes: _margin,
-            isActive: _isActive,
-            createdAt: widget.service!.createdAt,
-            price: price,
-            description: description,
-          ));
+      context.read<ServiceCubit>().updateService(
+        ServiceEntity(
+          id: widget.service!.id,
+          orgId: widget.service!.orgId,
+          name: name,
+          durationMinutes: _duration,
+          timeMarginMinutes: _margin,
+          isActive: _isActive,
+          createdAt: widget.service!.createdAt,
+          price: price,
+          description: description,
+        ),
+      );
     } else {
-      context.read<ServiceCubit>().createService(ServiceEntity(
-            id: '',
-            orgId: orgId,
-            name: name,
-            durationMinutes: _duration,
-            timeMarginMinutes: _margin,
-            isActive: _isActive,
-            createdAt: DateTime.now(),
-            price: price,
-            description: description,
-          ));
+      context.read<ServiceCubit>().createService(
+        ServiceEntity(
+          id: '',
+          orgId: orgId,
+          name: name,
+          durationMinutes: _duration,
+          timeMarginMinutes: _margin,
+          isActive: _isActive,
+          createdAt: DateTime.now(),
+          price: price,
+          description: description,
+        ),
+      );
     }
   }
 
@@ -248,9 +266,9 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
 
     if (confirm == true && mounted) {
       context.read<ServiceCubit>().deleteService(
-            orgId: orgId,
-            serviceId: widget.service!.id,
-          );
+        orgId: orgId,
+        serviceId: widget.service!.id,
+      );
     }
   }
 }

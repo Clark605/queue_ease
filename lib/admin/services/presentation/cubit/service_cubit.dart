@@ -65,12 +65,12 @@ class ServiceCubit extends Cubit<ServiceState> {
 
   /// Creates a new service under the given organization.
   ///
-  /// Emits [ServiceLoading] then [ServiceOperationSuccess] on success, or
-  /// [ServiceError] on failure. The real-time stream will re-emit
-  /// [ServiceLoaded] with the updated list automatically.
+  /// Emits [ServiceOperationSuccess] on success, or [ServiceError] on failure.
+  /// Does not emit [ServiceLoading] to avoid clobbering the current list view.
+  /// The real-time stream will re-emit [ServiceLoaded] with the updated list
+  /// automatically.
   Future<void> createService(ServiceEntity service) async {
     _logger.info('ServiceCubit: createService → ${service.name}');
-    emit(const ServiceLoading());
 
     final result = await _serviceRepository.createService(service);
     switch (result) {
@@ -79,17 +79,16 @@ class ServiceCubit extends Cubit<ServiceState> {
         emit(const ServiceOperationSuccess());
       case Failure(:final exception):
         _logger.error('ServiceCubit: createService failed', exception);
-        emit(ServiceError(exception.message));
+        emit(ServiceMutationError(exception.message));
     }
   }
 
   /// Updates an existing service.
   ///
-  /// Emits [ServiceLoading] then [ServiceOperationSuccess] on success, or
-  /// [ServiceError] on failure.
+  /// Emits [ServiceOperationSuccess] on success, or [ServiceError] on failure.
+  /// Does not emit [ServiceLoading] to avoid clobbering the current list view.
   Future<void> updateService(ServiceEntity service) async {
     _logger.info('ServiceCubit: updateService → ${service.id}');
-    emit(const ServiceLoading());
 
     final result = await _serviceRepository.updateService(service);
     switch (result) {
@@ -98,20 +97,19 @@ class ServiceCubit extends Cubit<ServiceState> {
         emit(const ServiceOperationSuccess());
       case Failure(:final exception):
         _logger.error('ServiceCubit: updateService failed', exception);
-        emit(ServiceError(exception.message));
+        emit(ServiceMutationError(exception.message));
     }
   }
 
   /// Permanently deletes a service by [serviceId] under [orgId].
   ///
-  /// Emits [ServiceLoading] then [ServiceOperationSuccess] on success, or
-  /// [ServiceError] on failure.
+  /// Emits [ServiceOperationSuccess] on success, or [ServiceError] on failure.
+  /// Does not emit [ServiceLoading] to avoid clobbering the current list view.
   Future<void> deleteService({
     required String orgId,
     required String serviceId,
   }) async {
     _logger.info('ServiceCubit: deleteService → $serviceId');
-    emit(const ServiceLoading());
 
     final result = await _serviceRepository.deleteService(
       orgId: orgId,
@@ -123,7 +121,7 @@ class ServiceCubit extends Cubit<ServiceState> {
         emit(const ServiceOperationSuccess());
       case Failure(:final exception):
         _logger.error('ServiceCubit: deleteService failed', exception);
-        emit(ServiceError(exception.message));
+        emit(ServiceMutationError(exception.message));
     }
   }
 

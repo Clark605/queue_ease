@@ -33,9 +33,24 @@ final class ServiceLoaded extends ServiceState {
   List<Object?> get props => [services];
 }
 
-/// Emitted when a service operation fails.
+/// Emitted when the real-time stream fails to load services.
+///
+/// Shown inline in the list body — not relevant to form-page mutations.
 final class ServiceError extends ServiceState {
   const ServiceError(this.message);
+
+  final String message;
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// Emitted when a write operation (create, update, delete) fails.
+///
+/// Distinct from [ServiceError] so that form pages can listen exclusively
+/// for mutation failures without reacting to unrelated stream errors.
+final class ServiceMutationError extends ServiceState {
+  const ServiceMutationError(this.message);
 
   final String message;
 

@@ -67,14 +67,13 @@ class OrganizationCubit extends Cubit<OrganizationState> {
 
   /// Updates the organization profile.
   ///
-  /// Emits [OrganizationLoading] during the update, then [OrganizationLoaded]
-  /// on success (the stream will emit the updated entity) or [OrganizationError]
-  /// on failure.
+  /// Emits [OrganizationError] on failure. On success, the real-time stream
+  /// will automatically re-emit [OrganizationLoaded] with the updated data.
+  /// Does not emit [OrganizationLoading] to avoid clobbering the current view.
   Future<void> updateOrganization(OrganizationEntity organization) async {
     _logger.info(
       'OrganizationCubit: updateOrganization → ${organization.name}',
     );
-    emit(const OrganizationLoading());
 
     try {
       final result = await _organizationRepository.updateOrganization(
