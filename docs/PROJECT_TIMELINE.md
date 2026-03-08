@@ -1,16 +1,16 @@
 # Queue Ease - Project Timeline & Network Diagrams
 
-**Last Updated:** March 1, 2026  
+**Last Updated:** March 8, 2026  
 **Project:** Appointment & Queue Manager (Queue Ease)  
-**Timeline:** ~12-14 Weeks Remaining (MVP)  
-**Current Status:** ✅ Phase 1 Complete + Data Models Complete + Security Rules Complete  
+**Timeline:** ~11-13 Weeks Remaining (MVP)  
+**Current Status:** ✅ Phase 1 Complete + Sprint 2 (Admin Core) Complete  
 **Development Approach:** Agile Incremental (Repo + Feature per Sprint)
 
 ---
 
 ## 📊 Current Progress Summary
 
-**✅ COMPLETED (as of February 28, 2026)**
+**✅ COMPLETED (as of March 8, 2026)**
 - **Phase 1: Foundation** - COMPLETE
   - ✅ Authentication System (email/password, Google Sign-In, password reset)
   - ✅ User Role Management (RBAC with router integration)
@@ -30,10 +30,18 @@
   - ✅ 78 TypeScript tests passing (users, organizations, services, working_hours, appointments, queues)
   - ✅ Deployed to both dev & prod Firebase environments
   - ✅ Data validation, field immutability, and cross-org access prevention
+- **Sprint 2: Admin Core** - COMPLETE
+  - ✅ Organization creation during admin signup
+  - ✅ OrganizationRepository with real-time streams
+  - ✅ Organization profile view and edit screens
+  - ✅ ServiceRepository with CRUD operations
+  - ✅ Service management UI (list, add, edit, delete)
+  - ✅ Service validation and time margin configuration
+  - ✅ First-time setup tutorial for new admins
+  - ✅ User document updated with organizationId reference
 
 **⏳ PENDING (Agile Incremental Approach)**
-- Sprint 2 (Week 3): Service Management - Repo to UI (next up)
-- Sprint 3 (Week 4): Working Hours + QR/Share - Repo to UI
+- Sprint 3 (Week 4): Working Hours + QR/Share - Repo to UI (next up)
 - Sprint 4 (Weeks 5-6): Customer Booking Flow - Repos to UI
 - Sprint 5 (Weeks 7-8): Queue System - Repo to UI
 - Sprint 6 (Weeks 9-10): Business Logic & Cloud Functions
@@ -134,41 +142,43 @@ gantt
 
 ---
 
-### Sprint 2 (Week 3): Organization Setup + Service Management
+### ✅ Sprint 2 (Week 3): Organization Setup + Service Management - COMPLETE
 **Goal:** Enable organization creation during signup, then complete service management
+
+**Sprint Status:** ✅ COMPLETE (March 8, 2026)
 
 **Sprint Backlog:**
 **Part 1: Organization Setup (2-3 days)**
-- OrganizationRepository implementation (CRUD + real-time stream)
-- Modify signup flow to create Organization document
-- Update user document to include organizationId reference
-- Organization profile view screen (admin UI)
-- Organization profile edit functionality (admin UI)
-- Organization repository unit tests
-- Signup flow integration tests
+- ✅ OrganizationRepository implementation (CRUD + real-time stream)
+- ✅ Modify signup flow to create Organization document
+- ✅ Update user document to include organizationId reference
+- ✅ Organization profile view screen (admin UI)
+- ✅ Organization profile edit functionality (admin UI)
+- ✅ Organization repository unit tests
+- ✅ First-time setup tutorial implementation
 
 **Part 2: Service Management (3-4 days)**
-- ServiceRepository implementation (CRUD + real-time stream)
-- Service repository unit tests
-- Service list screen (admin UI)
-- Add/edit service forms (admin UI)
-- Service validation logic
-- Time margin configuration UI
-- Integration tests for service flow
+- ✅ ServiceRepository implementation (CRUD + real-time stream)
+- ✅ Service repository unit tests
+- ✅ Service list screen (admin UI)
+- ✅ Add/edit service forms (admin UI)
+- ✅ Service validation logic
+- ✅ Time margin configuration UI
+- ✅ Service active/inactive toggle
 
 **Definition of Done:**
-- OrganizationRepository fully implemented and tested
-- Admin signup creates Organization document in Firestore
-- User document has organizationId field linking to their organization
-- Admin can view and edit their organization profile
-- ServiceRepository fully implemented and tested
-- Admin can view all services for their organization
-- Admin can create new services (with organizationId reference)
-- Admin can edit existing services
-- Admin can delete services
-- Time margin can be configured per service
-- All code tested (unit + widget tests)
-- Complete flow demoable: Signup → Organization created → Services managed
+- ✅ OrganizationRepository fully implemented and tested
+- ✅ Admin signup creates Organization document in Firestore
+- ✅ User document has organizationId field linking to their organization
+- ✅ Admin can view and edit their organization profile
+- ✅ ServiceRepository fully implemented and tested
+- ✅ Admin can view all services for their organization
+- ✅ Admin can create new services (with organizationId reference)
+- ✅ Admin can edit existing services
+- ✅ Admin can delete services
+- ✅ Time margin can be configured per service
+- ✅ First-time setup tutorial guides new admins through setup
+- ✅ Complete flow demoable: Signup → Organization created → Services managed
 
 ---
 
