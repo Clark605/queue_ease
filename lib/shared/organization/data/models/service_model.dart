@@ -36,13 +36,32 @@ class ServiceModel {
     DocumentSnapshot<Map<String, dynamic>> doc, {
     required String orgId,
   }) {
+    assert(
+      doc.exists,
+      'ServiceModel.fromDoc: document ${doc.id} does not exist',
+    );
     final data = doc.data()!;
+
+    final name = data['name'] as String?;
+    if (name == null || name.isEmpty) {
+      throw FormatException(
+        'Service document "${doc.id}" is missing required field "name".',
+      );
+    }
+
+    final durationMinutes = data['durationMinutes'] as int?;
+    if (durationMinutes == null || durationMinutes <= 0) {
+      throw FormatException(
+        'Service document "${doc.id}" has invalid "durationMinutes": $durationMinutes.',
+      );
+    }
+
     return ServiceModel(
       id: doc.id,
       orgId: orgId,
-      name: data['name'] as String? ?? '',
-      durationMinutes: data['durationMinutes'] as int? ?? 0,
-      timeMarginMinutes: data['timeMarginMinutes'] as int? ?? 0,
+      name: name,
+      durationMinutes: durationMinutes,
+      timeMarginMinutes: data['timeMarginMinutes'] as int? ?? 5,
       isActive: data['isActive'] as bool? ?? true,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       price: (data['price'] as num?)?.toDouble(),
@@ -52,9 +71,12 @@ class ServiceModel {
   }
 
   /// Converts this model to a Firestore map.
+  ///
+  /// [orgId] is intentionally excluded — it is already encoded in the
+  /// subcollection path (`organizations/{orgId}/services`) and storing it
+  /// redundantly in the document wastes space.
   Map<String, dynamic> toMap() {
     return {
-      'orgId': orgId,
       'name': name,
       'durationMinutes': durationMinutes,
       'timeMarginMinutes': timeMarginMinutes,

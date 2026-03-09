@@ -125,7 +125,7 @@ service cloud.firestore {
         && request.resource.data.isOpen is bool
         && request.resource.data.createdAt is timestamp
         // Only allowed fields
-        && hasOnlyAllowedFields(['adminUid','name','bookingLinkSlug','isOpen','description','address','phoneNumber','email','createdAt','updatedAt']);
+        && hasOnlyAllowedFields(['adminUid','name','bookingLinkSlug','isOpen','description','address','phoneNumber','email','qrCodeUrl','logoUrl','createdAt','updatedAt']);
       
       // T031: Only organization owner can update/delete
       allow update: if isAuthenticated()
@@ -133,7 +133,7 @@ service cloud.firestore {
         // createdAt must be immutable and adminUid cannot change
         && createdAtNotModified()
         && request.resource.data.adminUid == resource.data.adminUid
-        && hasOnlyAllowedFields(['adminUid','name','bookingLinkSlug','isOpen','description','address','phoneNumber','email','createdAt','updatedAt']);
+        && hasOnlyAllowedFields(['adminUid','name','bookingLinkSlug','isOpen','description','address','phoneNumber','email','qrCodeUrl','logoUrl','createdAt','updatedAt']);
 
       allow delete: if isAuthenticated() && ownsOrganization(orgId);
       
@@ -316,11 +316,10 @@ service cloud.firestore {
         && request.resource.data.role is string
         && request.resource.data.role in ['admin', 'customer']
         // Required fields and type checks
-        && hasRequiredFields(['uid', 'email', 'role', 'createdAt'])
+        && hasRequiredFields(['uid', 'email', 'role'])
         && request.resource.data.email is string
-        && request.resource.data.createdAt is timestamp
         // Reject unexpected fields
-        && hasOnlyAllowedFields(['uid','email','displayName','role','phone','orgId','createdAt','updatedAt']);
+        && hasOnlyAllowedFields(['uid','email','displayName','role','phone','organizationId','tutorialCompleted','createdAt','updatedAt']);
       
       // T065: User can only update their own document
       // Immutable fields (uid, createdAt, role) cannot be modified
@@ -330,7 +329,8 @@ service cloud.firestore {
         && request.resource.data.uid == resource.data.uid
         && createdAtNotModified()
         // Role is immutable - prevents self-escalation (e.g., customer → admin)
-        && request.resource.data.role == resource.data.role;
+        && request.resource.data.role == resource.data.role
+        && hasOnlyAllowedFields(['uid','email','displayName','role','phone','organizationId','tutorialCompleted','createdAt','updatedAt']);
       
       // T066: No one can delete user documents (soft delete via update instead)
       allow delete: if false;

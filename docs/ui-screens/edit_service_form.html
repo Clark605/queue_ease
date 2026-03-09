@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Edit Service Form</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#135BEC", "background-light": "#f6f6f8", "background-dark": "#101622"}, fontFamily: {display: "Inter"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}}}};</script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<!-- Container for iOS Phone UI -->
+<div class="relative mx-auto min-h-screen max-w-[430px] bg-background-light dark:bg-background-dark flex flex-col pb-40">
+<!-- Top App Bar (iOS Style) -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+<button class="flex items-center text-primary">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<h1 class="text-lg font-bold">Edit Service</h1>
+<button class="text-primary font-bold text-base">Save</button>
+</header>
+<!-- Main Form Content -->
+<main class="p-4 space-y-4">
+<!-- Main Service Details Card -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 space-y-6">
+<!-- Service Name Input -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Service Name</label>
+<input class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent p-3 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="text" value="General Consultation"/>
+</div>
+<!-- Duration Stepper -->
+<div class="flex items-center justify-between py-2">
+<div class="flex items-center gap-3">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">timer</span>
+</div>
+<div>
+<p class="text-base font-medium">Duration</p>
+<p class="text-xs text-slate-500">How long is the session?</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 items-center justify-center rounded-lg border border-primary text-primary hover:bg-primary/5">
+<span class="material-symbols-outlined text-lg">remove</span>
+</button>
+<div class="flex flex-col items-center min-w-[50px]">
+<span class="text-lg font-bold">20</span>
+<span class="text-[10px] uppercase font-bold text-slate-400">min</span>
+</div>
+<button class="flex h-9 w-9 items-center justify-center rounded-lg border border-primary text-primary hover:bg-primary/5">
+<span class="material-symbols-outlined text-lg">add</span>
+</button>
+</div>
+</div>
+<!-- Time Margin Stepper -->
+<div class="flex items-center justify-between py-2">
+<div class="flex items-center gap-3">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">history</span>
+</div>
+<div>
+<p class="text-base font-medium">Time Margin</p>
+<p class="text-xs text-slate-500">Buffer between slots</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 items-center justify-center rounded-lg border border-primary text-primary hover:bg-primary/5">
+<span class="material-symbols-outlined text-lg">remove</span>
+</button>
+<div class="flex flex-col items-center min-w-[50px]">
+<span class="text-lg font-bold">5</span>
+<span class="text-[10px] uppercase font-bold text-slate-400">min</span>
+</div>
+<button class="flex h-9 w-9 items-center justify-center rounded-lg border border-primary text-primary hover:bg-primary/5">
+<span class="material-symbols-outlined text-lg">add</span>
+</button>
+</div>
+</div>
+<div class="h-px bg-slate-100 dark:bg-slate-800"></div>
+<!-- Price Input -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Price ($)</label>
+<input class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent p-3 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Optional" type="number"/>
+</div>
+<!-- Description Input -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Description</label>
+<textarea class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent p-3 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none" placeholder="Optional description for your customers" rows="3"></textarea>
+</div>
+</div>
+<!-- Settings Card -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-base font-medium">Service Active</p>
+<p class="text-sm text-slate-500">Customers can book this service</p>
+</div>
+<!-- iOS Toggle Style -->
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary">
+<span class="inline-block h-5 w-5 translate-x-5 transform rounded-full bg-white transition-transform"></span>
+</div>
+</div>
+</div>
+<!-- Danger Zone -->
+<div class="pt-4 flex justify-center">
+<button class="text-red-500 font-medium text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">delete</span>
+                    Delete Service
+                </button>
+</div>
+</main>
+<!-- Sticky Bottom Action -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                Save Service
+            </button>
+<div class="h-6"></div> <!-- Safe area spacing -->
+</div>
+</div>
+</body></html>

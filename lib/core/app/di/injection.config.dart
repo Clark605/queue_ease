@@ -15,6 +15,11 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:google_sign_in/google_sign_in.dart' as _i116;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../../admin/organization/presentation/cubit/organization_cubit.dart'
+    as _i616;
+import '../../../admin/services/presentation/cubit/service_cubit.dart' as _i714;
+import '../../../admin/tutorial/presentation/cubit/tutorial_cubit.dart'
+    as _i790;
 import '../../../shared/auth/data/datasources/firebase_auth_datasource.dart'
     as _i480;
 import '../../../shared/auth/data/datasources/firestore_user_datasource.dart'
@@ -23,6 +28,18 @@ import '../../../shared/auth/data/repositories/auth_repository_impl.dart'
     as _i161;
 import '../../../shared/auth/domain/repositories/auth_repository.dart' as _i489;
 import '../../../shared/auth/presentation/cubit/auth_cubit.dart' as _i928;
+import '../../../shared/organization/data/datasources/firestore_organization_datasource.dart'
+    as _i681;
+import '../../../shared/organization/data/datasources/firestore_service_datasource.dart'
+    as _i251;
+import '../../../shared/organization/data/repositories/organization_repository_impl.dart'
+    as _i503;
+import '../../../shared/organization/data/repositories/service_repository_impl.dart'
+    as _i309;
+import '../../../shared/organization/domain/repositories/organization_repository.dart'
+    as _i506;
+import '../../../shared/organization/domain/repositories/service_repository.dart'
+    as _i973;
 import '../../config/auth_module.dart' as _i972;
 import '../../config/config_module.dart' as _i580;
 import '../../config/flavor_config.dart' as _i722;
@@ -58,10 +75,28 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1021.AppLogger>(),
       ),
     );
+    gh.lazySingleton<_i681.FirestoreOrganizationDatasource>(
+      () => _i681.FirestoreOrganizationDatasource(
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i251.FirestoreServiceDatasource>(
+      () => _i251.FirestoreServiceDatasource(
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
     gh.lazySingleton<_i480.FirebaseAuthDatasource>(
       () => _i480.FirebaseAuthDatasource(
         gh<_i59.FirebaseAuth>(),
         gh<_i116.GoogleSignIn>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i506.OrganizationRepository>(
+      () => _i503.OrganizationRepositoryImpl(
+        gh<_i681.FirestoreOrganizationDatasource>(),
         gh<_i1021.AppLogger>(),
       ),
     );
@@ -70,6 +105,31 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i480.FirebaseAuthDatasource>(),
         gh<_i500.FirestoreUserDatasource>(),
         gh<_i925.UserSessionService>(),
+        gh<_i506.OrganizationRepository>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
+    gh.factory<_i790.TutorialCubit>(
+      () => _i790.TutorialCubit(
+        gh<_i500.FirestoreUserDatasource>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i973.ServiceRepository>(
+      () => _i309.ServiceRepositoryImpl(
+        gh<_i251.FirestoreServiceDatasource>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
+    gh.factory<_i616.OrganizationCubit>(
+      () => _i616.OrganizationCubit(
+        gh<_i506.OrganizationRepository>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
+    gh.factory<_i714.ServiceCubit>(
+      () => _i714.ServiceCubit(
+        gh<_i973.ServiceRepository>(),
         gh<_i1021.AppLogger>(),
       ),
     );

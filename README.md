@@ -6,7 +6,7 @@ Smart queue and appointment management for small clinics and service-based busin
 ![Flutter](https://img.shields.io/badge/Flutter-3.9.0%2B-02569B?logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-3.9.0%2B-0175C2?logo=dart&logoColor=white)
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![Coverage](https://img.shields.io/badge/progress-35--40%25-orange)
+![Coverage](https://img.shields.io/badge/progress-45--50%25-orange)
 
 ---
 
@@ -29,10 +29,10 @@ For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
 
 ## 🎯 Current Project Status
 
-**Last Updated:** February 21, 2026  
-**Current Branch:** `feature/auth`
+**Last Updated:** March 8, 2026  
+**Current Branch:** `feature/admin-core`
 
-### ✅ Completed (Phase 1 - Foundation)
+### ✅ Completed (Phase 1 - Foundation & Sprint 2 - Admin Core)
 - ✅ Complete authentication system (email/password, Google Sign-In, password reset)
 - ✅ Full RBAC with role-based routing (admin vs. customer)
 - ✅ Comprehensive error handling framework (Result type, AppException hierarchy)
@@ -40,14 +40,21 @@ For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
 - ✅ Clean architecture with dependency injection
 - ✅ ALL 5 core domain entities (Organization, Service, WorkingHours, Appointment, Queue)
 - ✅ ALL 5 Firestore models with complete serialization
+- ✅ Firestore security rules with 78 passing tests
+- ✅ Organization creation during admin signup
+- ✅ OrganizationRepository with real-time streams
+- ✅ Organization profile view and edit screens
+- ✅ ServiceRepository with full CRUD operations
+- ✅ Service management UI (list, add, edit, delete, active/inactive toggle)
+- ✅ First-time setup tutorial for new admins
 - ✅ 15+ unit tests covering entities, models, auth, and error handling
-- ✅ Comprehensive documentation (Architecture, PRD, Timeline)
 
-### 🚧 Next Up (Phase 2 - Repository Layer)
-- Implement Firestore security rules
-- Create repositories for all domain entities
-- Build Service Management CRUD (admin UI)
-- Build Working Hours configuration (admin UI)
+### 🚧 Next Up (Sprint 3 - Working Hours + QR/Share)
+- WorkingHoursRepository implementation
+- Working hours configuration UI (admin)
+- Daily schedule and break time setup
+- QR code generation for organization
+- Unique link generation and native share integration
 
 **Overall Progress:** ~35-40% complete  
 **Estimated MVP Timeline:** 5-6 weeks remaining

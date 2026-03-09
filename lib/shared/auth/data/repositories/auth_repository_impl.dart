@@ -1,8 +1,10 @@
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/app_exception.dart';
+import '../../../../core/error/result.dart';
 import '../../../../core/services/user_session_service.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../organization/domain/repositories/organization_repository.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/user_role.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -15,12 +17,14 @@ class AuthRepositoryImpl implements AuthRepository {
     this._authDatasource,
     this._firestoreDatasource,
     this._sessionService,
+    this._organizationRepository,
     this._logger,
   );
 
   final FirebaseAuthDatasource _authDatasource;
   final FirestoreUserDatasource _firestoreDatasource;
   final UserSessionService _sessionService;
+  final OrganizationRepository _organizationRepository;
   final AppLogger _logger;
 
   @override
@@ -31,20 +35,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return null;
     }
 
-    // Try cache first to avoid a Firestore round-trip.
-    final cachedRole = await _sessionService.getRole();
-    if (cachedRole != null) {
-      _logger.debug(
-        'AuthRepository: getCurrentUser → restored from cache uid=${firebaseUser.uid}',
-      );
-      return UserEntity(
-        uid: firebaseUser.uid,
-        email: firebaseUser.email ?? '',
-        role: cachedRole,
-        displayName: firebaseUser.displayName,
-      );
-    }
-
+    // Always fetch the full profile from Firestore so that fields like
+    // organizationId and tutorialCompleted are always present.
     final profile = await _firestoreDatasource.getUser(firebaseUser.uid);
     if (profile == null) {
       _logger.warning(
@@ -54,7 +46,8 @@ class AuthRepositoryImpl implements AuthRepository {
     }
     await _sessionService.saveRole(profile.role);
     _logger.info(
-      'AuthRepository: getCurrentUser → authenticated uid=${firebaseUser.uid} role=${profile.role.name}',
+      'AuthRepository: getCurrentUser → authenticated uid=${firebaseUser.uid} '
+      'role=${profile.role.name} orgId=${profile.organizationId}',
     );
     return profile;
   }
@@ -104,10 +97,44 @@ class AuthRepositoryImpl implements AuthRepository {
       role: role,
       displayName: displayName,
       phone: phone,
-      orgName: orgName,
     );
     await _sessionService.saveRole(profile.role);
     _logger.debug('AuthRepository: new user profile persisted uid=$uid');
+
+    // For admin sign-ups, atomically create the organization document and link
+    // it to the user profile via organizationId.
+    if (role == UserRole.admin) {
+      _logger.info(
+        'AuthRepository: creating organization for new admin uid=$uid',
+      );
+      final orgResult = await _organizationRepository.createOrganization(
+        adminUid: uid,
+        name: orgName ?? '',
+      );
+      switch (orgResult) {
+        case Success(:final data):
+          _logger.info('AuthRepository: org created orgId=${data.id} uid=$uid');
+          return UserEntity(
+            uid: profile.uid,
+            email: profile.email,
+            role: profile.role,
+            displayName: profile.displayName,
+            phone: profile.phone,
+            organizationId: data.id,
+            tutorialCompleted: profile.tutorialCompleted,
+          );
+        case Failure(:final exception):
+          _logger.warning(
+            'AuthRepository: org creation failed uid=$uid — '
+            '${exception.message}',
+            exception,
+          );
+          // Return profile without organizationId; the missing-org guard will
+          // redirect the admin to the setup screen on next navigation.
+          return profile;
+      }
+    }
+
     return profile;
   }
 
