@@ -160,9 +160,8 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
         ),
       );
       // Delay pop to allow user to see the SnackBar
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) context.pop();
-      });
+      Future.delayed(const Duration(milliseconds: 500), () {});
+      if (mounted) context.pop();
     } else if (state is ServiceMutationError) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

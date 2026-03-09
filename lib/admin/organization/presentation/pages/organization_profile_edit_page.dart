@@ -88,11 +88,10 @@ class _OrganizationProfileEditPageState
             );
 
             // Pop back to profile page
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (mounted) {
-                context.pop();
-              }
-            });
+            Future.delayed(const Duration(milliseconds: 500), () {});
+            if (mounted) {
+              context.pop();
+            }
           }
         },
         builder: (context, state) {
