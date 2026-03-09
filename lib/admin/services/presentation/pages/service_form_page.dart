@@ -7,6 +7,7 @@ import '../../../../core/app/theme/app_text_styles.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
+import '../../../../shared/widgets/delete_confirmation_dialog.dart';
 import '../cubit/service_cubit.dart';
 import '../cubit/service_state.dart';
 import '../widgets/service_form_app_bar.dart';
@@ -47,6 +48,8 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
   static const int _marginStep = 5;
   static const int _marginMin = 0;
   static const int _marginMax = 60;
+  static const int _defaultDuration = 15;
+  static const int _defaultMargin = 5;
 
   @override
   void initState() {
@@ -57,8 +60,8 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
       text: s?.price != null ? s!.price!.toStringAsFixed(2) : '',
     );
     _descriptionController = TextEditingController(text: s?.description ?? '');
-    _duration = s?.durationMinutes ?? 15;
-    _margin = s?.timeMarginMinutes ?? 5;
+    _duration = s?.durationMinutes ?? _defaultDuration;
+    _margin = s?.timeMarginMinutes ?? _defaultMargin;
     _isActive = s?.isActive ?? true;
   }
 
@@ -241,33 +244,16 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
       return;
     }
     final orgId = authState.user.organizationId!;
+    final cubit = context.read<ServiceCubit>();
 
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Service'),
-        content: Text(
-          'Delete "${widget.service!.name}"? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red[600]),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+    final confirmed = await showDeleteConfirmationDialog(
+      context,
+      title: 'Delete Service',
+      itemName: widget.service!.name,
     );
 
-    if (confirm == true && mounted) {
-      context.read<ServiceCubit>().deleteService(
-        orgId: orgId,
-        serviceId: widget.service!.id,
-      );
+    if (confirmed && mounted) {
+      cubit.deleteService(orgId: orgId, serviceId: widget.service!.id);
     }
   }
 }

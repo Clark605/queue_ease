@@ -6,6 +6,7 @@ import '../../../../core/app/router/app_router.dart';
 import '../../../../core/app/theme/app_colors.dart';
 import '../../../../core/app/theme/app_text_styles.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
+import '../../../../shared/widgets/delete_confirmation_dialog.dart';
 import '../cubit/service_cubit.dart';
 import '../cubit/service_state.dart';
 import '../widgets/service_list_tile.dart';
@@ -21,66 +22,66 @@ class ServiceListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.surface,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 1,
-          centerTitle: true,
-          iconTheme: const IconThemeData(color: AppColors.primary),
-          title: Text(
-            'Services',
-            style: AppTextStyles.headlineSmall.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search_rounded),
-              color: AppColors.onSurfaceVariant,
-              onPressed: null, // Future: implement search
-              tooltip: 'Search',
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1),
-            child: Container(
-              color: AppColors.outline.withValues(alpha: 0.4),
-              height: 1,
-            ),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 1,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: AppColors.primary),
+        title: Text(
+          'Services',
+          style: AppTextStyles.headlineSmall.copyWith(
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: BlocBuilder<ServiceCubit, ServiceState>(
-          // Don't rebuild on success — keep the last ServiceLoaded view
-          // visible while the stream pushes an updated ServiceLoaded.
-          buildWhen: (_, current) => current is! ServiceOperationSuccess,
-          builder: (context, state) {
-            if (state is ServiceLoading || state is ServiceInitial) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (state is ServiceError) {
-              return _ErrorView(message: state.message);
-            }
-            if (state is ServiceLoaded) {
-              if (state.services.isEmpty) {
-                return _EmptyStateView(
-                  onAdd: () => context.push(Routes.adminServiceForm),
-                );
-              }
-              return _ServiceList(services: state.services);
-            }
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search_rounded),
+            color: AppColors.onSurfaceVariant,
+            onPressed: null, // Future: implement search
+            tooltip: 'Search',
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(
+            color: AppColors.outline.withValues(alpha: 0.4),
+            height: 1,
+          ),
+        ),
+      ),
+      body: BlocBuilder<ServiceCubit, ServiceState>(
+        // Don't rebuild on success — keep the last ServiceLoaded view
+        // visible while the stream pushes an updated ServiceLoaded.
+        buildWhen: (_, current) => current is! ServiceOperationSuccess,
+        builder: (context, state) {
+          if (state is ServiceLoading || state is ServiceInitial) {
             return const Center(child: CircularProgressIndicator());
-          },
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          icon: const Icon(Icons.add_rounded),
-          label: const Text('Add Service'),
-          onPressed: () => context.push(Routes.adminServiceForm),
-        ),
-      );
+          }
+          if (state is ServiceError) {
+            return _ErrorView(message: state.message);
+          }
+          if (state is ServiceLoaded) {
+            if (state.services.isEmpty) {
+              return _EmptyStateView(
+                onAdd: () => context.push(Routes.adminServiceForm),
+              );
+            }
+            return _ServiceList(services: state.services);
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('Add Service'),
+        onPressed: () => context.push(Routes.adminServiceForm),
+      ),
+    );
   }
 }
 
@@ -105,51 +106,26 @@ class _ServiceList extends StatelessWidget {
           onEdit: () => context.push(Routes.adminServiceForm, extra: service),
           onDelete: () => _confirmDelete(context, service),
           onToggle: () => context.read<ServiceCubit>().updateService(
-            ServiceEntity(
-              id: service.id,
-              orgId: service.orgId,
-              name: service.name,
-              durationMinutes: service.durationMinutes,
-              timeMarginMinutes: service.timeMarginMinutes,
-              isActive: !service.isActive,
-              createdAt: service.createdAt,
-              price: service.price,
-              description: service.description,
-            ),
+            service.copyWith(isActive: !service.isActive),
           ),
         );
       },
     );
   }
 
-  void _confirmDelete(BuildContext context, ServiceEntity service) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Service'),
-        content: Text(
-          'Are you sure you want to delete "${service.name}"? '
-          'This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.red[600]),
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<ServiceCubit>().deleteService(
-                orgId: service.orgId,
-                serviceId: service.id,
-              );
-            },
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+  Future<void> _confirmDelete(
+    BuildContext context,
+    ServiceEntity service,
+  ) async {
+    final cubit = context.read<ServiceCubit>();
+    final confirmed = await showDeleteConfirmationDialog(
+      context,
+      title: 'Delete Service',
+      itemName: service.name,
     );
+    if (confirmed) {
+      cubit.deleteService(orgId: service.orgId, serviceId: service.id);
+    }
   }
 }
 
