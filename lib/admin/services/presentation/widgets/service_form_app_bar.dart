@@ -11,14 +11,11 @@ class ServiceFormAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ServiceFormAppBar({
     super.key,
     required this.isEditMode,
-    required this.isLoading,
-    required this.onSave,
     required this.onBack,
   });
 
   final bool isEditMode;
-  final bool isLoading;
-  final VoidCallback onSave;
+
   final VoidCallback onBack;
 
   @override
@@ -39,23 +36,11 @@ class ServiceFormAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: Text(
         isEditMode ? 'Edit Service' : 'Add Service',
-        style: AppTextStyles.headlineSmall.copyWith(fontWeight: FontWeight.bold),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: TextButton(
-            onPressed: isLoading ? null : onSave,
-            child: Text(
-              'Save',
-              style: AppTextStyles.labelLarge.copyWith(
-                color: isLoading ? AppColors.outline : AppColors.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+        style: AppTextStyles.headlineSmall.copyWith(
+          fontWeight: FontWeight.bold,
         ),
-      ],
+      ),
+
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(

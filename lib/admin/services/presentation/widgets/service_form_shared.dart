@@ -55,7 +55,7 @@ InputDecoration serviceFieldDecoration({required String hintText}) {
     hintText: hintText,
     hintStyle: AppTextStyles.bodyLarge.copyWith(color: AppColors.outline),
     filled: true,
-    fillColor: AppColors.background,
+    fillColor: AppColors.surface,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
