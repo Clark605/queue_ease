@@ -48,6 +48,34 @@ class OrganizationEntity extends Equatable {
   /// Timestamp when the organization was created.
   final DateTime createdAt;
 
+  /// Returns a copy of this entity with the given fields replaced.
+  ///
+  /// The immutable fields [id], [adminUid], [bookingLinkSlug], and [createdAt]
+  /// are intentionally excluded — they cannot be changed after creation.
+  /// Nullable optional fields are only replaced when a non-null value is
+  /// provided.
+  OrganizationEntity copyWith({
+    String? name,
+    bool? isOpen,
+    String? address,
+    String? logoUrl,
+    String? description,
+    String? qrCodeUrl,
+  }) {
+    return OrganizationEntity(
+      id: id,
+      name: name ?? this.name,
+      adminUid: adminUid,
+      bookingLinkSlug: bookingLinkSlug,
+      isOpen: isOpen ?? this.isOpen,
+      createdAt: createdAt,
+      qrCodeUrl: qrCodeUrl ?? this.qrCodeUrl,
+      address: address ?? this.address,
+      logoUrl: logoUrl ?? this.logoUrl,
+      description: description ?? this.description,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

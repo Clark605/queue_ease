@@ -48,6 +48,37 @@ class ServiceEntity extends Equatable {
   /// Timestamp when the service was created.
   final DateTime createdAt;
 
+  /// Returns a copy of this entity with the given fields replaced.
+  ///
+  /// Nullable fields ([price], [queueType], [description]) are only replaced
+  /// when a non-null value is provided — they cannot be explicitly cleared via
+  /// this method.
+  ServiceEntity copyWith({
+    String? id,
+    String? orgId,
+    String? name,
+    int? durationMinutes,
+    int? timeMarginMinutes,
+    bool? isActive,
+    DateTime? createdAt,
+    double? price,
+    String? queueType,
+    String? description,
+  }) {
+    return ServiceEntity(
+      id: id ?? this.id,
+      orgId: orgId ?? this.orgId,
+      name: name ?? this.name,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      timeMarginMinutes: timeMarginMinutes ?? this.timeMarginMinutes,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      price: price ?? this.price,
+      queueType: queueType ?? this.queueType,
+      description: description ?? this.description,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,
