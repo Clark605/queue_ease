@@ -57,11 +57,16 @@ class ServiceStepperRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title,
-            style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w500)),
-        Text(subtitle,
-            style: AppTextStyles.bodySmall
-                .copyWith(color: AppColors.onSurfaceVariant)),
+        Text(
+          title,
+          style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w500),
+        ),
+        Text(
+          subtitle,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
       ],
     );
   }
@@ -77,8 +82,10 @@ class ServiceStepperRow extends StatelessWidget {
             children: [
               Text(
                 '$value',
-                style: AppTextStyles.bodyLarge
-                    .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
                 textAlign: TextAlign.center,
               ),
               Text(

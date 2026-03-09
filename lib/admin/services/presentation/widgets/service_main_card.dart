@@ -44,8 +44,9 @@ class ServiceMainCard extends StatelessWidget {
             controller: nameController,
             textCapitalization: TextCapitalization.words,
             style: AppTextStyles.bodyLarge,
-            decoration:
-                serviceFieldDecoration(hintText: 'e.g. General Consultation'),
+            decoration: serviceFieldDecoration(
+              hintText: 'e.g. General Consultation',
+            ),
             validator: (value) {
               final v = value?.trim() ?? '';
               if (v.isEmpty) return 'Service name is required';

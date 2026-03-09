@@ -110,10 +110,7 @@ class FirestoreUserDatasource {
   ///
   /// Called atomically inside [FirestoreOrganizationDatasource.create]'s
   /// [WriteBatch]; may also be called standalone during missing-org recovery.
-  Future<void> updateOrganizationId(
-    String uid,
-    String organizationId,
-  ) async {
+  Future<void> updateOrganizationId(String uid, String organizationId) async {
     _logger.debug(
       'FirestoreUserDatasource: updateOrganizationId → uid=$uid '
       'orgId=$organizationId',
@@ -146,9 +143,7 @@ class FirestoreUserDatasource {
 
   /// Marks the first-time tutorial as completed for [uid].
   Future<void> markTutorialCompleted(String uid) async {
-    _logger.debug(
-      'FirestoreUserDatasource: markTutorialCompleted → uid=$uid',
-    );
+    _logger.debug('FirestoreUserDatasource: markTutorialCompleted → uid=$uid');
     try {
       await _users.doc(uid).update({'tutorialCompleted': true});
     } on FirebaseException catch (e, st) {

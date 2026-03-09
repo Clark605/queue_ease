@@ -30,19 +30,17 @@ class UserModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        uid,
-        email,
-        role,
-        displayName,
-        phone,
-        organizationId,
-        tutorialCompleted,
-      ];
+    uid,
+    email,
+    role,
+    displayName,
+    phone,
+    organizationId,
+    tutorialCompleted,
+  ];
 
   /// Creates a [UserModel] from a Firestore document snapshot.
-  factory UserModel.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
+  factory UserModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
     if (data == null) {
       throw FormatException('Document data is null for uid: ${doc.id}');
