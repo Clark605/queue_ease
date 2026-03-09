@@ -6,7 +6,7 @@ import '../../../../core/app/router/app_router.dart';
 import '../../../../core/app/theme/app_colors.dart';
 import '../../../../core/app/theme/app_text_styles.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
-import '../../../../shared/widgets/delete_confirmation_dialog.dart';
+import '../../../../core/dialogs/delete_confirmation_dialog.dart';
 import '../cubit/service_cubit.dart';
 import '../cubit/service_state.dart';
 import '../widgets/service_list_tile.dart';
