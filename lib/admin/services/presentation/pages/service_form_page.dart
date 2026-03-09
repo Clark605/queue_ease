@@ -7,8 +7,10 @@ import '../../../../core/app/theme/app_text_styles.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
-import '../../../../shared/widgets/delete_confirmation_dialog.dart';
+import '../../../../core/dialogs/delete_confirmation_dialog.dart';
 import '../cubit/service_cubit.dart';
+import '../cubit/service_form_cubit.dart';
+import '../cubit/service_form_state.dart';
 import '../cubit/service_state.dart';
 import '../widgets/service_form_app_bar.dart';
 import '../widgets/service_form_bottom_bar.dart';
@@ -17,39 +19,49 @@ import '../widgets/service_settings_card.dart';
 
 /// Shared add / edit form for a [ServiceEntity].
 ///
+/// Provisions a [ServiceFormCubit] scoped to this route to manage the
+/// reactive stepper and toggle state. The inner [_ServiceFormBody] is a
+/// [StatefulWidget] solely for [TextEditingController] lifecycle management —
+/// it contains zero [State.setState] calls.
+///
 /// Stitch references:
 ///   Add  — `eb5dc21cc1624d30877ae249112e941a`
 ///   Edit — `dd7e56c4ee974bc2a41b13443f8b0b75`
-class ServiceFormPage extends StatefulWidget {
+class ServiceFormPage extends StatelessWidget {
   const ServiceFormPage({super.key, this.service});
 
   final ServiceEntity? service;
 
   @override
-  State<ServiceFormPage> createState() => _ServiceFormPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => ServiceFormCubit(initial: service),
+      child: _ServiceFormBody(service: service),
+    );
+  }
 }
 
-class _ServiceFormPageState extends State<ServiceFormPage> {
+// ---------------------------------------------------------------------------
+// Body — StatefulWidget only for TextEditingController lifecycle
+// ---------------------------------------------------------------------------
+
+class _ServiceFormBody extends StatefulWidget {
+  const _ServiceFormBody({this.service});
+
+  final ServiceEntity? service;
+
+  @override
+  State<_ServiceFormBody> createState() => _ServiceFormBodyState();
+}
+
+class _ServiceFormBodyState extends State<_ServiceFormBody> {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _nameController;
   late final TextEditingController _priceController;
   late final TextEditingController _descriptionController;
 
-  late int _duration;
-  late int _margin;
-  late bool _isActive;
-
   bool get _isEditMode => widget.service != null;
-
-  static const int _durationStep = 5;
-  static const int _durationMin = 5;
-  static const int _durationMax = 240;
-  static const int _marginStep = 5;
-  static const int _marginMin = 0;
-  static const int _marginMax = 60;
-  static const int _defaultDuration = 15;
-  static const int _defaultMargin = 5;
 
   @override
   void initState() {
@@ -60,9 +72,6 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
       text: s?.price != null ? s!.price!.toStringAsFixed(2) : '',
     );
     _descriptionController = TextEditingController(text: s?.description ?? '');
-    _duration = s?.durationMinutes ?? _defaultDuration;
-    _margin = s?.timeMarginMinutes ?? _defaultMargin;
-    _isActive = s?.isActive ?? true;
   }
 
   @override
@@ -76,18 +85,17 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ServiceCubit, ServiceState>(
-      listenWhen: (previous, current) =>
+      listenWhen: (_, current) =>
           current is ServiceOperationSuccess || current is ServiceMutationError,
-      listener: _onStateChange,
-      child: BlocBuilder<ServiceCubit, ServiceState>(
-        builder: (context, state) {
-          final isLoading = state is ServiceLoading;
+      listener: _onServiceCubitChange,
+      child: BlocBuilder<ServiceFormCubit, ServiceFormState>(
+        builder: (context, formState) {
+          final isLoading =
+              context.watch<ServiceCubit>().state is ServiceLoading;
           return Scaffold(
             backgroundColor: AppColors.background,
             appBar: ServiceFormAppBar(
               isEditMode: _isEditMode,
-              isLoading: isLoading,
-              onSave: _onSave,
               onBack: () => context.pop(),
             ),
             bottomNavigationBar: ServiceFormBottomBar(
@@ -105,35 +113,29 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                       nameController: _nameController,
                       priceController: _priceController,
                       descriptionController: _descriptionController,
-                      duration: _duration,
-                      margin: _margin,
-                      onDurationDecrement: _duration > _durationMin
-                          ? () => setState(() => _duration -= _durationStep)
+                      duration: formState.duration,
+                      margin: formState.margin,
+                      onDurationDecrement:
+                          formState.duration > ServiceFormCubit.durationMin
+                          ? context.read<ServiceFormCubit>().decrementDuration
                           : null,
-                      onDurationIncrement: _duration < _durationMax
-                          ? () => setState(() => _duration += _durationStep)
+                      onDurationIncrement:
+                          formState.duration < ServiceFormCubit.durationMax
+                          ? context.read<ServiceFormCubit>().incrementDuration
                           : null,
-                      onMarginDecrement: _margin > _marginMin
-                          ? () => setState(
-                              () => _margin = (_margin - _marginStep).clamp(
-                                _marginMin,
-                                _marginMax,
-                              ),
-                            )
+                      onMarginDecrement:
+                          formState.margin > ServiceFormCubit.marginMin
+                          ? context.read<ServiceFormCubit>().decrementMargin
                           : null,
-                      onMarginIncrement: _margin < _marginMax
-                          ? () => setState(
-                              () => _margin = (_margin + _marginStep).clamp(
-                                _marginMin,
-                                _marginMax,
-                              ),
-                            )
+                      onMarginIncrement:
+                          formState.margin < ServiceFormCubit.marginMax
+                          ? context.read<ServiceFormCubit>().incrementMargin
                           : null,
                     ),
                     const SizedBox(height: 16),
                     ServiceSettingsCard(
-                      isActive: _isActive,
-                      onChanged: (v) => setState(() => _isActive = v),
+                      isActive: formState.isActive,
+                      onChanged: context.read<ServiceFormCubit>().setActive,
                     ),
                     if (_isEditMode) ...[
                       const SizedBox(height: 16),
@@ -150,7 +152,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
     );
   }
 
-  void _onStateChange(BuildContext context, ServiceState state) {
+  void _onServiceCubitChange(BuildContext context, ServiceState state) {
     if (state is ServiceOperationSuccess) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -162,8 +164,6 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
           duration: const Duration(milliseconds: 1500),
         ),
       );
-      // Delay pop to allow user to see the SnackBar
-      Future.delayed(const Duration(milliseconds: 500), () {});
       if (mounted) context.pop();
     } else if (state is ServiceMutationError) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -200,6 +200,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
       return;
     }
 
+    final formState = context.read<ServiceFormCubit>().state;
     final orgId = authState.user.organizationId!;
     final name = _nameController.text.trim();
     final price = double.tryParse(_priceController.text.trim());
@@ -213,9 +214,9 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
           id: widget.service!.id,
           orgId: widget.service!.orgId,
           name: name,
-          durationMinutes: _duration,
-          timeMarginMinutes: _margin,
-          isActive: _isActive,
+          durationMinutes: formState.duration,
+          timeMarginMinutes: formState.margin,
+          isActive: formState.isActive,
           createdAt: widget.service!.createdAt,
           price: price,
           description: description,
@@ -227,9 +228,9 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
           id: '',
           orgId: orgId,
           name: name,
-          durationMinutes: _duration,
-          timeMarginMinutes: _margin,
-          isActive: _isActive,
+          durationMinutes: formState.duration,
+          timeMarginMinutes: formState.margin,
+          isActive: formState.isActive,
           createdAt: DateTime.now(),
           price: price,
           description: description,
