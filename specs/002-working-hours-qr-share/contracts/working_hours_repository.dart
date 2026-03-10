@@ -1,3 +1,4 @@
+// ignore: dangling_library_doc_comments
 /// Contract: WorkingHoursRepository
 ///
 /// Abstract repository interface for working hours data operations.
@@ -6,8 +7,8 @@
 ///
 /// FILE: lib/shared/organization/domain/repositories/working_hours_repository.dart
 
-import '../entities/working_hours_entity.dart';
-import '../../../../core/error/result.dart';
+import 'package:queue_ease/core/error/result.dart';
+import 'package:queue_ease/shared/organization/domain/entities/working_hours_entity.dart';
 
 abstract class WorkingHoursRepository {
   /// Returns a live stream of all 7 working hours documents for the given

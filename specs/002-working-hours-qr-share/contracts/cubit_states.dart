@@ -1,10 +1,11 @@
+// ignore: dangling_library_doc_comments
 /// Contract: WorkingHoursCubit States
 ///
 /// Sealed state hierarchy for WorkingHoursCubit.
 /// FILE: lib/admin/working_hours/presentation/cubit/working_hours_state.dart
 
 import 'package:equatable/equatable.dart';
-import '../../../../../shared/organization/domain/entities/working_hours_entity.dart';
+import 'package:queue_ease/shared/organization/domain/entities/working_hours_entity.dart';
 
 sealed class WorkingHoursState extends Equatable {
   const WorkingHoursState();
