@@ -1,32 +1,33 @@
 ﻿# queue_ease Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-02-25
+Auto-generated from all feature plans. Last updated: 2026-03-10
 
 ## Active Technologies
-- Dart 3.9+, Flutter 3.9+ (stable channel) + flutter_bloc (Cubit), GetIt + Injectable, GoRouter 17.1.0, Cloud Firestore, Firebase Auth, Equatable, Talker (001-admin-core)
-- Firebase Firestore — `users/{uid}`, `organizations/{orgId}`, `organizations/{orgId}/services/{serviceId}` (001-admin-core)
+- Dart 3.9.0+ / Flutter 3.9.0+ + flutter_bloc (Cubit), GetIt + Injectable, GoRouter 17.1.0, Firebase (Auth + Firestore + Crashlytics), Talker, qr_flutter, share_plus, gal (002-working-hours-qr-share)
+- Cloud Firestore — subcollection `organizations/{orgId}/working_hours/{dayOfWeek}` (002-working-hours-qr-share)
 
-- Firestore Rules Language v2 (declarative, server-side execution) + Firebase CLI 13.x, Firebase Emulator Suite, @firebase/rules-unit-testing (001-firestore-security-rules)
+- [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION] + [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION] (002-working-hours-qr-share)
 
 ## Project Structure
 
 ```text
-src/
+backend/
+frontend/
 tests/
 ```
 
 ## Commands
 
-# Add commands for Firestore Rules Language v2 (declarative, server-side execution)
+cd src; pytest; ruff check .
 
 ## Code Style
 
-Firestore Rules Language v2 (declarative, server-side execution): Follow standard conventions
+[e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]: Follow standard conventions
 
 ## Recent Changes
-- 001-admin-core: Added Dart 3.9+, Flutter 3.9+ (stable channel) + flutter_bloc (Cubit), GetIt + Injectable, GoRouter 17.1.0, Cloud Firestore, Firebase Auth, Equatable, Talker
+- 002-working-hours-qr-share: Added Dart 3.9.0+ / Flutter 3.9.0+ + flutter_bloc (Cubit), GetIt + Injectable, GoRouter 17.1.0, Firebase (Auth + Firestore + Crashlytics), Talker, qr_flutter, share_plus, gal
 
-- 001-firestore-security-rules: Added Firestore Rules Language v2 (declarative, server-side execution) + Firebase CLI 13.x, Firebase Emulator Suite, @firebase/rules-unit-testing
+- 002-working-hours-qr-share: Added [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION] + [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
