@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/app/theme/app_text_styles.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 /// Horizontal divider with a centred "or" label, used between primary and
 /// OAuth sign-in options on auth screens.

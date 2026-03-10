@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/app/theme/app_colors.dart';
-import '../../../../core/app/theme/app_text_styles.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import 'service_form_shared.dart';
 
 /// Card with an active/inactive toggle for the service.

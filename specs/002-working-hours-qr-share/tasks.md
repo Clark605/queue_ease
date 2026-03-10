@@ -20,10 +20,10 @@ Without P0-1, any write that includes `breakStart`/`breakEnd` will be silently r
 
 **⚠️ CRITICAL**: Deploy `firestore.rules` first — no Firestore writes can be tested until this is live.
 
-- [ ] T001 Update `firestore.rules`: add `breakStart` and `breakEnd` to `hasOnlyAllowedFields` in both `allow create` and `allow update` for the `working_hours` subcollection, and add conditional HH:mm validation for both break fields. Deploy: `firebase deploy --only firestore:rules` — **Note**: `WorkingHoursModel.toMap()` always emits `breakStart`/`breakEnd` keys (even when `null`), so the current rules reject ALL working hours writes — not just those containing break times. No Phase 2 Firestore operations can be tested until this deploy succeeds.
-- [ ] T002 [P] Add `qr_flutter: ^4.1.0`, `share_plus: ^12.0.1`, `gal: ^2.3.0` to `pubspec.yaml` dependencies and run `flutter pub get`
-- [ ] T003 [P] Add `WRITE_EXTERNAL_STORAGE` (maxSdkVersion 32) and `READ_MEDIA_IMAGES` permissions to `android/app/src/main/AndroidManifest.xml`
-- [ ] T004 [P] Add `NSPhotoLibraryAddUsageDescription` key to `ios/Runner/Info.plist`
+- [X] T001 Update `firestore.rules`: add `breakStart` and `breakEnd` to `hasOnlyAllowedFields` in both `allow create` and `allow update` for the `working_hours` subcollection, and add conditional HH:mm validation for both break fields. Deploy: `firebase deploy --only firestore:rules` — **Note**: `WorkingHoursModel.toMap()` always emits `breakStart`/`breakEnd` keys (even when `null`), so the current rules reject ALL working hours writes — not just those containing break times. No Phase 2 Firestore operations can be tested until this deploy succeeds.
+- [X] T002 [P] Add `qr_flutter: ^4.1.0`, `share_plus: ^12.0.1`, `gal: ^2.3.0` to `pubspec.yaml` dependencies and run `flutter pub get`
+- [X] T003 [P] Add `WRITE_EXTERNAL_STORAGE` (maxSdkVersion 32) and `READ_MEDIA_IMAGES` permissions to `android/app/src/main/AndroidManifest.xml`
+- [X] T004 [P] Add `NSPhotoLibraryAddUsageDescription` key to `ios/Runner/Info.plist`
 
 **Checkpoint**: Rules deployed, new packages resolved, platform permissions declared — data layer can now be built.
 
@@ -35,10 +35,10 @@ Without P0-1, any write that includes `breakStart`/`breakEnd` will be silently r
 
 **⚠️ CRITICAL**: This phase must complete before Phase 3 (US1) begins — blocks all working hours features.
 
-- [ ] T005 Create `WorkingHoursRepository` abstract interface in `lib/shared/organization/domain/repositories/working_hours_repository.dart` — no Flutter imports, two methods: `watchWorkingHours(String orgId)` and `saveAllWorkingHours({orgId, days})`
-- [ ] T006 Create `FirestoreWorkingHoursDatasource` in `lib/shared/organization/data/datasources/firestore_working_hours_datasource.dart` — annotate `@lazySingleton`; implement `watchWorkingHours` with `asyncMap` default-init on empty snapshot, `saveAll` with `batch.update()`, and `_initializeDefaults` with `batch.set()`; include explicit `'dayOfWeek': entity.dayOfWeek` write in batch maps
-- [ ] T007 Create `WorkingHoursRepositoryImpl` in `lib/shared/organization/data/repositories/working_hours_repository_impl.dart` — annotate `@LazySingleton(as: WorkingHoursRepository)`; implement `saveAllWorkingHours` using `Result.guard`; include `_validateAll` with `_toMinutes` comparing open/close and break window
-- [ ] T008 Run `dart run build_runner build --delete-conflicting-outputs` and verify `lib/core/app/di/injection.config.dart` contains entries for both `FirestoreWorkingHoursDatasource` and `WorkingHoursRepository`
+- [X] T005 Create `WorkingHoursRepository` abstract interface in `lib/shared/organization/domain/repositories/working_hours_repository.dart` — no Flutter imports, two methods: `watchWorkingHours(String orgId)` and `saveAllWorkingHours({orgId, days})`
+- [X] T006 Create `FirestoreWorkingHoursDatasource` in `lib/shared/organization/data/datasources/firestore_working_hours_datasource.dart` — annotate `@lazySingleton`; implement `watchWorkingHours` with `asyncMap` default-init on empty snapshot, `saveAll` with `batch.update()`, and `_initializeDefaults` with `batch.set()`; include explicit `'dayOfWeek': entity.dayOfWeek` write in batch maps
+- [X] T007 Create `WorkingHoursRepositoryImpl` in `lib/shared/organization/data/repositories/working_hours_repository_impl.dart` — annotate `@LazySingleton(as: WorkingHoursRepository)`; implement `saveAllWorkingHours` using `Result.guard`; include `_validateAll` with `_toMinutes` comparing open/close and break window
+- [X] T008 Run `dart run build_runner build --delete-conflicting-outputs` and verify `lib/core/app/di/injection.config.dart` contains entries for both `FirestoreWorkingHoursDatasource` and `WorkingHoursRepository`
 
 **Checkpoint**: `WorkingHoursRepository` is registered in the DI container and all validation/default-init logic is in place.
 
@@ -50,10 +50,10 @@ Without P0-1, any write that includes `breakStart`/`breakEnd` will be silently r
 
 **Independent Test**: Toggle Saturday to open, set 10:00–14:00, save. Return to screen — Saturday shows as open 10:00–14:00.
 
-- [ ] T009 [P] [US1] Create `WorkingHoursState` sealed class in `lib/admin/working_hours/presentation/cubit/working_hours_state.dart` — seven states: `Initial`, `Loading`, `Loaded(days)`, `Saving`, `SaveSuccess`, `SaveError(message)`, `StreamError(message)` — all extend `Equatable`
-- [ ] T010 [P] [US1] Create `DayWorkingHoursTile` stateful widget in `lib/admin/working_hours/presentation/widgets/day_working_hours_tile.dart` — receives `WorkingHoursEntity` and `onChanged(WorkingHoursEntity)` callback; renders day name + open/closed `Switch`; when open shows two `TextButton` time pickers (openTime, closeTime) using `showTimePicker`; no break section yet (added in US2)
-- [ ] T011 [US1] Create `WorkingHoursCubit` in `lib/admin/working_hours/presentation/cubit/working_hours_cubit.dart` — annotate `@injectable`; depends on `WorkingHoursRepository` and `AppLogger`; implement `watchWorkingHours(orgId)` (stream subscription, emits `Loading` then `Loaded`/`StreamError`) and `saveAll({orgId, days})` (emits `Saving` then `SaveSuccess`/`SaveError`); cancel subscription in `close()`
-- [ ] T012 [US1] Create `WorkingHoursPage` in `lib/admin/working_hours/presentation/pages/working_hours_page.dart` — reads `orgId` from `OrganizationCubit` in `initState` and calls `cubit.watchWorkingHours(orgId)`; maintains local `_pendingDays` list updated by tile `onChanged` callbacks; `BlocConsumer` with `buildWhen` excluding save transient states; `listener` shows success/error snackbar and resets `_pendingDays` on `Loaded`; `ListView.builder` for 7 `DayWorkingHoursTile` widgets; Save All button (disabled during `Saving`) passes `_pendingDays` to `cubit.saveAll`; `AppLoadingIndicator` for `Loading`, `AppErrorWidget` for `StreamError`
+- [X] T009 [P] [US1] Create `WorkingHoursState` sealed class in `lib/admin/working_hours/presentation/cubit/working_hours_state.dart` — seven states: `Initial`, `Loading`, `Loaded(days)`, `Saving`, `SaveSuccess`, `SaveError(message)`, `StreamError(message)` — all extend `Equatable`
+- [X] T010 [P] [US1] Create `DayWorkingHoursTile` stateful widget in `lib/admin/working_hours/presentation/widgets/day_working_hours_tile.dart` — receives `WorkingHoursEntity` and `onChanged(WorkingHoursEntity)` callback; renders day name + open/closed `Switch`; when open shows two `TextButton` time pickers (openTime, closeTime) using `showTimePicker`; no break section yet (added in US2)
+- [X] T011 [US1] Create `WorkingHoursCubit` in `lib/admin/working_hours/presentation/cubit/working_hours_cubit.dart` — annotate `@injectable`; depends on `WorkingHoursRepository` and `AppLogger`; implement `watchWorkingHours(orgId)` (stream subscription, emits `Loading` then `Loaded`/`StreamError`) and `saveAll({orgId, days})` (emits `Saving` then `SaveSuccess`/`SaveError`); cancel subscription in `close()`
+- [X] T012 [US1] Create `WorkingHoursPage` in `lib/admin/working_hours/presentation/pages/working_hours_page.dart` — reads `orgId` from `OrganizationCubit` in `initState` and calls `cubit.watchWorkingHours(orgId)`; maintains local `_pendingDays` list updated by tile `onChanged` callbacks; `BlocConsumer` with `buildWhen` excluding save transient states; `listener` shows success/error snackbar and resets `_pendingDays` on `Loaded`; `ListView.builder` for 7 `DayWorkingHoursTile` widgets; Save All button (disabled during `Saving`) passes `_pendingDays` to `cubit.saveAll`; `AppLoadingIndicator` for `Loading`, `AppErrorWidget` for `StreamError`
 
 **Checkpoint**: Admin can open Working Hours, see defaults, change day times, and save. Full P1 story testable end-to-end.
 
@@ -65,8 +65,8 @@ Without P0-1, any write that includes `breakStart`/`breakEnd` will be silently r
 
 **Independent Test**: Enable break on Monday 12:00–13:00, save. Return to screen — Monday shows break period 12:00–13:00.
 
-- [ ] T013 [P] [US2] Create `BreakTimeSection` stateful widget in `lib/admin/working_hours/presentation/widgets/break_time_section.dart` — receives `breakStart`, `breakEnd` (nullable strings) and `onChanged(String? breakStart, String? breakEnd)` callback; renders a break-enable `Switch`; when enabled shows two `TextButton` time pickers (breakStart, breakEnd) using `showTimePicker` with defaults 12:00/13:00
-- [ ] T014 [US2] Update `DayWorkingHoursTile` in `lib/admin/working_hours/presentation/widgets/day_working_hours_tile.dart` to include `BreakTimeSection` below the open-time row when the day is open; wire `BreakTimeSection.onChanged` to update the entity's `breakStart`/`breakEnd` and call the parent `onChanged` callback
+- [X] T013 [P] [US2] Create `BreakTimeSection` stateful widget in `lib/admin/working_hours/presentation/widgets/break_time_section.dart` — receives `breakStart`, `breakEnd` (nullable strings) and `onChanged(String? breakStart, String? breakEnd)` callback; renders a break-enable `Switch`; when enabled shows two `TextButton` time pickers (breakStart, breakEnd) using `showTimePicker` with defaults 12:00/13:00
+- [X] T014 [US2] Update `DayWorkingHoursTile` in `lib/admin/working_hours/presentation/widgets/day_working_hours_tile.dart` to include `BreakTimeSection` below the open-time row when the day is open; wire `BreakTimeSection.onChanged` to update the entity's `breakStart`/`breakEnd` and call the parent `onChanged` callback
 
 **Checkpoint**: Break time configuration fully functional within the Working Hours page. US1 + US2 both testable end-to-end.
 
@@ -108,7 +108,7 @@ Without P0-1, any write that includes `breakStart`/`breakEnd` will be silently r
 
 **⚠️ REQUIRED**: Must run before Phase 7 — T023 depends on both cubits being registered.
 
-- [ ] T026 Run `dart run build_runner build --delete-conflicting-outputs` and verify `lib/core/app/di/injection.config.dart` now contains registrations for both `WorkingHoursCubit` and `ShareAccessCubit` in addition to the Phase 2 entries
+- [X] T026 Run `dart run build_runner build --delete-conflicting-outputs` and verify `lib/core/app/di/injection.config.dart` now contains registrations for both `WorkingHoursCubit` and `ShareAccessCubit` in addition to the Phase 2 entries
 
 **Checkpoint**: DI container has all four new registrations — `FirestoreWorkingHoursDatasource`, `WorkingHoursRepository`, `WorkingHoursCubit`, `ShareAccessCubit`. Route wiring can now proceed.
 
@@ -118,9 +118,9 @@ Without P0-1, any write that includes `breakStart`/`breakEnd` will be silently r
 
 **Purpose**: Wire the two new screens into GoRouter and replace all `_showComingSoon` stubs with real navigation.
 
-- [ ] T023 Add route constants `adminWorkingHours = '/a/working-hours'` and `adminShareAccess = '/a/share-access'` to `Routes` abstract class, and add the two corresponding `GoRoute` entries (each with `BlocProvider` wrapping) in `lib/core/app/router/app_router.dart`
-- [ ] T024 [P] Replace `_showComingSoon` in the Working Hours `_ManagementCard.onTap` and `_ShareAccessCard.onTap` with `context.push(Routes.adminWorkingHours)` and `context.push(Routes.adminShareAccess)` in `lib/admin/dashboard/presentation/pages/admin_dashboard_tab.dart`
-- [ ] T025 [P] Replace both `_showComingSoon` calls in the "Organization" section (Working Hours tile and Share Access tile) with `context.push(Routes.adminWorkingHours)` and `context.push(Routes.adminShareAccess)` in `lib/admin/presentation/pages/settings_page.dart`
+- [X] T023 Add route constants `adminWorkingHours = '/a/working-hours'` and `adminShareAccess = '/a/share-access'` to `Routes` abstract class, and add the two corresponding `GoRoute` entries (each with `BlocProvider` wrapping) in `lib/core/app/router/app_router.dart`
+- [X] T024 [P] Replace `_showComingSoon` in the Working Hours `_ManagementCard.onTap` and `_ShareAccessCard.onTap` with `context.push(Routes.adminWorkingHours)` and `context.push(Routes.adminShareAccess)` in `lib/admin/dashboard/presentation/pages/admin_dashboard_tab.dart`
+- [X] T025 [P] Replace both `_showComingSoon` calls in the "Organization" section (Working Hours tile and Share Access tile) with `context.push(Routes.adminWorkingHours)` and `context.push(Routes.adminShareAccess)` in `lib/admin/presentation/pages/settings_page.dart`
 
 **Checkpoint**: Both pages reachable from Admin Dashboard and Settings. Full navigation flow verified.
 

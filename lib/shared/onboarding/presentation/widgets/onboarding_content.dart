@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/app/theme/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/onboarding_content_model.dart';
 
 /// Displays a single onboarding page with an illustration, title, and subtitle.

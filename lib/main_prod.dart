@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:talker/talker.dart' as talker_lib;
 
-import 'core/app/app.dart';
-import 'core/app/di/injection.dart';
+import 'core/app.dart';
+import 'core/di/injection.dart';
 import 'core/config/flavor_config.dart';
 import 'core/utils/app_logger.dart';
 import 'firebase_options.dart';
