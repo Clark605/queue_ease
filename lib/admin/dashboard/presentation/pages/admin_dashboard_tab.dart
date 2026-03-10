@@ -493,7 +493,7 @@ class _ManagementGrid extends StatelessWidget {
                   label: 'Working Hours',
                   iconColor: const Color(0xFF4F46E5),
                   iconBgColor: const Color(0xFFEEF2FF),
-                  onTap: () => _showComingSoon(context, 'Working Hours'),
+                  onTap: () => context.push(Routes.adminWorkingHours),
                 ),
               ),
             ],

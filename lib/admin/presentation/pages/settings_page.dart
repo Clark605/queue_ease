@@ -65,14 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.access_time,
             title: 'Working Hours',
             subtitle: 'Set your operating hours',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Working Hours - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => context.push(Routes.adminWorkingHours),
           ),
           _buildSettingsTile(
             context,
