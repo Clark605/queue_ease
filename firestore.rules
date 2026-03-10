@@ -194,7 +194,9 @@ service cloud.firestore {
             && request.resource.data.openTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
             && request.resource.data.closeTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
           ))
-          && hasOnlyAllowedFields(['orgId','dayOfWeek','isOpen','openTime','closeTime','createdAt','updatedAt']);
+          && (!request.resource.data.keys().hasAny(['breakStart']) || request.resource.data.breakStart == null || request.resource.data.breakStart.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$'))
+          && (!request.resource.data.keys().hasAny(['breakEnd']) || request.resource.data.breakEnd == null || request.resource.data.breakEnd.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$'))
+          && hasOnlyAllowedFields(['orgId','dayOfWeek','isOpen','openTime','closeTime','breakStart','breakEnd','createdAt','updatedAt']);
 
         allow update: if isAuthenticated()
           && ownsOrganization(orgId)
@@ -207,7 +209,9 @@ service cloud.firestore {
             && request.resource.data.openTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
             && request.resource.data.closeTime.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
           ))
-          && hasOnlyAllowedFields(['orgId','dayOfWeek','isOpen','openTime','closeTime','createdAt','updatedAt']);
+          && (!request.resource.data.keys().hasAny(['breakStart']) || request.resource.data.breakStart == null || request.resource.data.breakStart.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$'))
+          && (!request.resource.data.keys().hasAny(['breakEnd']) || request.resource.data.breakEnd == null || request.resource.data.breakEnd.matches('^([01]?[0-9]|2[0-3]):[0-5][0-9]$'))
+          && hasOnlyAllowedFields(['orgId','dayOfWeek','isOpen','openTime','closeTime','breakStart','breakEnd','createdAt','updatedAt']);
 
         allow delete: if isAuthenticated() && ownsOrganization(orgId);
       }
