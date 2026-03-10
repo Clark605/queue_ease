@@ -81,7 +81,9 @@ class ShareAccessCubit extends Cubit<ShareAccessState> {
       );
     } catch (e, st) {
       _logger.error('ShareAccessCubit: downloadQrCode unexpected error', e, st);
-      emit(const ShareAccessError('Failed to download QR code. Please try again.'));
+      emit(
+        const ShareAccessError('Failed to download QR code. Please try again.'),
+      );
     }
   }
 }

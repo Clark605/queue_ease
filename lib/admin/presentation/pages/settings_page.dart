@@ -72,14 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.qr_code,
             title: 'Share Access',
             subtitle: 'QR code and booking link',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Share Access - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => context.push(Routes.adminShareAccess),
           ),
 
           const Divider(height: 32),

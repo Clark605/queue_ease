@@ -611,12 +611,7 @@ class _ShareAccessCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: GestureDetector(
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Share Access - Coming soon'),
-            duration: Duration(seconds: 2),
-          ),
-        ),
+        onTap: () => context.push(Routes.adminShareAccess),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
