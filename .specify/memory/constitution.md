@@ -48,7 +48,7 @@ FOLLOW-UP ACTIONS:
 # Queue Ease Constitution
 
 ## Core Principles
-
+ - Follow all rules in .github/copilot-instructions.md in addition to the specific principles below
 ### I. Code Quality First
 
 All code MUST adhere to Clean Architecture principles with strict layer separation:
