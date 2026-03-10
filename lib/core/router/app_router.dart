@@ -10,6 +10,8 @@ import '../../admin/organization/presentation/pages/organization_setup_page.dart
 import '../../admin/presentation/pages/admin_main_page.dart';
 import '../../admin/services/presentation/cubit/service_cubit.dart';
 import '../../admin/services/presentation/pages/service_form_page.dart';
+import '../../admin/share_access/presentation/cubit/share_access_cubit.dart';
+import '../../admin/share_access/presentation/pages/share_access_page.dart';
 import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart';
 import '../../admin/working_hours/presentation/pages/working_hours_page.dart';
 import '../../customer/entry/presentation/pages/customer_home_page.dart';
@@ -38,6 +40,7 @@ abstract final class Routes {
   static const String adminServices = '/a/services';
   static const String adminServiceForm = '/a/services/form';
   static const String adminWorkingHours = '/a/working-hours';
+  static const String adminShareAccess = '/a/share-access';
   static const String customerHome = '/c/home';
 
   // Dev-only
@@ -211,6 +214,26 @@ GoRouter createRouter(AuthCubit authCubit) {
         builder: (context, state) => BlocProvider(
           create: (context) => getIt<WorkingHoursCubit>(),
           child: const WorkingHoursPage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.adminShareAccess,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) {
+                final cubit = getIt<OrganizationCubit>();
+                final authState = context.read<AuthCubit>().state;
+                if (authState is Authenticated &&
+                    authState.user.organizationId != null) {
+                  cubit.watchOrganization(authState.user.organizationId!);
+                }
+                return cubit;
+              },
+            ),
+            BlocProvider(create: (context) => getIt<ShareAccessCubit>()),
+          ],
+          child: const ShareAccessPage(),
         ),
       ),
       // Customer routes

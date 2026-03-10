@@ -15,45 +15,45 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:google_sign_in/google_sign_in.dart' as _i116;
 import 'package:injectable/injectable.dart' as _i526;
 
-import '../../../admin/organization/presentation/cubit/organization_cubit.dart'
-    as _i616;
-import '../../../admin/services/presentation/cubit/service_cubit.dart' as _i714;
-import '../../../admin/tutorial/presentation/cubit/tutorial_cubit.dart'
-    as _i790;
-import '../../../admin/working_hours/presentation/cubit/working_hours_cubit.dart'
-    as _i567;
-import '../../../shared/auth/data/datasources/firebase_auth_datasource.dart'
-    as _i480;
-import '../../../shared/auth/data/datasources/firestore_user_datasource.dart'
-    as _i500;
-import '../../../shared/auth/data/repositories/auth_repository_impl.dart'
-    as _i161;
-import '../../../shared/auth/domain/repositories/auth_repository.dart' as _i489;
-import '../../../shared/auth/presentation/cubit/auth_cubit.dart' as _i928;
-import '../../../shared/organization/data/datasources/firestore_organization_datasource.dart'
-    as _i681;
-import '../../../shared/organization/data/datasources/firestore_service_datasource.dart'
-    as _i251;
-import '../../../shared/organization/data/datasources/firestore_working_hours_datasource.dart'
-    as _i985;
-import '../../../shared/organization/data/repositories/organization_repository_impl.dart'
-    as _i503;
-import '../../../shared/organization/data/repositories/service_repository_impl.dart'
-    as _i309;
-import '../../../shared/organization/data/repositories/working_hours_repository_impl.dart'
-    as _i219;
-import '../../../shared/organization/domain/repositories/organization_repository.dart'
-    as _i506;
-import '../../../shared/organization/domain/repositories/service_repository.dart'
-    as _i973;
-import '../../../shared/organization/domain/repositories/working_hours_repository.dart'
-    as _i449;
-import '../../config/auth_module.dart' as _i972;
-import '../../config/config_module.dart' as _i580;
-import '../../config/flavor_config.dart' as _i722;
-import '../../services/onboarding_service.dart' as _i461;
-import '../../services/user_session_service.dart' as _i925;
-import '../../utils/app_logger.dart' as _i1021;
+import '../../admin/organization/presentation/cubit/organization_cubit.dart'
+    as _i549;
+import '../../admin/services/presentation/cubit/service_cubit.dart' as _i214;
+import '../../admin/share_access/presentation/cubit/share_access_cubit.dart'
+    as _i792;
+import '../../admin/tutorial/presentation/cubit/tutorial_cubit.dart' as _i960;
+import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart'
+    as _i991;
+import '../../shared/auth/data/datasources/firebase_auth_datasource.dart'
+    as _i992;
+import '../../shared/auth/data/datasources/firestore_user_datasource.dart'
+    as _i241;
+import '../../shared/auth/data/repositories/auth_repository_impl.dart' as _i607;
+import '../../shared/auth/domain/repositories/auth_repository.dart' as _i61;
+import '../../shared/auth/presentation/cubit/auth_cubit.dart' as _i728;
+import '../../shared/organization/data/datasources/firestore_organization_datasource.dart'
+    as _i543;
+import '../../shared/organization/data/datasources/firestore_service_datasource.dart'
+    as _i41;
+import '../../shared/organization/data/datasources/firestore_working_hours_datasource.dart'
+    as _i644;
+import '../../shared/organization/data/repositories/organization_repository_impl.dart'
+    as _i220;
+import '../../shared/organization/data/repositories/service_repository_impl.dart'
+    as _i423;
+import '../../shared/organization/data/repositories/working_hours_repository_impl.dart'
+    as _i590;
+import '../../shared/organization/domain/repositories/organization_repository.dart'
+    as _i1058;
+import '../../shared/organization/domain/repositories/service_repository.dart'
+    as _i709;
+import '../../shared/organization/domain/repositories/working_hours_repository.dart'
+    as _i57;
+import '../config/auth_module.dart' as _i322;
+import '../config/config_module.dart' as _i557;
+import '../config/flavor_config.dart' as _i636;
+import '../services/onboarding_service.dart' as _i854;
+import '../services/user_session_service.dart' as _i343;
+import '../utils/app_logger.dart' as _i924;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -67,105 +67,108 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i59.FirebaseAuth>(() => authModule.firebaseAuth);
     gh.lazySingleton<_i974.FirebaseFirestore>(() => authModule.firestore);
     gh.lazySingleton<_i116.GoogleSignIn>(() => authModule.googleSignIn);
-    gh.lazySingleton<_i722.FlavorConfig>(() => configModule.config);
-    gh.singleton<_i1021.AppLogger>(
-      () => _i1021.AppLogger(gh<_i722.FlavorConfig>()),
+    gh.lazySingleton<_i636.FlavorConfig>(() => configModule.config);
+    gh.singleton<_i924.AppLogger>(
+      () => _i924.AppLogger(gh<_i636.FlavorConfig>()),
     );
-    gh.lazySingleton<_i461.OnboardingService>(
-      () => _i461.OnboardingService(gh<_i1021.AppLogger>()),
+    gh.lazySingleton<_i854.OnboardingService>(
+      () => _i854.OnboardingService(gh<_i924.AppLogger>()),
     );
-    gh.lazySingleton<_i925.UserSessionService>(
-      () => _i925.UserSessionService(gh<_i1021.AppLogger>()),
+    gh.lazySingleton<_i343.UserSessionService>(
+      () => _i343.UserSessionService(gh<_i924.AppLogger>()),
     );
-    gh.lazySingleton<_i500.FirestoreUserDatasource>(
-      () => _i500.FirestoreUserDatasource(
+    gh.factory<_i792.ShareAccessCubit>(
+      () => _i792.ShareAccessCubit(gh<_i924.AppLogger>()),
+    );
+    gh.lazySingleton<_i241.FirestoreUserDatasource>(
+      () => _i241.FirestoreUserDatasource(
         gh<_i974.FirebaseFirestore>(),
-        gh<_i1021.AppLogger>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i681.FirestoreOrganizationDatasource>(
-      () => _i681.FirestoreOrganizationDatasource(
+    gh.lazySingleton<_i543.FirestoreOrganizationDatasource>(
+      () => _i543.FirestoreOrganizationDatasource(
         gh<_i974.FirebaseFirestore>(),
-        gh<_i1021.AppLogger>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i251.FirestoreServiceDatasource>(
-      () => _i251.FirestoreServiceDatasource(
+    gh.lazySingleton<_i41.FirestoreServiceDatasource>(
+      () => _i41.FirestoreServiceDatasource(
         gh<_i974.FirebaseFirestore>(),
-        gh<_i1021.AppLogger>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i985.FirestoreWorkingHoursDatasource>(
-      () => _i985.FirestoreWorkingHoursDatasource(
+    gh.lazySingleton<_i644.FirestoreWorkingHoursDatasource>(
+      () => _i644.FirestoreWorkingHoursDatasource(
         gh<_i974.FirebaseFirestore>(),
-        gh<_i1021.AppLogger>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i480.FirebaseAuthDatasource>(
-      () => _i480.FirebaseAuthDatasource(
+    gh.lazySingleton<_i992.FirebaseAuthDatasource>(
+      () => _i992.FirebaseAuthDatasource(
         gh<_i59.FirebaseAuth>(),
         gh<_i116.GoogleSignIn>(),
-        gh<_i1021.AppLogger>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i506.OrganizationRepository>(
-      () => _i503.OrganizationRepositoryImpl(
-        gh<_i681.FirestoreOrganizationDatasource>(),
-        gh<_i1021.AppLogger>(),
+    gh.lazySingleton<_i1058.OrganizationRepository>(
+      () => _i220.OrganizationRepositoryImpl(
+        gh<_i543.FirestoreOrganizationDatasource>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i489.AuthRepository>(
-      () => _i161.AuthRepositoryImpl(
-        gh<_i480.FirebaseAuthDatasource>(),
-        gh<_i500.FirestoreUserDatasource>(),
-        gh<_i925.UserSessionService>(),
-        gh<_i506.OrganizationRepository>(),
-        gh<_i1021.AppLogger>(),
+    gh.lazySingleton<_i61.AuthRepository>(
+      () => _i607.AuthRepositoryImpl(
+        gh<_i992.FirebaseAuthDatasource>(),
+        gh<_i241.FirestoreUserDatasource>(),
+        gh<_i343.UserSessionService>(),
+        gh<_i1058.OrganizationRepository>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.factory<_i790.TutorialCubit>(
-      () => _i790.TutorialCubit(
-        gh<_i500.FirestoreUserDatasource>(),
-        gh<_i1021.AppLogger>(),
+    gh.factory<_i960.TutorialCubit>(
+      () => _i960.TutorialCubit(
+        gh<_i241.FirestoreUserDatasource>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i973.ServiceRepository>(
-      () => _i309.ServiceRepositoryImpl(
-        gh<_i251.FirestoreServiceDatasource>(),
-        gh<_i1021.AppLogger>(),
+    gh.lazySingleton<_i709.ServiceRepository>(
+      () => _i423.ServiceRepositoryImpl(
+        gh<_i41.FirestoreServiceDatasource>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.factory<_i616.OrganizationCubit>(
-      () => _i616.OrganizationCubit(
-        gh<_i506.OrganizationRepository>(),
-        gh<_i1021.AppLogger>(),
+    gh.factory<_i549.OrganizationCubit>(
+      () => _i549.OrganizationCubit(
+        gh<_i1058.OrganizationRepository>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i449.WorkingHoursRepository>(
-      () => _i219.WorkingHoursRepositoryImpl(
-        gh<_i985.FirestoreWorkingHoursDatasource>(),
-        gh<_i1021.AppLogger>(),
+    gh.lazySingleton<_i57.WorkingHoursRepository>(
+      () => _i590.WorkingHoursRepositoryImpl(
+        gh<_i644.FirestoreWorkingHoursDatasource>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.factory<_i714.ServiceCubit>(
-      () => _i714.ServiceCubit(
-        gh<_i973.ServiceRepository>(),
-        gh<_i1021.AppLogger>(),
+    gh.factory<_i214.ServiceCubit>(
+      () => _i214.ServiceCubit(
+        gh<_i709.ServiceRepository>(),
+        gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i928.AuthCubit>(
-      () => _i928.AuthCubit(gh<_i489.AuthRepository>(), gh<_i1021.AppLogger>()),
+    gh.lazySingleton<_i728.AuthCubit>(
+      () => _i728.AuthCubit(gh<_i61.AuthRepository>(), gh<_i924.AppLogger>()),
     );
-    gh.factory<_i567.WorkingHoursCubit>(
-      () => _i567.WorkingHoursCubit(
-        gh<_i449.WorkingHoursRepository>(),
-        gh<_i1021.AppLogger>(),
+    gh.factory<_i991.WorkingHoursCubit>(
+      () => _i991.WorkingHoursCubit(
+        gh<_i57.WorkingHoursRepository>(),
+        gh<_i924.AppLogger>(),
       ),
     );
     return this;
   }
 }
 
-class _$AuthModule extends _i972.AuthModule {}
+class _$AuthModule extends _i322.AuthModule {}
 
-class _$ConfigModule extends _i580.ConfigModule {}
+class _$ConfigModule extends _i557.ConfigModule {}
