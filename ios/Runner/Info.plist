@@ -45,6 +45,8 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Save QR code image to your photo library.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>
