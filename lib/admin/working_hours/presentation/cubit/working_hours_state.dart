@@ -34,12 +34,11 @@ final class WorkingHoursLoaded extends WorkingHoursState {
   WorkingHoursLoaded copyWith({
     List<WorkingHoursEntity>? pendingDays,
     bool? isDirty,
-  }) =>
-      WorkingHoursLoaded(
-        days,
-        pendingDays: pendingDays ?? this.pendingDays,
-        isDirty: isDirty ?? this.isDirty,
-      );
+  }) => WorkingHoursLoaded(
+    days,
+    pendingDays: pendingDays ?? this.pendingDays,
+    isDirty: isDirty ?? this.isDirty,
+  );
 
   @override
   List<Object?> get props => [days, pendingDays, isDirty];
