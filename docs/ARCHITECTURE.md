@@ -1,6 +1,6 @@
 # Queue Ease - Architecture Documentation
 
-**Last Updated:** February 25, 2026  
+**Last Updated:** March 10, 2026  
 **Version:** 1.1.0+1  
 **Architecture Pattern:** Clean Architecture with Feature-Based Modularization
 
@@ -17,8 +17,9 @@
 7. [Error Handling](#error-handling)
 8. [Navigation Architecture](#navigation-architecture)
 9. [State Management](#state-management)
-10. [Testing Strategy](#testing-strategy)
-11. [Code Organization Guidelines](#code-organization-guidelines)
+10. [Platform-Specific Configurations](#platform-specific-configurations)
+11. [Testing Strategy](#testing-strategy)
+12. [Code Organization Guidelines](#code-organization-guidelines)
 
 ---
 
@@ -40,6 +41,9 @@ Queue Ease is built using **Clean Architecture** principles with a **feature-bas
 - **Backend**: Firebase (Auth, Firestore, Crashlytics)
 - **Logging**: Talker + Talker BLoC Logger
 - **Testing**: flutter_test, bloc_test, mocktail
+- **QR Code**: qr_flutter 4.1.0
+- **Sharing**: share_plus 12.0.1
+- **Gallery**: gal 2.3.0
 
 ---
 
@@ -167,16 +171,28 @@ lib/
 │   │
 │   ├── organization/               # Organization management
 │   │   ├── data/
-│   │   │   └── models/
-│   │   │       ├── organization_model.dart
-│   │   │       ├── service_model.dart
-│   │   │       └── working_hours_model.dart
+│   │   │   ├── datasources/
+│   │   │   │   ├── firestore_organization_datasource.dart
+│   │   │   │   ├── firestore_service_datasource.dart
+│   │   │   │   └── firestore_working_hours_datasource.dart
+│   │   │   ├── models/
+│   │   │   │   ├── organization_model.dart
+│   │   │   │   ├── service_model.dart
+│   │   │   │   └── working_hours_model.dart
+│   │   │   └── repositories/
+│   │   │       ├── organization_repository_impl.dart
+│   │   │       ├── service_repository_impl.dart
+│   │   │       └── working_hours_repository_impl.dart
 │   │   ├── domain/
-│   │   │   └── entities/
-│   │   │       ├── organization_entity.dart
-│   │   │       ├── service_entity.dart
-│   │   │       └── working_hours_entity.dart
-│   │   └── presentation/           # (Future: Shared org widgets)
+│   │   │   ├── entities/
+│   │   │   │   ├── organization_entity.dart
+│   │   │   │   ├── service_entity.dart
+│   │   │   │   └── working_hours_entity.dart
+│   │   │   └── repositories/
+│   │   │       ├── organization_repository.dart
+│   │   │       ├── service_repository.dart
+│   │   │       └── working_hours_repository.dart
+│   │   └── presentation/           # ✅ Organization & Service UI (COMPLETE)
 │   │
 │   ├── booking/                    # Appointment booking
 │   │   ├── data/
@@ -203,10 +219,37 @@ lib/
 │   │   └── presentation/
 │   │       └── pages/
 │   │           └── admin_dashboard_page.dart
-│   ├── services/                   # (Future: Service CRUD)
-│   ├── working_hours/              # (Future: Hours configuration)
+│   ├── services/                   # ✅ Service CRUD (COMPLETE)
+│   │   └── presentation/
+│   │       ├── cubit/
+│   │       │   ├── service_cubit.dart
+│   │       │   └── service_state.dart
+│   │       ├── pages/
+│   │       │   ├── service_list_page.dart
+│   │       │   └── service_form_page.dart
+│   │       └── widgets/
+│   │           └── service_list_tile.dart
+│   ├── working_hours/              # ✅ Working Hours Configuration (COMPLETE)
+│   │   └── presentation/
+│   │       ├── cubit/
+│   │       │   ├── working_hours_cubit.dart
+│   │       │   └── working_hours_state.dart
+│   │       ├── pages/
+│   │       │   └── working_hours_page.dart
+│   │       └── widgets/
+│   │           ├── day_working_hours_tile.dart
+│   │           └── break_time_section.dart
+│   ├── share_access/               # ✅ QR & Link Generation (COMPLETE)
+│   │   └── presentation/
+│   │       ├── cubit/
+│   │       │   ├── share_access_cubit.dart
+│   │       │   └── share_access_state.dart
+│   │       ├── pages/
+│   │       │   └── share_access_page.dart
+│   │       └── widgets/
+│   │           ├── qr_code_display.dart
+│   │           └── share_action_buttons.dart
 │   ├── queue_management/           # (Future: Live queue control)
-│   ├── share_access/               # (Future: QR & link generation)
 │   └── daily_summary/              # (Future: Daily reports)
 │
 ├── customer/                       # Customer-specific features
@@ -514,17 +557,27 @@ class AuthRepositoryImpl implements AuthRepository {
 
 #### 3. Organization (`shared/organization`)
 
-**Status**: 🚧 Data models complete, repositories pending
+**Status**: ✅ Complete (Sprint 2 & 3)
 
 **Responsibilities**:
 - Organization profile management
 - Service definition and configuration
 - Working hours setup
 
-**Key Entities**:
-- `OrganizationEntity`: Business profile
-- `ServiceEntity`: Bookable services
-- `WorkingHoursEntity`: Day-specific schedules
+**Key Components**:
+- **Data Layer**:
+  - `OrganizationModel`, `ServiceModel`, `WorkingHoursModel`: Firestore serialization
+  - `FirestoreOrganizationDatasource`: Organization CRUD operations
+  - `FirestoreServiceDatasource`: Service CRUD operations
+  - `FirestoreWorkingHoursDatasource`: Working hours CRUD with default initialization
+  - `OrganizationRepositoryImpl`, `ServiceRepositoryImpl`, `WorkingHoursRepositoryImpl`: Repository implementations
+- **Domain Layer**:
+  - `OrganizationEntity`, `ServiceEntity`, `WorkingHoursEntity`: Domain models
+  - `OrganizationRepository`, `ServiceRepository`, `WorkingHoursRepository`: Repository interfaces
+- **Presentation Layer** (Admin):
+  - `OrganizationCubit`: Organization profile management
+  - `ServiceCubit`: Service list management
+  - `WorkingHoursCubit`: Working hours configuration with real-time streams
 
 #### 4. Booking (`shared/booking`)
 
@@ -556,14 +609,40 @@ class AuthRepositoryImpl implements AuthRepository {
 
 #### Admin Features (`admin/`)
 
-**Status**: ⏳ Basic dashboard only
+**Status**: 🚧 In Progress (Sprint 2 & 3 Complete)
 
-**Planned Modules**:
-- `services/`: Service CRUD operations
-- `working_hours/`: Hours configuration
-- `queue_management/`: Live queue control
-- `share_access/`: QR code & link generation
-- `daily_summary/`: Performance reports
+**Completed Modules**:
+
+**1. Services (`admin/services/`) - ✅ Complete (Sprint 2)**
+- `ServiceCubit`: Service list state management with real-time Firestore streaming
+- `ServiceListPage`: Displays all services with add/edit/delete actions
+- `ServiceFormPage`: Add/edit service form with validation
+- `ServiceListTile`: Service card with active/inactive toggle
+- Real-time CRUD operations with Firestore
+
+**2. Working Hours (`admin/working_hours/`) - ✅ Complete (Sprint 3)**
+- `WorkingHoursCubit`: Working hours state management with real-time streaming
+- `WorkingHoursPage`: 7-day schedule configuration with time pickers
+- `DayWorkingHoursTile`: Individual day configuration (open/closed toggle, time pickers)
+- `BreakTimeSection`: Optional break period configuration
+- Schedule validation (open < close, break within working hours)
+- Batch save for all 7 days atomically
+- Default initialization (Mon-Fri 09:00-17:00, Sat-Sun closed)
+
+**3. Share Access (`admin/share_access/`) - ✅ Complete (Sprint 3)**
+- `ShareAccessCubit`: QR code sharing state management
+- `ShareAccessPage`: QR code display with booking URL
+- `QrCodeDisplay`: QR code rendering using `qr_flutter`
+- `ShareActionButtons`: Share, copy link, download QR
+- Native share integration using `share_plus`
+- QR code download to gallery using `gal`
+- QR code capture as PNG using `RepaintBoundary`
+- Clipboard integration for link copying
+- Platform permissions configured (Android & iOS)
+
+**Pending Modules**:
+- `queue_management/`: Live queue control (Sprint 5)
+- `daily_summary/`: Performance reports (Sprint 7)
 
 #### Customer Features (`customer/`)
 
@@ -831,6 +910,60 @@ BlocConsumer<AuthCubit, AuthState>(
   builder: (context, state) { ... },
 )
 ```
+
+---
+
+## Platform-Specific Configurations
+
+### Android Configuration
+
+**Location**: `android/app/src/main/AndroidManifest.xml`
+
+**Permissions** (added Sprint 3 for QR code download):
+```xml
+<!-- Gallery access for QR code download -->
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+                 android:maxSdkVersion="32" />
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+```
+
+**Build Configuration**: `android/app/build.gradle.kts`
+- minSdkVersion: 21
+- targetSdkVersion: 34
+- Firebase integration via `google-services.json`
+
+### iOS Configuration
+
+**Location**: `ios/Runner/Info.plist`
+
+**Usage Descriptions** (added Sprint 3 for QR code download):
+```xml
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>We need access to save QR codes to your photo library</string>
+```
+
+**Build Configuration**: `ios/Runner.xcodeproj/project.pbxproj`
+- iOS Deployment Target: 12.0
+- Firebase integration via `GoogleService-Info.plist`
+
+### Third-Party Package Integration
+
+**Sprint 3 Additions**:
+
+1. **qr_flutter (^4.1.0)** - QR Code Generation
+   - Usage: `QrImageView` widget in `ShareAccessPage`
+   - Purpose: Generate QR codes from booking URLs
+   - Configuration: version auto, error correction level M
+
+2. **share_plus (^12.0.1)** - Native Sharing
+   - Usage: Share QR code image and booking link
+   - Supports: iOS Share Sheet, Android Share Intent
+   - Fallback: URL-only sharing if image fails
+
+3. **gal (^2.3.0)** - Gallery Access
+   - Usage: Save QR code PNG to device gallery
+   - Platform-specific: Uses MediaStore (Android) and Photos framework (iOS)
+   - Permission handling: Prompts user, graceful error on denial
 
 ---
 

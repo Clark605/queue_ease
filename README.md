@@ -6,7 +6,7 @@ Smart queue and appointment management for small clinics and service-based busin
 ![Flutter](https://img.shields.io/badge/Flutter-3.9.0%2B-02569B?logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-3.9.0%2B-0175C2?logo=dart&logoColor=white)
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![Coverage](https://img.shields.io/badge/progress-45--50%25-orange)
+![Coverage](https://img.shields.io/badge/progress-50--55%25-orange)
 
 ---
 
@@ -29,10 +29,10 @@ For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
 
 ## 🎯 Current Project Status
 
-**Last Updated:** March 8, 2026  
-**Current Branch:** `feature/admin-core`
+**Last Updated:** March 10, 2026  
+**Current Branch:** `002-working-hours-qr-share`
 
-### ✅ Completed (Phase 1 - Foundation & Sprint 2 - Admin Core)
+### ✅ Completed (Phase 1 - Foundation + Sprint 2 - Admin Core + Sprint 3 - Working Hours & QR/Share)
 - ✅ Complete authentication system (email/password, Google Sign-In, password reset)
 - ✅ Full RBAC with role-based routing (admin vs. customer)
 - ✅ Comprehensive error handling framework (Result type, AppException hierarchy)
@@ -40,24 +40,34 @@ For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
 - ✅ Clean architecture with dependency injection
 - ✅ ALL 5 core domain entities (Organization, Service, WorkingHours, Appointment, Queue)
 - ✅ ALL 5 Firestore models with complete serialization
-- ✅ Firestore security rules with 78 passing tests
+- ✅ Firestore security rules with 78 passing tests (updated for break fields)
 - ✅ Organization creation during admin signup
 - ✅ OrganizationRepository with real-time streams
 - ✅ Organization profile view and edit screens
 - ✅ ServiceRepository with full CRUD operations
 - ✅ Service management UI (list, add, edit, delete, active/inactive toggle)
 - ✅ First-time setup tutorial for new admins
+- ✅ **WorkingHoursRepository with real-time streaming**
+- ✅ **Working hours configuration UI (7-day schedule)**
+- ✅ **Break time configuration (optional lunch breaks)**
+- ✅ **Schedule validation (open/close times, break windows)**
+- ✅ **QR code generation using qr_flutter**
+- ✅ **Share Access page with native sharing (share_plus)**
+- ✅ **QR code download to gallery (gal)**
+- ✅ **Platform permissions configured (Android & iOS)**
 - ✅ 15+ unit tests covering entities, models, auth, and error handling
 
-### 🚧 Next Up (Sprint 3 - Working Hours + QR/Share)
-- WorkingHoursRepository implementation
-- Working hours configuration UI (admin)
-- Daily schedule and break time setup
-- QR code generation for organization
-- Unique link generation and native share integration
+### 🚧 Next Up (Sprint 4 - Customer Booking Flow)
+- AppointmentRepository implementation
+- Organization landing page for customers
+- Service selection UI
+- Time slot availability calculation
+- Booking form with customer info
+- Appointment confirmation screen
+- Booking conflict prevention logic
 
-**Overall Progress:** ~35-40% complete  
-**Estimated MVP Timeline:** 5-6 weeks remaining
+**Overall Progress:** ~50-55% complete  
+**Estimated MVP Timeline:** 4-5 weeks remaining
 
 ---
 
@@ -108,16 +118,16 @@ lib/
 ├── shared/                         # Role-agnostic features
 │   ├── auth/                       # Authentication (✅ Complete)
 │   ├── onboarding/                 # First-time user flow (✅ Complete)
-│   ├── organization/               # Organization domain (🚧 Models complete)
+│   ├── organization/               # Organization domain (✅ Repositories complete)
 │   ├── booking/                    # Appointment domain (🚧 Models complete)
 │   └── queue/                      # Queue domain (🚧 Models complete)
 │
 ├── admin/                          # Admin-specific features
 │   ├── dashboard/                  # Admin dashboard (✅ Basic UI)
-│   ├── services/                   # Service management (⏳ Planned)
-│   ├── working_hours/              # Hours configuration (⏳ Planned)
+│   ├── services/                   # Service management (✅ Complete - Sprint 2)
+│   ├── working_hours/              # Hours configuration (✅ Complete - Sprint 3)
+│   ├── share_access/               # QR & link generation (✅ Complete - Sprint 3)
 │   ├── queue_management/           # Live queue control (⏳ Planned)
-│   ├── share_access/               # QR & link generation (⏳ Planned)
 │   └── daily_summary/              # Reports (⏳ Planned)
 │
 ├── customer/                       # Customer-specific features
@@ -197,6 +207,9 @@ For complete documentation, see [docs/](docs/) folder.
 
 ### UI Components
 - **smooth_page_indicator** 2.0.1 - Page indicators
+- **qr_flutter** 4.1.0 - QR code generation
+- **share_plus** 12.0.1 - Native platform sharing
+- **gal** 2.3.0 - Gallery/photo library access
 
 ### Logging & Debugging
 - **Talker** 4.9.3 - Advanced logging
