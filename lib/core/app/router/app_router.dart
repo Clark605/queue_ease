@@ -10,6 +10,8 @@ import '../../../admin/organization/presentation/pages/organization_setup_page.d
 import '../../../admin/presentation/pages/admin_main_page.dart';
 import '../../../admin/services/presentation/cubit/service_cubit.dart';
 import '../../../admin/services/presentation/pages/service_form_page.dart';
+import '../../../admin/working_hours/presentation/cubit/working_hours_cubit.dart';
+import '../../../admin/working_hours/presentation/pages/working_hours_page.dart';
 import '../../../customer/entry/presentation/pages/customer_home_page.dart';
 import '../../../shared/auth/domain/entities/user_role.dart';
 import '../../../shared/auth/presentation/cubit/auth_cubit.dart';
@@ -35,6 +37,7 @@ abstract final class Routes {
   static const String adminOrgEdit = '/a/org/edit';
   static const String adminServices = '/a/services';
   static const String adminServiceForm = '/a/services/form';
+  static const String adminWorkingHours = '/a/working-hours';
   static const String customerHome = '/c/home';
 
   // Dev-only
@@ -202,6 +205,13 @@ GoRouter createRouter(AuthCubit authCubit) {
             child: ServiceFormPage(service: service),
           );
         },
+      ),
+      GoRoute(
+        path: Routes.adminWorkingHours,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<WorkingHoursCubit>(),
+          child: const WorkingHoursPage(),
+        ),
       ),
       // Customer routes
       GoRoute(

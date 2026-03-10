@@ -20,6 +20,8 @@ import '../../../admin/organization/presentation/cubit/organization_cubit.dart'
 import '../../../admin/services/presentation/cubit/service_cubit.dart' as _i714;
 import '../../../admin/tutorial/presentation/cubit/tutorial_cubit.dart'
     as _i790;
+import '../../../admin/working_hours/presentation/cubit/working_hours_cubit.dart'
+    as _i567;
 import '../../../shared/auth/data/datasources/firebase_auth_datasource.dart'
     as _i480;
 import '../../../shared/auth/data/datasources/firestore_user_datasource.dart'
@@ -153,6 +155,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i928.AuthCubit>(
       () => _i928.AuthCubit(gh<_i489.AuthRepository>(), gh<_i1021.AppLogger>()),
+    );
+    gh.factory<_i567.WorkingHoursCubit>(
+      () => _i567.WorkingHoursCubit(
+        gh<_i449.WorkingHoursRepository>(),
+        gh<_i1021.AppLogger>(),
+      ),
     );
     return this;
   }
