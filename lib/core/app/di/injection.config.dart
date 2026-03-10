@@ -32,14 +32,20 @@ import '../../../shared/organization/data/datasources/firestore_organization_dat
     as _i681;
 import '../../../shared/organization/data/datasources/firestore_service_datasource.dart'
     as _i251;
+import '../../../shared/organization/data/datasources/firestore_working_hours_datasource.dart'
+    as _i985;
 import '../../../shared/organization/data/repositories/organization_repository_impl.dart'
     as _i503;
 import '../../../shared/organization/data/repositories/service_repository_impl.dart'
     as _i309;
+import '../../../shared/organization/data/repositories/working_hours_repository_impl.dart'
+    as _i219;
 import '../../../shared/organization/domain/repositories/organization_repository.dart'
     as _i506;
 import '../../../shared/organization/domain/repositories/service_repository.dart'
     as _i973;
+import '../../../shared/organization/domain/repositories/working_hours_repository.dart'
+    as _i449;
 import '../../config/auth_module.dart' as _i972;
 import '../../config/config_module.dart' as _i580;
 import '../../config/flavor_config.dart' as _i722;
@@ -87,6 +93,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1021.AppLogger>(),
       ),
     );
+    gh.lazySingleton<_i985.FirestoreWorkingHoursDatasource>(
+      () => _i985.FirestoreWorkingHoursDatasource(
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
     gh.lazySingleton<_i480.FirebaseAuthDatasource>(
       () => _i480.FirebaseAuthDatasource(
         gh<_i59.FirebaseAuth>(),
@@ -124,6 +136,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i616.OrganizationCubit>(
       () => _i616.OrganizationCubit(
         gh<_i506.OrganizationRepository>(),
+        gh<_i1021.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i449.WorkingHoursRepository>(
+      () => _i219.WorkingHoursRepositoryImpl(
+        gh<_i985.FirestoreWorkingHoursDatasource>(),
         gh<_i1021.AppLogger>(),
       ),
     );
