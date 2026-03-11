@@ -38,8 +38,8 @@ class ServiceListPage extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search_rounded),
+          const IconButton(
+            icon: Icon(Icons.search_rounded),
             color: AppColors.onSurfaceVariant,
             onPressed: null, // Future: implement search
             tooltip: 'Search',

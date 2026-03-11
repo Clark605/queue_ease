@@ -221,15 +221,15 @@ class _ShareAccessBodyState extends State<_ShareAccessBody> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.lock_outline_rounded,
                   size: 12,
                   color: AppColors.onSurfaceVariant,
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text('Secure · Queue Ease', style: AppTextStyles.bodySmall),
               ],
             ),
@@ -267,14 +267,14 @@ class _ShareAccessBodyState extends State<_ShareAccessBody> {
   }
 
   Widget _buildSectionDivider() {
-    return Row(
+    return const Row(
       children: [
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           child: Text('Actions', style: AppTextStyles.labelSmall),
         ),
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
       ],
     );
   }
@@ -309,7 +309,7 @@ class _MissingSlugError extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               'Setup Required',
               style: AppTextStyles.headlineMedium,
               textAlign: TextAlign.center,

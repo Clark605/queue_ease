@@ -94,7 +94,7 @@ class _OrganizationProfileEditPageState
                   children: [
                     Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                     const SizedBox(height: 16),
-                    Text('Error', style: AppTextStyles.headlineMedium),
+                    const Text('Error', style: AppTextStyles.headlineMedium),
                     const SizedBox(height: 8),
                     Text(
                       state.message,
@@ -128,7 +128,7 @@ class _OrganizationProfileEditPageState
                       padding: const EdgeInsets.all(12),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.info_outline,
                             color: AppColors.primary,
                             size: 20,

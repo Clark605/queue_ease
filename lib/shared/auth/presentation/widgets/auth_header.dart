@@ -39,7 +39,7 @@ class AuthHeader extends StatelessWidget {
           style: AppTextStyles.headlineMedium.copyWith(letterSpacing: -0.3),
         ),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           'Manage appointments seamlessly',
           style: AppTextStyles.bodySmall,
           textAlign: TextAlign.center,

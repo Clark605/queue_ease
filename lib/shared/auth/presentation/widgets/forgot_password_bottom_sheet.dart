@@ -92,7 +92,7 @@ class _ForgotPasswordBottomSheetState extends State<ForgotPasswordBottomSheet> {
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.lock_reset_rounded,
                     color: AppColors.primary,
                     size: 24,
@@ -205,7 +205,7 @@ class _ForgotPasswordBottomSheetState extends State<ForgotPasswordBottomSheet> {
               color: AppColors.success.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.mark_email_read_outlined,
               color: AppColors.success,
               size: 48,

@@ -19,14 +19,14 @@ class CustomerHomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: const Padding(
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Your Bookings', style: AppTextStyles.headlineMedium),
-            const SizedBox(height: 24),
-            const Expanded(
+            SizedBox(height: 24),
+            Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

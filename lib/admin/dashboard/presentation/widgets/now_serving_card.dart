@@ -119,7 +119,7 @@ class NowServingCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            Row(
+            const Row(
               children: [
                 Expanded(
                   child: _QueueActionButton(
@@ -128,20 +128,20 @@ class NowServingCard extends StatelessWidget {
                     textColor: Colors.white,
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 Expanded(
                   child: _QueueActionButton(
                     label: 'No-show',
-                    backgroundColor: const Color(0xFFFEF2F2),
-                    textColor: const Color(0xFFDC2626),
-                    borderColor: const Color(0xFFFECACA),
+                    backgroundColor: Color(0xFFFEF2F2),
+                    textColor: Color(0xFFDC2626),
+                    borderColor: Color(0xFFFECACA),
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 Expanded(
                   child: _QueueActionButton(
                     label: 'Skip',
-                    backgroundColor: const Color(0xFFF8FAFC),
+                    backgroundColor: Color(0xFFF8FAFC),
                     textColor: Colors.grey,
                   ),
                 ),

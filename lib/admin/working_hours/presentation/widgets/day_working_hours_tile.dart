@@ -298,8 +298,8 @@ class _TimeRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: chip('Opens', openTime, onOpenTap)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
             child: Icon(
               Icons.arrow_forward,
               size: 16,

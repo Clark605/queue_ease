@@ -163,7 +163,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check that dots are present.
-      var dots = find.byType(Container);
+      final dots = find.byType(Container);
       expect(dots, findsWidgets);
 
       // Go to next page.

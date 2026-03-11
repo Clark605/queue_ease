@@ -81,7 +81,7 @@ class ServiceListTile extends StatelessWidget {
               onChanged: (_) => onToggle(),
             ),
             PopupMenuButton<String>(
-              icon: Icon(
+              icon: const Icon(
                 Icons.more_vert,
                 color: AppColors.onSurfaceVariant,
                 size: 20,
@@ -90,17 +90,17 @@ class ServiceListTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               itemBuilder: (_) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'edit',
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.edit_outlined,
                         size: 18,
                         color: AppColors.primary,
                       ),
-                      const SizedBox(width: 8),
-                      const Text('Edit'),
+                      SizedBox(width: 8),
+                      Text('Edit'),
                     ],
                   ),
                 ),

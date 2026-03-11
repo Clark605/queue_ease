@@ -119,9 +119,9 @@ class _TutorialOverlayContent extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           'Setup Guide',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.onPrimary,
                             fontWeight: FontWeight.w600,
                             fontSize: 14,

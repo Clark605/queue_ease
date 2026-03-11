@@ -170,10 +170,10 @@ class _StatsStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return const SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: const Row(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
         children: [
           _StatChip(
             icon: Icons.group_outlined,

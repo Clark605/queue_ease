@@ -44,7 +44,7 @@ class OrganizationProfilePage extends StatelessWidget {
                   children: [
                     Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                     const SizedBox(height: 16),
-                    Text('Error', style: AppTextStyles.headlineMedium),
+                    const Text('Error', style: AppTextStyles.headlineMedium),
                     const SizedBox(height: 8),
                     Text(
                       state.message,
