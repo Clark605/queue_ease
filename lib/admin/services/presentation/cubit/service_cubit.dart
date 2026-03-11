@@ -8,21 +8,23 @@ import '../../../../core/error/result.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
 import '../../../../shared/organization/domain/repositories/service_repository.dart';
+import '../../../services/domain/repositories/admin_service_repository.dart';
 import 'service_state.dart';
 
 /// Manages service list state and CRUD operations for an organization.
 ///
-/// Provides real-time streaming of the service list via [watchServices]
-/// and mutation operations via [createService], [updateService], and
-/// [deleteService].
-///
-/// The stream subscription is automatically cancelled when the cubit is closed.
+/// Uses [ServiceRepository] for the real-time watch stream and
+/// [AdminServiceRepository] for all write operations.
 @injectable
 class ServiceCubit extends Cubit<ServiceState> {
-  ServiceCubit(this._serviceRepository, this._logger)
-    : super(const ServiceInitial());
+  ServiceCubit(
+    this._serviceRepository,
+    this._adminServiceRepository,
+    this._logger,
+  ) : super(const ServiceInitial());
 
   final ServiceRepository _serviceRepository;
+  final AdminServiceRepository _adminServiceRepository;
   final AppLogger _logger;
 
   StreamSubscription<List<ServiceEntity>>? _servicesSubscription;
@@ -72,7 +74,7 @@ class ServiceCubit extends Cubit<ServiceState> {
   Future<void> createService(ServiceEntity service) async {
     _logger.info('ServiceCubit: createService → ${service.name}');
 
-    final result = await _serviceRepository.createService(service);
+    final result = await _adminServiceRepository.createService(service);
     switch (result) {
       case Success():
         _logger.info('ServiceCubit: createService success');
@@ -90,7 +92,7 @@ class ServiceCubit extends Cubit<ServiceState> {
   Future<void> updateService(ServiceEntity service) async {
     _logger.info('ServiceCubit: updateService → ${service.id}');
 
-    final result = await _serviceRepository.updateService(service);
+    final result = await _adminServiceRepository.updateService(service);
     switch (result) {
       case Success():
         _logger.info('ServiceCubit: updateService success');
@@ -111,7 +113,7 @@ class ServiceCubit extends Cubit<ServiceState> {
   }) async {
     _logger.info('ServiceCubit: deleteService → $serviceId');
 
-    final result = await _serviceRepository.deleteService(
+    final result = await _adminServiceRepository.deleteService(
       orgId: orgId,
       serviceId: serviceId,
     );

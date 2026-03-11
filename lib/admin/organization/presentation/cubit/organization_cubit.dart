@@ -7,20 +7,23 @@ import '../../../../core/error/app_exception.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../shared/organization/domain/entities/organization_entity.dart';
 import '../../../../shared/organization/domain/repositories/organization_repository.dart';
+import '../../../organization/domain/repositories/admin_organization_repository.dart';
 import 'organization_state.dart';
 
 /// Manages organization profile state and operations.
 ///
-/// Provides real-time streaming of organization data via [watchOrganization]
-/// and mutation operations via [updateOrganization].
-///
-/// The stream subscription is automatically cancelled when the cubit is closed.
+/// Uses [OrganizationRepository] for the real-time watch stream and
+/// [AdminOrganizationRepository] for update operations.
 @injectable
 class OrganizationCubit extends Cubit<OrganizationState> {
-  OrganizationCubit(this._organizationRepository, this._logger)
-    : super(const OrganizationInitial());
+  OrganizationCubit(
+    this._organizationRepository,
+    this._adminOrganizationRepository,
+    this._logger,
+  ) : super(const OrganizationInitial());
 
   final OrganizationRepository _organizationRepository;
+  final AdminOrganizationRepository _adminOrganizationRepository;
   final AppLogger _logger;
 
   StreamSubscription<OrganizationEntity>? _organizationSubscription;
@@ -76,7 +79,7 @@ class OrganizationCubit extends Cubit<OrganizationState> {
     );
 
     try {
-      final result = await _organizationRepository.updateOrganization(
+      final result = await _adminOrganizationRepository.updateOrganization(
         organization,
       );
 

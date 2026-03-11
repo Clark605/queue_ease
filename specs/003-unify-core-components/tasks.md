@@ -124,43 +124,43 @@
 
 ### Create admin domain interfaces (all parallel)
 
-- [ ] T035 [P] [US5] Create `lib/admin/services/domain/repositories/admin_service_repository.dart` — `abstract class AdminServiceRepository` with `createService`, `updateService`, `deleteService` matching signatures from `contracts/widget-api.md`
-- [ ] T036 [P] [US5] Create `lib/admin/working_hours/domain/repositories/admin_working_hours_repository.dart` — `abstract class AdminWorkingHoursRepository` with `saveAllWorkingHours`
-- [ ] T037 [P] [US5] Create `lib/admin/organization/domain/repositories/admin_organization_repository.dart` — `abstract class AdminOrganizationRepository` with `createOrganization`, `updateOrganization`
+- [X] T035 [P] [US5] Create `lib/admin/services/domain/repositories/admin_service_repository.dart` — `abstract class AdminServiceRepository` with `createService`, `updateService`, `deleteService` matching signatures from `contracts/widget-api.md`
+- [X] T036 [P] [US5] Create `lib/admin/working_hours/domain/repositories/admin_working_hours_repository.dart` — `abstract class AdminWorkingHoursRepository` with `saveAllWorkingHours`
+- [X] T037 [P] [US5] Create `lib/admin/organization/domain/repositories/admin_organization_repository.dart` — `abstract class AdminOrganizationRepository` with `createOrganization`, `updateOrganization`
 
 ### Create admin datasources (all parallel, depend on T035–T037)
 
-- [ ] T038 [P] [US5] Create `lib/admin/services/data/datasources/admin_service_datasource.dart` — copy `create`, `update`, `delete` methods from `lib/shared/organization/data/datasources/firestore_service_datasource.dart`; add `@lazySingleton`
-- [ ] T039 [P] [US5] Create `lib/admin/working_hours/data/datasources/admin_working_hours_datasource.dart` — copy `saveAll` method from `lib/shared/organization/data/datasources/firestore_working_hours_datasource.dart`; add `@lazySingleton`
-- [ ] T040 [P] [US5] Create `lib/admin/organization/data/datasources/admin_organization_datasource.dart` — copy `create` and `update` write methods from `lib/shared/organization/data/datasources/firestore_organization_datasource.dart`; add `@lazySingleton`
+- [X] T038 [P] [US5] Create `lib/admin/services/data/datasources/admin_service_datasource.dart` — copy `create`, `update`, `delete` methods from `lib/shared/organization/data/datasources/firestore_service_datasource.dart`; add `@lazySingleton`
+- [X] T039 [P] [US5] Create `lib/admin/working_hours/data/datasources/admin_working_hours_datasource.dart` — copy `saveAll` method from `lib/shared/organization/data/datasources/firestore_working_hours_datasource.dart`; add `@lazySingleton`
+- [X] T040 [P] [US5] Create `lib/admin/organization/data/datasources/admin_organization_datasource.dart` — copy `create` and `update` write methods from `lib/shared/organization/data/datasources/firestore_organization_datasource.dart`; add `@lazySingleton`
 
 ### Create admin repository implementations (all parallel, depend on T035–T040)
 
-- [ ] T041 [P] [US5] Create `lib/admin/services/data/repositories/admin_service_repository_impl.dart` — `@LazySingleton(as: AdminServiceRepository)` implementing `AdminServiceRepository`; inject `AdminServiceDatasource`; move `_validate` and `_applyDefaults` helpers from `ServiceRepositoryImpl`
-- [ ] T042 [P] [US5] Create `lib/admin/working_hours/data/repositories/admin_working_hours_repository_impl.dart` — `@LazySingleton(as: AdminWorkingHoursRepository)` implementing `AdminWorkingHoursRepository`; inject `AdminWorkingHoursDatasource`; move validation helpers from `WorkingHoursRepositoryImpl`
-- [ ] T043 [P] [US5] Create `lib/admin/organization/data/repositories/admin_organization_repository_impl.dart` — `@LazySingleton(as: AdminOrganizationRepository)` implementing `AdminOrganizationRepository`; inject `AdminOrganizationDatasource`
+- [X] T041 [P] [US5] Create `lib/admin/services/data/repositories/admin_service_repository_impl.dart` — `@LazySingleton(as: AdminServiceRepository)` implementing `AdminServiceRepository`; inject `AdminServiceDatasource`; move `_validate` and `_applyDefaults` helpers from `ServiceRepositoryImpl`
+- [X] T042 [P] [US5] Create `lib/admin/working_hours/data/repositories/admin_working_hours_repository_impl.dart` — `@LazySingleton(as: AdminWorkingHoursRepository)` implementing `AdminWorkingHoursRepository`; inject `AdminWorkingHoursDatasource`; move validation helpers from `WorkingHoursRepositoryImpl`
+- [X] T043 [P] [US5] Create `lib/admin/organization/data/repositories/admin_organization_repository_impl.dart` — `@LazySingleton(as: AdminOrganizationRepository)` implementing `AdminOrganizationRepository`; inject `AdminOrganizationDatasource`
 
 ### Strip write operations from shared layer (all parallel, depend on T038–T043)
 
-- [ ] T044 [P] [US5] Update `lib/shared/organization/domain/repositories/service_repository.dart` — remove `createService`, `updateService`, `deleteService` abstract methods; keep `watchServices` only
-- [ ] T045 [P] [US5] Update `lib/shared/organization/domain/repositories/working_hours_repository.dart` — remove `saveAllWorkingHours` abstract method; keep `watchWorkingHours` only
-- [ ] T046 [P] [US5] Update `lib/shared/organization/domain/repositories/organization_repository.dart` — remove `createOrganization`, `updateOrganization` abstract methods; keep `watchOrganization` and `getByAdminUid`
-- [ ] T047 [P] [US5] Update `lib/shared/organization/data/datasources/firestore_service_datasource.dart` — delete `create`, `update`, `delete` methods; keep `watchServices` only
-- [ ] T048 [P] [US5] Update `lib/shared/organization/data/datasources/firestore_working_hours_datasource.dart` — delete `saveAll` method; keep `watchWorkingHours` only
-- [ ] T049 [P] [US5] Update `lib/shared/organization/data/datasources/firestore_organization_datasource.dart` — delete write methods; keep read methods only
-- [ ] T050 [P] [US5] Update `lib/shared/organization/data/repositories/service_repository_impl.dart` — remove `createService`, `updateService`, `deleteService` implementations and `_validate`/`_applyDefaults` helpers (moved to `AdminServiceRepositoryImpl`)
-- [ ] T051 [P] [US5] Update `lib/shared/organization/data/repositories/working_hours_repository_impl.dart` — remove `saveAllWorkingHours` implementation
-- [ ] T052 [P] [US5] Update `lib/shared/organization/data/repositories/organization_repository_impl.dart` — remove `createOrganization`, `updateOrganization` implementations
+- [X] T044 [P] [US5] Update `lib/shared/organization/domain/repositories/service_repository.dart` — remove `createService`, `updateService`, `deleteService` abstract methods; keep `watchServices` only
+- [X] T045 [P] [US5] Update `lib/shared/organization/domain/repositories/working_hours_repository.dart` — remove `saveAllWorkingHours` abstract method; keep `watchWorkingHours` only
+- [X] T046 [P] [US5] Update `lib/shared/organization/domain/repositories/organization_repository.dart` — remove `createOrganization`, `updateOrganization` abstract methods; keep `watchOrganization` and `getByAdminUid`
+- [X] T047 [P] [US5] Update `lib/shared/organization/data/datasources/firestore_service_datasource.dart` — delete `create`, `update`, `delete` methods; keep `watchServices` only
+- [X] T048 [P] [US5] Update `lib/shared/organization/data/datasources/firestore_working_hours_datasource.dart` — delete `saveAll` method; keep `watchWorkingHours` only
+- [X] T049 [P] [US5] Update `lib/shared/organization/data/datasources/firestore_organization_datasource.dart` — delete write methods; keep read methods only
+- [X] T050 [P] [US5] Update `lib/shared/organization/data/repositories/service_repository_impl.dart` — remove `createService`, `updateService`, `deleteService` implementations and `_validate`/`_applyDefaults` helpers (moved to `AdminServiceRepositoryImpl`)
+- [X] T051 [P] [US5] Update `lib/shared/organization/data/repositories/working_hours_repository_impl.dart` — remove `saveAllWorkingHours` implementation
+- [X] T052 [P] [US5] Update `lib/shared/organization/data/repositories/organization_repository_impl.dart` — remove `createOrganization`, `updateOrganization` implementations
 
 ### Update admin Cubits to inject admin repositories (all parallel, depend on T041–T043)
 
-- [ ] T053 [P] [US5] Update service write Cubit(s) in `lib/admin/services/presentation/cubits/` — replace `ServiceRepository` injections used for write ops with `AdminServiceRepository`; `ServiceRepository` injection for `watchServices` remains
-- [ ] T054 [P] [US5] Update working hours Cubit in `lib/admin/working_hours/presentation/cubits/` — replace `WorkingHoursRepository.saveAllWorkingHours` call with `AdminWorkingHoursRepository.saveAllWorkingHours`; `WorkingHoursRepository` injection for `watchWorkingHours` remains
-- [ ] T055 [P] [US5] Update organization Cubit(s) in `lib/admin/organization/presentation/cubits/` — replace `OrganizationRepository` write method calls with `AdminOrganizationRepository`; read calls remain on `OrganizationRepository`
+- [X] T053 [P] [US5] Update service write Cubit(s) in `lib/admin/services/presentation/cubits/` — replace `ServiceRepository` injections used for write ops with `AdminServiceRepository`; `ServiceRepository` injection for `watchServices` remains
+- [X] T054 [P] [US5] Update working hours Cubit in `lib/admin/working_hours/presentation/cubits/` — replace `WorkingHoursRepository.saveAllWorkingHours` call with `AdminWorkingHoursRepository.saveAllWorkingHours`; `WorkingHoursRepository` injection for `watchWorkingHours` remains
+- [X] T055 [P] [US5] Update organization Cubit(s) in `lib/admin/organization/presentation/cubits/` — replace `OrganizationRepository` write method calls with `AdminOrganizationRepository`; read calls remain on `OrganizationRepository`
 
 ### Regenerate DI
 
-- [ ] T056 [US5] Run `dart run build_runner build --delete-conflicting-outputs` to regenerate `lib/core/di/injection.config.dart` with the three new `@LazySingleton` registrations (depends on T041–T043)
+- [X] T056 [US5] Run `dart run build_runner build --delete-conflicting-outputs` to regenerate `lib/core/di/injection.config.dart` with the three new `@LazySingleton` registrations (depends on T041–T043)
 
 **Checkpoint**: `flutter analyze` passes; `injection.config.dart` registers `AdminServiceRepositoryImpl`, `AdminWorkingHoursRepositoryImpl`, `AdminOrganizationRepositoryImpl`.
 
@@ -172,13 +172,13 @@
 
 **Verify**: `wc -l admin_dashboard_tab.dart` (or IDE line count) shows ≤ 300; dashboard renders identically.
 
-- [ ] T057 [P] [US6] Create `lib/admin/dashboard/presentation/widgets/management_card.dart` — extract `_ManagementCard` private class from `admin_dashboard_tab.dart` into a public `ManagementCard` widget
-- [ ] T058 [P] [US6] Create `lib/admin/dashboard/presentation/widgets/now_serving_card.dart` — extract `_NowServingCard` and its dependent `_QueueActionButton` private class into `NowServingCard` widget file
+- [X] T057 [P] [US6] Create `lib/admin/dashboard/presentation/widgets/management_card.dart` — extract `_ManagementCard` private class from `admin_dashboard_tab.dart` into a public `ManagementCard` widget
+- [X] T058 [P] [US6] Create `lib/admin/dashboard/presentation/widgets/now_serving_card.dart` — extract `_NowServingCard` and its dependent `_QueueActionButton` private class into `NowServingCard` widget file
 
 > **Note**: T057 and T058 are parallel (independent widgets).
 
-- [ ] T059 [US6] Create `lib/admin/dashboard/presentation/widgets/management_grid.dart` — extract `_ManagementGrid` into `ManagementGrid` widget; import `ManagementCard` from T057 (depends on T057)
-- [ ] T060 [US6] Update `lib/admin/dashboard/presentation/pages/admin_dashboard_tab.dart` — delete the four extracted private classes (`_NowServingCard`, `_QueueActionButton`, `_ManagementGrid`, `_ManagementCard`); add imports for the three new widget files; verify file is ≤ 300 lines (depends on T057–T059)
+- [X] T059 [US6] Create `lib/admin/dashboard/presentation/widgets/management_grid.dart` — extract `_ManagementGrid` into `ManagementGrid` widget; import `ManagementCard` from T057 (depends on T057)
+- [X] T060 [US6] Update `lib/admin/dashboard/presentation/pages/admin_dashboard_tab.dart` — delete the four extracted private classes (`_NowServingCard`, `_QueueActionButton`, `_ManagementGrid`, `_ManagementCard`); add imports for the three new widget files; verify file is ≤ 300 lines (depends on T057–T059)
 
 **Checkpoint**: `admin_dashboard_tab.dart` ≤ 300 lines; dashboard compiles and renders identically.
 
@@ -188,8 +188,8 @@
 
 **Purpose**: Final compile and analysis verification across all changes.
 
-- [ ] T061 Run `flutter analyze --no-fatal-infos` and resolve all errors and warnings introduced by this refactor
-- [ ] T062 [P] Run `flutter build apk --debug` (or equivalent) to confirm full build succeeds end-to-end
+- [X] T061 Run `flutter analyze --no-fatal-infos` and resolve all errors and warnings introduced by this refactor
+- [X] T062 [P] Run `flutter build apk --debug` (or equivalent) to confirm full build succeeds end-to-end
 
 ---
 

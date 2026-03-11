@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/error/app_exception.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../domain/entities/working_hours_entity.dart';
 import '../models/working_hours_model.dart';
 
+/// Reads working hours documents at `organizations/{orgId}/working_hours`.
+///
+/// Write operations are handled by [AdminWorkingHoursDatasource] in the admin layer.
 @lazySingleton
 class FirestoreWorkingHoursDatasource {
   FirestoreWorkingHoursDatasource(this._firestore, this._logger);
@@ -37,46 +39,6 @@ class FirestoreWorkingHoursDatasource {
         )
         .toList();
   });
-
-  Future<void> saveAll(String orgId, List<WorkingHoursEntity> days) async {
-    _logger.debug(
-      'FirestoreWorkingHoursDatasource: saveAll → orgId=$orgId, days=${days.length}',
-    );
-    try {
-      final batch = _firestore.batch();
-      for (final entity in days) {
-        final docRef = _collection(orgId).doc(entity.dayOfWeek.toString());
-        batch.update(docRef, {
-          ...WorkingHoursModel(
-            orgId: entity.orgId,
-            dayOfWeek: entity.dayOfWeek,
-            isOpen: entity.isOpen,
-            openTime: entity.openTime,
-            closeTime: entity.closeTime,
-            breakStart: entity.breakStart,
-            breakEnd: entity.breakEnd,
-          ).toMap(),
-          'dayOfWeek': entity.dayOfWeek,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      }
-      await batch.commit();
-    } on FirebaseException catch (e, st) {
-      _logger.error('FirestoreWorkingHoursDatasource: saveAll failed', e, st);
-      throw DatabaseException('Failed to save working hours.', stackTrace: st);
-    } catch (e, st) {
-      _logger.error(
-        'FirestoreWorkingHoursDatasource: saveAll unexpected error',
-        e,
-        st,
-      );
-      throw UnknownException(
-        'Unexpected error saving working hours.',
-        cause: e,
-        stackTrace: st,
-      );
-    }
-  }
 
   Future<void> _initializeDefaults(String orgId) async {
     final batch = _firestore.batch();
