@@ -16,7 +16,7 @@
 
 **Purpose**: Create the `core/widgets/` directory and empty barrel file so all US3 widget files have a home.
 
-- [ ] T001 Create empty barrel file at `lib/core/widgets/widgets.dart` (no exports yet — populated in US3)
+- [X] T001 Create empty barrel file at `lib/core/widgets/widgets.dart` (no exports yet — populated in US3)
 
 **Checkpoint**: `lib/core/widgets/` directory exists.
 
@@ -28,14 +28,14 @@
 
 **Verify**: Search for `ScaffoldMessenger.of(context).showSnackBar` — zero matches outside `app_snack_bar.dart`.
 
-- [ ] T002 [US1] Create `lib/core/utils/app_snack_bar.dart` — `abstract final class AppSnackBar` with four static methods: `showSuccess`, `showError`, `showWarning`, `showInfo`; each calls `ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(...)` with `SnackBarBehavior.floating`, rounded corners (radius 8), and the matching `AppColors.*` background
-- [ ] T003 [P] [US1] Replace inline SnackBar call in `lib/admin/dashboard/presentation/pages/admin_dashboard_tab.dart` with `AppSnackBar.*`
-- [ ] T004 [P] [US1] Replace all 6 inline SnackBar calls in `lib/admin/presentation/pages/settings_page.dart` with `AppSnackBar.*`
-- [ ] T005 [P] [US1] Replace inline SnackBar calls and local `_showSnackBar` helper in `lib/admin/working_hours/presentation/pages/working_hours_page.dart` with `AppSnackBar.*`
-- [ ] T006 [P] [US1] Replace inline SnackBar calls in `lib/admin/services/presentation/pages/service_form_page.dart` with `AppSnackBar.*`
-- [ ] T007 [P] [US1] Replace inline SnackBar calls in `lib/admin/organization/presentation/pages/organization_profile_edit_page.dart` with `AppSnackBar.*`
-- [ ] T008 [P] [US1] Replace inline SnackBar call in `lib/admin/queue_management/presentation/pages/queue_management_page.dart` with `AppSnackBar.*`
-- [ ] T009 [P] [US1] Replace inline SnackBar call in `lib/shared/auth/presentation/widgets/forgot_password_bottom_sheet.dart` with `AppSnackBar.*`
+- [X] T002 [US1] Create `lib/core/utils/app_snack_bar.dart` — `abstract final class AppSnackBar` with four static methods: `showSuccess`, `showError`, `showWarning`, `showInfo`; each calls `ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(...)` with `SnackBarBehavior.floating`, rounded corners (radius 8), and the matching `AppColors.*` background
+- [X] T003 [P] [US1] Replace inline SnackBar call in `lib/admin/dashboard/presentation/pages/admin_dashboard_tab.dart` with `AppSnackBar.*`
+- [X] T004 [P] [US1] Replace all 6 inline SnackBar calls in `lib/admin/presentation/pages/settings_page.dart` with `AppSnackBar.*`
+- [X] T005 [P] [US1] Replace inline SnackBar calls and local `_showSnackBar` helper in `lib/admin/working_hours/presentation/pages/working_hours_page.dart` with `AppSnackBar.*`
+- [X] T006 [P] [US1] Replace inline SnackBar calls in `lib/admin/services/presentation/pages/service_form_page.dart` with `AppSnackBar.*`
+- [X] T007 [P] [US1] Replace inline SnackBar calls in `lib/admin/organization/presentation/pages/organization_profile_edit_page.dart` with `AppSnackBar.*`
+- [X] T008 [P] [US1] Replace inline SnackBar call in `lib/admin/queue_management/presentation/pages/queue_management_page.dart` with `AppSnackBar.*`
+- [X] T009 [P] [US1] Replace inline SnackBar call in `lib/shared/auth/presentation/widgets/forgot_password_bottom_sheet.dart` with `AppSnackBar.*`
 
 > **Note**: T003–T009 are parallel with each other (different files) but all depend on T002.
 

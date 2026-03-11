@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../tutorial/presentation/cubit/tutorial_cubit.dart';
@@ -530,12 +531,7 @@ class _ManagementGrid extends StatelessWidget {
   }
 
   void _showComingSoon(BuildContext context, String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$feature - Coming soon'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    AppSnackBar.showInfo(context, '$feature - Coming soon');
   }
 }
 

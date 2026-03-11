@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/app_snack_bar.dart';
 import '../../../shared/auth/presentation/cubit/auth_cubit.dart';
 
 /// Settings page for app and organization configuration.
@@ -83,28 +84,14 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.notifications_outlined,
             title: 'Notifications',
             subtitle: 'Manage notification settings',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notifications - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => AppSnackBar.showInfo(context, 'Notifications - Coming soon'),
           ),
           _buildSettingsTile(
             context,
             icon: Icons.dark_mode_outlined,
             title: 'Theme',
             subtitle: 'Light, Dark, or System',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Theme settings - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => AppSnackBar.showInfo(context, 'Theme settings - Coming soon'),
           ),
 
           const Divider(height: 32),
@@ -115,28 +102,14 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.person_outline,
             title: 'Account Settings',
             subtitle: 'Update your account information',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Account Settings - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => AppSnackBar.showInfo(context, 'Account Settings - Coming soon'),
           ),
           _buildSettingsTile(
             context,
             icon: Icons.lock_outline,
             title: 'Privacy & Security',
             subtitle: 'Password and security settings',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Privacy & Security - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => AppSnackBar.showInfo(context, 'Privacy & Security - Coming soon'),
           ),
 
           const Divider(height: 32),
@@ -170,28 +143,14 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.description_outlined,
             title: 'Terms & Privacy',
             subtitle: 'Read our terms and privacy policy',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Terms & Privacy - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => AppSnackBar.showInfo(context, 'Terms & Privacy - Coming soon'),
           ),
           _buildSettingsTile(
             context,
             icon: Icons.help_outline,
             title: 'Help & Support',
             subtitle: 'Get help and send feedback',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Help & Support - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: () => AppSnackBar.showInfo(context, 'Help & Support - Coming soon'),
           ),
 
           const SizedBox(height: 24),

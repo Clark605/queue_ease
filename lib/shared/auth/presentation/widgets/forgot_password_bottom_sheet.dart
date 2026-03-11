@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import 'auth_text_field.dart';
@@ -53,12 +54,7 @@ class _ForgotPasswordBottomSheetState extends State<ForgotPasswordBottomSheet> {
         if (state is PasswordResetEmailSent) {
           setState(() => _emailSent = true);
         } else if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          AppSnackBar.showError(context, state.message);
         }
       },
       builder: (context, state) {

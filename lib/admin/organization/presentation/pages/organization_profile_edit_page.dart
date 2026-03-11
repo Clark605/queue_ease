@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 import '../cubit/organization_cubit.dart';
 import '../cubit/organization_state.dart';
 import '../widgets/organization_profile_form.dart';
@@ -36,12 +37,7 @@ class _OrganizationProfileEditPageState
     final state = context.read<OrganizationCubit>().state;
 
     if (state is! OrganizationLoaded) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Organization data not loaded'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBar.showError(context, 'Organization data not loaded');
       return;
     }
 
@@ -70,22 +66,12 @@ class _OrganizationProfileEditPageState
         listener: (context, state) {
           if (state is OrganizationError) {
             _isSaving = false;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppSnackBar.showError(context, state.message);
           }
 
           if (state is OrganizationLoaded && _isSaving) {
             _isSaving = false;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Profile updated successfully'),
-                backgroundColor: Colors.green[700],
-              ),
-            );
+            AppSnackBar.showSuccess(context, 'Profile updated successfully');
 
             // Pop back to profile page
             Future.delayed(const Duration(milliseconds: 500), () {});

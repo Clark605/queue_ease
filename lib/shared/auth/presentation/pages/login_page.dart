@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 import '../../presentation/cubit/auth_cubit.dart';
 import '../../presentation/cubit/auth_state.dart';
 import '../widgets/auth_divider.dart';
@@ -63,9 +64,7 @@ class _LoginPageState extends State<LoginPage> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          AppSnackBar.showError(context, state.message);
         }
         // Authenticated → router redirect handles navigation.
       },

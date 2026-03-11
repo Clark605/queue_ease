@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../../shared/organization/domain/entities/working_hours_entity.dart';
@@ -69,21 +70,11 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
   void _handleState(BuildContext context, WorkingHoursState state) {
     switch (state) {
       case WorkingHoursSaveSuccess():
-        _showSnackBar(context, 'Working hours saved', AppColors.success);
+        AppSnackBar.showSuccess(context, 'Working hours saved');
       case WorkingHoursSaveError(:final message):
-        _showSnackBar(context, message, AppColors.error);
+        AppSnackBar.showError(context, message);
       case _:
         break;
     }
-  }
-
-  void _showSnackBar(BuildContext context, String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: color,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
   }
 }
