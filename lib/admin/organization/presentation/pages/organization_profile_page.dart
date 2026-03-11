@@ -169,7 +169,10 @@ class OrganizationProfilePage extends StatelessWidget {
                       Clipboard.setData(
                         ClipboardData(text: org.bookingLinkSlug),
                       );
-                      AppSnackBar.showInfo(context, 'Booking link copied to clipboard');
+                      AppSnackBar.showInfo(
+                        context,
+                        'Booking link copied to clipboard',
+                      );
                     },
                   ),
                   const SizedBox(height: 12),

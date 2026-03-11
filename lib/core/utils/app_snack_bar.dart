@@ -31,9 +31,7 @@ abstract final class AppSnackBar {
           content: Text(message, style: const TextStyle(color: Colors.white)),
           backgroundColor: backgroundColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
   }

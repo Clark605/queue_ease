@@ -157,7 +157,9 @@ class _ServiceFormBodyState extends State<_ServiceFormBody> {
     if (state is ServiceOperationSuccess) {
       AppSnackBar.showSuccess(
         context,
-        _isEditMode ? 'Service updated successfully' : 'Service added successfully',
+        _isEditMode
+            ? 'Service updated successfully'
+            : 'Service added successfully',
       );
       if (mounted) context.pop();
     } else if (state is ServiceMutationError) {

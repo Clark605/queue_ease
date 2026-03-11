@@ -34,7 +34,8 @@ class QueueManagementPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.filter_list_rounded),
             color: AppColors.onSurfaceVariant,
-            onPressed: () => AppSnackBar.showInfo(context, 'Filter - Coming soon'),
+            onPressed: () =>
+                AppSnackBar.showInfo(context, 'Filter - Coming soon'),
             tooltip: 'Filter',
           ),
         ],
@@ -87,7 +88,8 @@ class QueueManagementPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             OutlinedButton.icon(
-              onPressed: () => AppSnackBar.showInfo(context, 'View history - Coming soon'),
+              onPressed: () =>
+                  AppSnackBar.showInfo(context, 'View history - Coming soon'),
               icon: const Icon(Icons.history),
               label: const Text('View History'),
               style: OutlinedButton.styleFrom(

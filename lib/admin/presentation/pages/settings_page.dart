@@ -84,14 +84,16 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.notifications_outlined,
             title: 'Notifications',
             subtitle: 'Manage notification settings',
-            onTap: () => AppSnackBar.showInfo(context, 'Notifications - Coming soon'),
+            onTap: () =>
+                AppSnackBar.showInfo(context, 'Notifications - Coming soon'),
           ),
           _buildSettingsTile(
             context,
             icon: Icons.dark_mode_outlined,
             title: 'Theme',
             subtitle: 'Light, Dark, or System',
-            onTap: () => AppSnackBar.showInfo(context, 'Theme settings - Coming soon'),
+            onTap: () =>
+                AppSnackBar.showInfo(context, 'Theme settings - Coming soon'),
           ),
 
           const Divider(height: 32),
@@ -102,14 +104,18 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.person_outline,
             title: 'Account Settings',
             subtitle: 'Update your account information',
-            onTap: () => AppSnackBar.showInfo(context, 'Account Settings - Coming soon'),
+            onTap: () =>
+                AppSnackBar.showInfo(context, 'Account Settings - Coming soon'),
           ),
           _buildSettingsTile(
             context,
             icon: Icons.lock_outline,
             title: 'Privacy & Security',
             subtitle: 'Password and security settings',
-            onTap: () => AppSnackBar.showInfo(context, 'Privacy & Security - Coming soon'),
+            onTap: () => AppSnackBar.showInfo(
+              context,
+              'Privacy & Security - Coming soon',
+            ),
           ),
 
           const Divider(height: 32),
@@ -143,14 +149,16 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.description_outlined,
             title: 'Terms & Privacy',
             subtitle: 'Read our terms and privacy policy',
-            onTap: () => AppSnackBar.showInfo(context, 'Terms & Privacy - Coming soon'),
+            onTap: () =>
+                AppSnackBar.showInfo(context, 'Terms & Privacy - Coming soon'),
           ),
           _buildSettingsTile(
             context,
             icon: Icons.help_outline,
             title: 'Help & Support',
             subtitle: 'Get help and send feedback',
-            onTap: () => AppSnackBar.showInfo(context, 'Help & Support - Coming soon'),
+            onTap: () =>
+                AppSnackBar.showInfo(context, 'Help & Support - Coming soon'),
           ),
 
           const SizedBox(height: 24),
