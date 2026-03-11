@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 
-/// A labelled stepper row with an icon, title, subtitle, and +/− controls.
-///
-/// Used for Duration and Time Margin fields in the service form.
-class ServiceStepperRow extends StatelessWidget {
-  const ServiceStepperRow({
+class NumericStepperRow extends StatelessWidget {
+  const NumericStepperRow({
     super.key,
     required this.icon,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.value,
     required this.unit,
-    required this.onDecrement,
-    required this.onIncrement,
+    this.onDecrement,
+    this.onIncrement,
   });
 
   final IconData icon;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final int value;
   final String unit;
   final VoidCallback? onDecrement;
@@ -61,12 +58,13 @@ class ServiceStepperRow extends StatelessWidget {
           title,
           style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w500),
         ),
-        Text(
-          subtitle,
-          style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.onSurfaceVariant,
+        if (subtitle != null)
+          Text(
+            subtitle!,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
-        ),
       ],
     );
   }
@@ -107,7 +105,6 @@ class ServiceStepperRow extends StatelessWidget {
   }
 }
 
-/// Circular +/− button with a primary-coloured border.
 class _StepperButton extends StatelessWidget {
   const _StepperButton({required this.icon, required this.onTap});
 

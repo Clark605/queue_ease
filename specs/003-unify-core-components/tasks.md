@@ -67,34 +67,34 @@
 
 ### Create core widgets (all parallel)
 
-- [ ] T013 [P] [US3] Create `lib/core/widgets/error_view.dart` — `ErrorView({required String message, String title = 'Something went wrong', VoidCallback? onRetry})`; retry `FilledButton` rendered only when `onRetry != null`; icon `Icons.error_outline` size 64 `AppColors.error`
-- [ ] T014 [P] [US3] Create `lib/core/widgets/empty_state_view.dart` — `EmptyStateView({required IconData icon, required String title, required String subtitle, String? actionLabel, VoidCallback? onAction})`; add `assert((actionLabel == null) == (onAction == null))`; CTA is `FilledButton.icon` shown only when both are non-null
-- [ ] T015 [P] [US3] Create `lib/core/widgets/initials_avatar.dart` — `InitialsAvatar({required String name, double size = 40, Color? backgroundColor, Color? textColor})`; split name on whitespace, take first char of first two words, uppercase; returns `'?'` for empty name
-- [ ] T016 [P] [US3] Create `lib/core/widgets/numeric_stepper_row.dart` — `NumericStepperRow({required IconData icon, required String title, String? subtitle, required int value, required String unit, VoidCallback? onDecrement, VoidCallback? onIncrement})`; leading 40×40 primary-bg icon container; bordered square stepper buttons disabled when callback is null
-- [ ] T017 [P] [US3] Create `lib/core/widgets/form_field_label.dart` — `FormFieldLabel({required String text})`; `bodySmall`, `w600`, `AppColors.onSurfaceVariant`
-- [ ] T018 [P] [US3] Create `lib/core/widgets/form_card.dart` — `FormCard({required Widget child, EdgeInsetsGeometry? padding})`; `Border.all(outline.withValues(alpha:0.5))`, single-item box shadow, `borderRadius:12`, default padding `EdgeInsets.all(16)`
-- [ ] T019 [P] [US3] Create `lib/core/widgets/form_app_bar.dart` — `FormAppBar({required String title, required VoidCallback onBack}) implements PreferredSizeWidget`; `preferredSize = Size.fromHeight(kToolbarHeight + 1)`; bottom `PreferredSize` divider line; back `IconButton`
-- [ ] T020 [P] [US3] Create `lib/core/widgets/form_action_bar.dart` — `FormActionBar({required String label, required VoidCallback? onSave, bool isLoading = false})`; top border container; respects `MediaQuery.of(context).padding.bottom` safe area; `isLoading` shows `CircularProgressIndicator(strokeWidth:2)` instead of label
-- [ ] T021 [P] [US3] Create `lib/core/widgets/loading_button.dart` — `LoadingButton({required String label, required VoidCallback? onPressed, bool isLoading = false})`; `SizedBox(width: double.infinity)` wrapping `FilledButton`; `isLoading` shows `CircularProgressIndicator(strokeWidth:2)`
-- [ ] T022 [P] [US3] Create `lib/core/widgets/app_field_decoration.dart` — top-level function `InputDecoration appFieldDecoration({required String hintText})`; all 5 border states (`border`, `enabledBorder`, `focusedBorder`, `errorBorder`, `focusedErrorBorder`) using `OutlineInputBorder(borderRadius:8)` with `AppColors.*` colours
+- [X] T013 [P] [US3] Create `lib/core/widgets/error_view.dart` — `ErrorView({required String message, String title = 'Something went wrong', VoidCallback? onRetry})`; retry `FilledButton` rendered only when `onRetry != null`; icon `Icons.error_outline` size 64 `AppColors.error`
+- [X] T014 [P] [US3] Create `lib/core/widgets/empty_state_view.dart` — `EmptyStateView({required IconData icon, required String title, required String subtitle, String? actionLabel, VoidCallback? onAction})`; add `assert((actionLabel == null) == (onAction == null))`; CTA is `FilledButton.icon` shown only when both are non-null
+- [X] T015 [P] [US3] Create `lib/core/widgets/initials_avatar.dart` — `InitialsAvatar({required String name, double size = 40, Color? backgroundColor, Color? textColor})`; split name on whitespace, take first char of first two words, uppercase; returns `'?'` for empty name
+- [X] T016 [P] [US3] Create `lib/core/widgets/numeric_stepper_row.dart` — `NumericStepperRow({required IconData icon, required String title, String? subtitle, required int value, required String unit, VoidCallback? onDecrement, VoidCallback? onIncrement})`; leading 40×40 primary-bg icon container; bordered square stepper buttons disabled when callback is null
+- [X] T017 [P] [US3] Create `lib/core/widgets/form_field_label.dart` — `FormFieldLabel({required String text})`; `bodySmall`, `w600`, `AppColors.onSurfaceVariant`
+- [X] T018 [P] [US3] Create `lib/core/widgets/form_card.dart` — `FormCard({required Widget child, EdgeInsetsGeometry? padding})`; `Border.all(outline.withValues(alpha:0.5))`, single-item box shadow, `borderRadius:12`, default padding `EdgeInsets.all(16)`
+- [X] T019 [P] [US3] Create `lib/core/widgets/form_app_bar.dart` — `FormAppBar({required String title, required VoidCallback onBack}) implements PreferredSizeWidget`; `preferredSize = Size.fromHeight(kToolbarHeight + 1)`; bottom `PreferredSize` divider line; back `IconButton`
+- [X] T020 [P] [US3] Create `lib/core/widgets/form_action_bar.dart` — `FormActionBar({required String label, required VoidCallback? onSave, bool isLoading = false})`; top border container; respects `MediaQuery.of(context).padding.bottom` safe area; `isLoading` shows `CircularProgressIndicator(strokeWidth:2)` instead of label
+- [X] T021 [P] [US3] Create `lib/core/widgets/loading_button.dart` — `LoadingButton({required String label, required VoidCallback? onPressed, bool isLoading = false})`; `SizedBox(width: double.infinity)` wrapping `FilledButton`; `isLoading` shows `CircularProgressIndicator(strokeWidth:2)`
+- [X] T022 [P] [US3] Create `lib/core/widgets/app_field_decoration.dart` — top-level function `InputDecoration appFieldDecoration({required String hintText})`; all 5 border states (`border`, `enabledBorder`, `focusedBorder`, `errorBorder`, `focusedErrorBorder`) using `OutlineInputBorder(borderRadius:8)` with `AppColors.*` colours
 
 ### Populate barrel file
 
-- [ ] T023 [US3] Add exports for all 10 widgets/functions to `lib/core/widgets/widgets.dart` (depends on T013–T022)
+- [X] T023 [US3] Add exports for all 10 widgets/functions to `lib/core/widgets/widgets.dart` (depends on T013–T022)
 
 ### Update consumers (all parallel, depend on T023)
 
-- [ ] T024 [P] [US3] Update `lib/admin/working_hours/presentation/widgets/working_hours_body.dart` — replace `_SaveButton` with `LoadingButton`, replace `_ErrorView` with `ErrorView(title: 'Failed to load working hours', ...)`; delete both private classes
-- [ ] T025 [P] [US3] Update `lib/admin/services/presentation/pages/service_list_page.dart` — replace `_EmptyStateView` with `EmptyStateView(icon: Icons.medical_services_outlined, ...)`; replace `_ErrorView` with `ErrorView(...)`; delete both private classes
-- [ ] T026 [P] [US3] Update `lib/admin/services/presentation/widgets/service_list_tile.dart` — replace `_InitialsAvatar` usages with `InitialsAvatar(name: ...)`; delete the `_InitialsAvatar` private class
-- [ ] T027 [P] [US3] Update `lib/admin/services/presentation/pages/service_form_page.dart` — replace `ServiceFormAppBar(isEditMode: ...)` with `FormAppBar(title: cubit.isEditMode ? 'Edit Service' : 'Add Service', onBack: context.pop)`; replace `ServiceFormBottomBar` with `FormActionBar(label: 'Save Service', ...)`; replace `ServiceFieldLabel`→`FormFieldLabel`, `ServiceFormCard`→`FormCard`, `serviceFieldDecoration`→`appFieldDecoration`, `ServiceStepperRow`→`NumericStepperRow`; update imports
+- [X] T024 [P] [US3] Update `lib/admin/working_hours/presentation/widgets/working_hours_body.dart` — replace `_SaveButton` with `LoadingButton`, replace `_ErrorView` with `ErrorView(title: 'Failed to load working hours', ...)`; delete both private classes
+- [X] T025 [P] [US3] Update `lib/admin/services/presentation/pages/service_list_page.dart` — replace `_EmptyStateView` with `EmptyStateView(icon: Icons.medical_services_outlined, ...)`; replace `_ErrorView` with `ErrorView(...)`; delete both private classes
+- [X] T026 [P] [US3] Update `lib/admin/services/presentation/widgets/service_list_tile.dart` — replace `_InitialsAvatar` usages with `InitialsAvatar(name: ...)`; delete the `_InitialsAvatar` private class
+- [X] T027 [P] [US3] Update `lib/admin/services/presentation/pages/service_form_page.dart` — replace `ServiceFormAppBar(isEditMode: ...)` with `FormAppBar(title: cubit.isEditMode ? 'Edit Service' : 'Add Service', onBack: context.pop)`; replace `ServiceFormBottomBar` with `FormActionBar(label: 'Save Service', ...)`; replace `ServiceFieldLabel`→`FormFieldLabel`, `ServiceFormCard`→`FormCard`, `serviceFieldDecoration`→`appFieldDecoration`, `ServiceStepperRow`→`NumericStepperRow`; update imports
 
 ### Delete old source files (all parallel, depend on T027)
 
-- [ ] T028 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_form_shared.dart`
-- [ ] T029 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_form_app_bar.dart`
-- [ ] T030 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_form_bottom_bar.dart`
-- [ ] T031 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_stepper_row.dart`
+- [X] T028 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_form_shared.dart`
+- [X] T029 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_form_app_bar.dart`
+- [X] T030 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_form_bottom_bar.dart`
+- [X] T031 [P] [US3] Delete `lib/admin/services/presentation/widgets/service_stepper_row.dart`
 
 **Checkpoint**: `lib/core/widgets/` has 10 dart files + barrel; no `Service`-prefixed widget classes remain in feature folders.
 

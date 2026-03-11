@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 
-/// Sticky bottom bar with a full-width "Save Service" button.
-class ServiceFormBottomBar extends StatelessWidget {
-  const ServiceFormBottomBar({
+class FormActionBar extends StatelessWidget {
+  const FormActionBar({
     super.key,
-    required this.isLoading,
+    required this.label,
     required this.onSave,
+    this.isLoading = false,
   });
 
+  final String label;
+  final VoidCallback? onSave;
   final bool isLoading;
-  final VoidCallback onSave;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.95),
+        color: AppColors.surface,
         border: Border(
           top: BorderSide(color: AppColors.outline.withValues(alpha: 0.4)),
         ),
@@ -44,11 +45,11 @@ class ServiceFormBottomBar extends StatelessWidget {
                 height: 22,
                 child: CircularProgressIndicator(
                   color: Colors.white,
-                  strokeWidth: 2.5,
+                  strokeWidth: 2,
                 ),
               )
             : Text(
-                'Save Service',
+                label,
                 style: AppTextStyles.labelLarge.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

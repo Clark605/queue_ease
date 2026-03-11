@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 
-/// iOS-style AppBar for the service add/edit form.
-///
-/// Displays a back arrow on the leading side, the page title in the centre,
-/// and a "Save" text action on the trailing side.
-class ServiceFormAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const ServiceFormAppBar({
-    super.key,
-    required this.isEditMode,
-    required this.onBack,
-  });
+class FormAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const FormAppBar({super.key, required this.title, required this.onBack});
 
-  final bool isEditMode;
-
+  final String title;
   final VoidCallback onBack;
 
   @override
@@ -35,12 +26,11 @@ class ServiceFormAppBar extends StatelessWidget implements PreferredSizeWidget {
         onPressed: onBack,
       ),
       title: Text(
-        isEditMode ? 'Edit Service' : 'Add Service',
+        title,
         style: AppTextStyles.headlineSmall.copyWith(
           fontWeight: FontWeight.bold,
         ),
       ),
-
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
