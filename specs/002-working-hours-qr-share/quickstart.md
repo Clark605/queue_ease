@@ -27,7 +27,7 @@ flutter pub get
 Expected new entries in `pubspec.yaml`:
 ```yaml
 qr_flutter: ^4.1.0
-share_plus: ^10.1.4
+share_plus: ^11.1.0
 gal: ^2.3.0
 ```
 
