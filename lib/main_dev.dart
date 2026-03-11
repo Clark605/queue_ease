@@ -8,8 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger.dart';
 
-import 'core/app/app.dart';
-import 'core/app/di/injection.dart';
+import 'core/app.dart';
+import 'core/di/injection.dart';
 import 'core/config/flavor_config.dart';
 import 'core/utils/app_logger.dart';
 import 'firebase_options.dart';

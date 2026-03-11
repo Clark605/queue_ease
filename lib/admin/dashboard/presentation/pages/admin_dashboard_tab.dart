@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/app/router/app_router.dart';
-import '../../../../core/app/theme/app_colors.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../tutorial/presentation/cubit/tutorial_cubit.dart';
@@ -493,7 +493,7 @@ class _ManagementGrid extends StatelessWidget {
                   label: 'Working Hours',
                   iconColor: const Color(0xFF4F46E5),
                   iconBgColor: const Color(0xFFEEF2FF),
-                  onTap: () => _showComingSoon(context, 'Working Hours'),
+                  onTap: () => context.push(Routes.adminWorkingHours),
                 ),
               ),
             ],
@@ -611,12 +611,7 @@ class _ShareAccessCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: GestureDetector(
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Share Access - Coming soon'),
-            duration: Duration(seconds: 2),
-          ),
-        ),
+        onTap: () => context.push(Routes.adminShareAccess),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(

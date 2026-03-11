@@ -3,24 +3,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
-import '../../../admin/organization/presentation/cubit/organization_cubit.dart';
-import '../../../admin/organization/presentation/pages/organization_profile_edit_page.dart';
-import '../../../admin/organization/presentation/pages/organization_profile_page.dart';
-import '../../../admin/organization/presentation/pages/organization_setup_page.dart';
-import '../../../admin/presentation/pages/admin_main_page.dart';
-import '../../../admin/services/presentation/cubit/service_cubit.dart';
-import '../../../admin/services/presentation/pages/service_form_page.dart';
-import '../../../customer/entry/presentation/pages/customer_home_page.dart';
-import '../../../shared/auth/domain/entities/user_role.dart';
-import '../../../shared/auth/presentation/cubit/auth_cubit.dart';
-import '../../../shared/auth/presentation/cubit/auth_state.dart';
-import '../../../shared/auth/presentation/pages/login_page.dart';
-import '../../../shared/auth/presentation/pages/sign_up_page.dart';
-import '../../../shared/onboarding/presentation/pages/onboarding_page.dart';
-import '../../../shared/organization/domain/entities/service_entity.dart';
-import '../../config/flavor_config.dart';
-import '../../services/onboarding_service.dart';
-import '../../utils/app_logger.dart';
+import '../../admin/organization/presentation/cubit/organization_cubit.dart';
+import '../../admin/organization/presentation/pages/organization_profile_edit_page.dart';
+import '../../admin/organization/presentation/pages/organization_profile_page.dart';
+import '../../admin/organization/presentation/pages/organization_setup_page.dart';
+import '../../admin/presentation/pages/admin_main_page.dart';
+import '../../admin/services/presentation/cubit/service_cubit.dart';
+import '../../admin/services/presentation/pages/service_form_page.dart';
+import '../../admin/share_access/presentation/cubit/share_access_cubit.dart';
+import '../../admin/share_access/presentation/pages/share_access_page.dart';
+import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart';
+import '../../admin/working_hours/presentation/pages/working_hours_page.dart';
+import '../../customer/entry/presentation/pages/customer_home_page.dart';
+import '../../shared/auth/domain/entities/user_role.dart';
+import '../../shared/auth/presentation/cubit/auth_cubit.dart';
+import '../../shared/auth/presentation/cubit/auth_state.dart';
+import '../../shared/auth/presentation/pages/login_page.dart';
+import '../../shared/auth/presentation/pages/sign_up_page.dart';
+import '../../shared/onboarding/presentation/pages/onboarding_page.dart';
+import '../../shared/organization/domain/entities/service_entity.dart';
+import '../config/flavor_config.dart';
+import '../services/onboarding_service.dart';
+import '../utils/app_logger.dart';
 import '../di/injection.dart';
 import 'go_router_refresh_stream.dart';
 
@@ -35,6 +39,8 @@ abstract final class Routes {
   static const String adminOrgEdit = '/a/org/edit';
   static const String adminServices = '/a/services';
   static const String adminServiceForm = '/a/services/form';
+  static const String adminWorkingHours = '/a/working-hours';
+  static const String adminShareAccess = '/a/share-access';
   static const String customerHome = '/c/home';
 
   // Dev-only
@@ -202,6 +208,33 @@ GoRouter createRouter(AuthCubit authCubit) {
             child: ServiceFormPage(service: service),
           );
         },
+      ),
+      GoRoute(
+        path: Routes.adminWorkingHours,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<WorkingHoursCubit>(),
+          child: const WorkingHoursPage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.adminShareAccess,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) {
+                final cubit = getIt<OrganizationCubit>();
+                final authState = context.read<AuthCubit>().state;
+                if (authState is Authenticated &&
+                    authState.user.organizationId != null) {
+                  cubit.watchOrganization(authState.user.organizationId!);
+                }
+                return cubit;
+              },
+            ),
+            BlocProvider(create: (context) => getIt<ShareAccessCubit>()),
+          ],
+          child: const ShareAccessPage(),
+        ),
       ),
       // Customer routes
       GoRoute(

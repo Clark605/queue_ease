@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../../../core/app/di/injection.dart';
-import '../../../../core/app/router/app_router.dart';
-import '../../../../core/app/theme/app_colors.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/onboarding_service.dart';
 import '../../domain/models/onboarding_content_model.dart';
 import '../widgets/fair_turns_illustration.dart';

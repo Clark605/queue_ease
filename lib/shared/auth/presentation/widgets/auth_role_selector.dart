@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/app/theme/app_colors.dart';
-import '../../../../core/app/theme/app_text_styles.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/entities/user_role.dart';
 
 /// Segmented control used on the Sign-Up screen to choose a role.

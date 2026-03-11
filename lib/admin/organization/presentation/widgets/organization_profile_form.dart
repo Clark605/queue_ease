@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/app/theme/app_text_styles.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/organization/domain/entities/organization_entity.dart';
 
 /// Reusable form widget for creating and editing organization profiles.

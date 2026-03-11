@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/app/di/injection.dart';
-import '../../../core/app/theme/app_colors.dart';
+import '../../../core/di/injection.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../dashboard/presentation/pages/admin_dashboard_tab.dart';
 import '../../organization/presentation/cubit/organization_cubit.dart';
 import '../../queue_management/presentation/pages/queue_management_page.dart';

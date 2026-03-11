@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:queue_ease/shared/auth/presentation/cubit/auth_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:queue_ease/core/app/app.dart';
-import 'package:queue_ease/core/app/di/injection.dart';
+import 'package:queue_ease/core/app.dart';
+import 'package:queue_ease/core/di/injection.dart';
 import 'package:queue_ease/core/config/flavor_config.dart';
 import 'package:queue_ease/core/services/onboarding_service.dart';
 

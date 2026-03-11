@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../core/app/theme/app_colors.dart';
-import '../../../../core/app/theme/app_text_styles.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import 'service_form_shared.dart';
 import 'service_stepper_row.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/app/theme/app_colors.dart';
-import '../../../../core/app/theme/app_text_styles.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 /// Rounded white card with shadow — matches the Stitch service form card design.
 class ServiceFormCard extends StatelessWidget {
