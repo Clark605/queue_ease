@@ -106,9 +106,9 @@
 
 **Verify**: `showModalBottomSheet` and `showDialog` call sites have no explicit `backgroundColor` or `shape` overrides.
 
-- [ ] T032 [US4] Update `lib/core/theme/app_theme.dart` — add `snackBarTheme` (`behavior: floating`, `shape: RoundedRectangleBorder(radius:8)`, `contentTextStyle: white bodyMedium`), `bottomSheetTheme` (top corners radius 16, `backgroundColor: AppColors.surface`), and `dialogTheme` (`shape: RoundedRectangleBorder(radius:12)`, `elevation:3`, `backgroundColor: AppColors.surface`) to the `ThemeData` builder
-- [ ] T033 [P] [US4] Audit all `showModalBottomSheet` call sites — remove any explicit `backgroundColor`, `shape`, or `elevation` parameters that duplicate the new theme defaults
-- [ ] T034 [P] [US4] Audit all `showDialog` call sites — remove any explicit `backgroundColor` or `shape` parameters that duplicate the new theme defaults
+- [X] T032 [US4] Update `lib/core/theme/app_theme.dart` — add `snackBarTheme` (`behavior: floating`, `shape: RoundedRectangleBorder(radius:8)`, `contentTextStyle: white bodyMedium`), `bottomSheetTheme` (top corners radius 16, `backgroundColor: AppColors.surface`), and `dialogTheme` (`shape: RoundedRectangleBorder(radius:12)`, `elevation:3`, `backgroundColor: AppColors.surface`) to the `ThemeData` builder
+- [X] T033 [P] [US4] Audit all `showModalBottomSheet` call sites — remove any explicit `backgroundColor`, `shape`, or `elevation` parameters that duplicate the new theme defaults
+- [X] T034 [P] [US4] Audit all `showDialog` call sites — remove any explicit `backgroundColor` or `shape` parameters that duplicate the new theme defaults
 
 > **Note**: T033 and T034 are parallel (different search scope) but both depend on T032.
 
