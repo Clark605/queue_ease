@@ -6,7 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/error/result.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
-import '../../../../shared/organization/domain/repositories/organization_repository.dart';
+import '../../domain/repositories/admin_organization_repository.dart';
 
 /// Shown to newly registered admin users whose account is not yet linked to
 /// an organization.
@@ -45,7 +45,7 @@ class _OrganizationSetupPageState extends State<OrganizationSetupPage> {
       _errorMessage = null;
     });
 
-    final orgRepo = getIt<OrganizationRepository>();
+    final orgRepo = getIt<AdminOrganizationRepository>();
     final result = await orgRepo.createOrganization(
       adminUid: authState.user.uid,
       name: _nameController.text.trim(),

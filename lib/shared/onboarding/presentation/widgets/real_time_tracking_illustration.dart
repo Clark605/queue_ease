@@ -62,25 +62,25 @@ class RealTimeTrackingIllustration extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                _QueueItem(
+                                const _QueueItem(
                                   number: '#4',
                                   isActive: false,
                                   isFaded: true,
                                 ),
                                 const SizedBox(height: 6),
-                                _QueueItem(
+                                const _QueueItem(
                                   number: '#5',
                                   isActive: true,
                                   isFaded: false,
                                 ),
                                 const SizedBox(height: 6),
-                                _QueueItem(
+                                const _QueueItem(
                                   number: '#6',
                                   isActive: false,
                                   isFaded: false,
                                 ),
                                 const SizedBox(height: 6),
-                                _QueueItem(
+                                const _QueueItem(
                                   number: '#7',
                                   isActive: false,
                                   isFaded: false,
@@ -276,7 +276,7 @@ class _QueueItem extends StatelessWidget {
               SizedBox(
                 width: isActive ? 20 : 0,
                 child: isActive
-                    ? Icon(
+                    ? const Icon(
                         Icons.arrow_forward_ios,
                         size: 14,
                         color: AppColors.primary,

@@ -52,7 +52,7 @@ void main() {
         return AuthCubit(mockRepo, mockLogger);
       },
       act: (cubit) => cubit.checkAuthStatus(),
-      expect: () => [const AuthLoading(), Authenticated(tUser)],
+      expect: () => [const AuthLoading(), const Authenticated(tUser)],
     );
 
     blocTest<AuthCubit, AuthState>(
@@ -96,7 +96,7 @@ void main() {
         email: 'test@example.com',
         password: 'password123',
       ),
-      expect: () => [const AuthLoading(), Authenticated(tUser)],
+      expect: () => [const AuthLoading(), const Authenticated(tUser)],
       verify: (_) {
         verify(
           () => mockRepo.signInWithEmailPassword(
@@ -175,7 +175,7 @@ void main() {
         displayName: 'New User',
         phone: '+1234567890',
       ),
-      expect: () => [const AuthLoading(), Authenticated(tUser)],
+      expect: () => [const AuthLoading(), const Authenticated(tUser)],
       verify: (_) {
         verify(
           () => mockRepo.signUpWithEmailPassword(
@@ -257,7 +257,7 @@ void main() {
         return AuthCubit(mockRepo, mockLogger);
       },
       act: (cubit) => cubit.signInWithGoogle(),
-      expect: () => [const AuthLoading(), Authenticated(tUser)],
+      expect: () => [const AuthLoading(), const Authenticated(tUser)],
       verify: (_) => verify(() => mockRepo.signInWithGoogle()).called(1),
     );
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import 'service_form_shared.dart';
+import '../../../../core/widgets/widgets.dart';
 
 /// Card with an active/inactive toggle for the service.
 class ServiceSettingsCard extends StatelessWidget {
@@ -17,7 +17,7 @@ class ServiceSettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ServiceFormCard(
+    return FormCard(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         children: [

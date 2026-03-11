@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 import '../../../organization/presentation/cubit/organization_cubit.dart';
 import '../../../organization/presentation/cubit/organization_state.dart';
 import '../cubit/share_access_cubit.dart';
@@ -68,25 +69,14 @@ class ShareAccessPage extends StatelessWidget {
   void _handleShareState(BuildContext context, ShareAccessState state) {
     switch (state) {
       case ShareAccessLinkCopied():
-        _showSnackBar(context, 'Link copied to clipboard', AppColors.success);
+        AppSnackBar.showSuccess(context, 'Link copied to clipboard');
       case ShareAccessDownloaded():
-        _showSnackBar(context, 'QR code saved to gallery', AppColors.success);
+        AppSnackBar.showSuccess(context, 'QR code saved to gallery');
       case ShareAccessError(:final message):
-        _showSnackBar(context, message, AppColors.error);
+        AppSnackBar.showError(context, message);
       case _:
         break;
     }
-  }
-
-  void _showSnackBar(BuildContext context, String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: color,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    );
   }
 }
 
@@ -231,15 +221,15 @@ class _ShareAccessBodyState extends State<_ShareAccessBody> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.lock_outline_rounded,
                   size: 12,
                   color: AppColors.onSurfaceVariant,
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text('Secure · Queue Ease', style: AppTextStyles.bodySmall),
               ],
             ),
@@ -277,14 +267,14 @@ class _ShareAccessBodyState extends State<_ShareAccessBody> {
   }
 
   Widget _buildSectionDivider() {
-    return Row(
+    return const Row(
       children: [
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           child: Text('Actions', style: AppTextStyles.labelSmall),
         ),
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
       ],
     );
   }
@@ -319,7 +309,7 @@ class _MissingSlugError extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               'Setup Required',
               style: AppTextStyles.headlineMedium,
               textAlign: TextAlign.center,

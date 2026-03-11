@@ -3,8 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import 'service_form_shared.dart';
-import 'service_stepper_row.dart';
+import '../../../../core/widgets/widgets.dart';
 
 /// The primary form card containing name, duration, margin, price, and
 /// description fields.
@@ -34,17 +33,18 @@ class ServiceMainCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ServiceFormCard(
+    return FormCard(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ServiceFieldLabel('Service Name'),
+          const FormFieldLabel(text: 'Service Name'),
           const SizedBox(height: 8),
           TextFormField(
             controller: nameController,
             textCapitalization: TextCapitalization.words,
             style: AppTextStyles.bodyLarge,
-            decoration: serviceFieldDecoration(
+            decoration: appFieldDecoration(
               hintText: 'e.g. General Consultation',
             ),
             validator: (value) {
@@ -55,7 +55,7 @@ class ServiceMainCard extends StatelessWidget {
             },
           ),
           const SizedBox(height: 24),
-          ServiceStepperRow(
+          NumericStepperRow(
             icon: Icons.timer_rounded,
             title: 'Duration',
             subtitle: 'How long is the session?',
@@ -65,7 +65,7 @@ class ServiceMainCard extends StatelessWidget {
             onIncrement: onDurationIncrement,
           ),
           const SizedBox(height: 8),
-          ServiceStepperRow(
+          NumericStepperRow(
             icon: Icons.history_rounded,
             title: 'Time Margin',
             subtitle: 'Buffer between slots',
@@ -77,7 +77,7 @@ class ServiceMainCard extends StatelessWidget {
           const SizedBox(height: 16),
           Divider(color: AppColors.outline.withValues(alpha: 0.3), height: 1),
           const SizedBox(height: 20),
-          const ServiceFieldLabel(r'Price ($)'),
+          const FormFieldLabel(text: r'Price ($)'),
           const SizedBox(height: 8),
           TextFormField(
             controller: priceController,
@@ -86,7 +86,7 @@ class ServiceMainCard extends StatelessWidget {
               FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
             ],
             style: AppTextStyles.bodyLarge,
-            decoration: serviceFieldDecoration(hintText: 'Optional').copyWith(
+            decoration: appFieldDecoration(hintText: 'Optional').copyWith(
               prefixText: '\$ ',
               prefixStyle: AppTextStyles.bodyLarge.copyWith(
                 color: AppColors.primary,
@@ -101,14 +101,14 @@ class ServiceMainCard extends StatelessWidget {
             },
           ),
           const SizedBox(height: 20),
-          const ServiceFieldLabel('Description'),
+          const FormFieldLabel(text: 'Description'),
           const SizedBox(height: 8),
           TextFormField(
             controller: descriptionController,
             maxLines: 4,
             maxLength: 500,
             style: AppTextStyles.bodyLarge,
-            decoration: serviceFieldDecoration(
+            decoration: appFieldDecoration(
               hintText: 'Optional description for your customers',
             ),
           ),

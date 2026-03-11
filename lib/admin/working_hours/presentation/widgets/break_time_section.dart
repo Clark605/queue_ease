@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/time_picker_helper.dart';
 
 /// Break-time configuration row embedded in a [DayWorkingHoursTile].
 ///
@@ -31,28 +32,6 @@ class _BreakTimeSectionState extends State<BreakTimeSection> {
 
   bool get _enabled => widget.breakStart != null;
 
-  TimeOfDay _parse(String hhmm) {
-    final p = hhmm.split(':');
-    return TimeOfDay(hour: int.parse(p[0]), minute: int.parse(p[1]));
-  }
-
-  String _fmt(TimeOfDay t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
-
-  String _display(String hhmm) {
-    final t = _parse(hhmm);
-    final h = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
-    return '$h:${t.minute.toString().padLeft(2, '0')} ${t.hour < 12 ? 'AM' : 'PM'}';
-  }
-
-  Future<void> _pickTime(String current, ValueChanged<String> onPicked) async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _parse(current),
-    );
-    if (picked != null) onPicked(_fmt(picked));
-  }
-
   void _onToggle(bool value) {
     if (value) {
       widget.onChanged(_defaultStart, _defaultEnd);
@@ -74,16 +53,34 @@ class _BreakTimeSectionState extends State<BreakTimeSection> {
             _BreakHeader(enabled: _enabled, onToggle: _onToggle),
             if (_enabled)
               _BreakTimeRow(
-                startTime: _display(widget.breakStart!),
-                endTime: _display(widget.breakEnd ?? _defaultEnd),
-                onStartTap: () => _pickTime(
-                  widget.breakStart!,
-                  (t) => widget.onChanged(t, widget.breakEnd),
-                ),
-                onEndTap: () => _pickTime(
+                startTime: TimePickerHelper.display(widget.breakStart!),
+                endTime: TimePickerHelper.display(
                   widget.breakEnd ?? _defaultEnd,
-                  (t) => widget.onChanged(widget.breakStart, t),
                 ),
+                onStartTap: () async {
+                  final picked = await TimePickerHelper.pick(
+                    context,
+                    widget.breakStart!,
+                  );
+                  if (picked != null) {
+                    widget.onChanged(
+                      TimePickerHelper.format(picked),
+                      widget.breakEnd,
+                    );
+                  }
+                },
+                onEndTap: () async {
+                  final picked = await TimePickerHelper.pick(
+                    context,
+                    widget.breakEnd ?? _defaultEnd,
+                  );
+                  if (picked != null) {
+                    widget.onChanged(
+                      widget.breakStart,
+                      TimePickerHelper.format(picked),
+                    );
+                  }
+                },
               ),
           ],
         ),
@@ -203,8 +200,8 @@ class _BreakTimeRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: chip('Start', startTime, onStartTap)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
             child: Icon(
               Icons.arrow_forward,
               size: 16,

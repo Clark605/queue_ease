@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
 import '../../../../core/dialogs/delete_confirmation_dialog.dart';
 import '../cubit/service_cubit.dart';
@@ -37,8 +38,8 @@ class ServiceListPage extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search_rounded),
+          const IconButton(
+            icon: Icon(Icons.search_rounded),
             color: AppColors.onSurfaceVariant,
             onPressed: null, // Future: implement search
             tooltip: 'Search',
@@ -61,12 +62,16 @@ class ServiceListPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is ServiceError) {
-            return _ErrorView(message: state.message);
+            return ErrorView(message: state.message);
           }
           if (state is ServiceLoaded) {
             if (state.services.isEmpty) {
-              return _EmptyStateView(
-                onAdd: () => context.push(Routes.adminServiceForm),
+              return EmptyStateView(
+                icon: Icons.medical_services_outlined,
+                title: 'No services yet',
+                subtitle: 'Add your first service to start accepting bookings',
+                actionLabel: 'Add Service',
+                onAction: () => context.push(Routes.adminServiceForm),
               );
             }
             return _ServiceList(services: state.services);
@@ -126,99 +131,5 @@ class _ServiceList extends StatelessWidget {
     if (confirmed) {
       cubit.deleteService(orgId: service.orgId, serviceId: service.id);
     }
-  }
-}
-
-class _EmptyStateView extends StatelessWidget {
-  const _EmptyStateView({required this.onAdd});
-
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 128,
-              height: 128,
-              decoration: const BoxDecoration(
-                color: Color(0x1A9E9E9E),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.medical_services_outlined,
-                size: 64,
-                color: Colors.grey.shade400,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'No services yet',
-              style: AppTextStyles.headlineSmall.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add your first service to start accepting bookings',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: 240,
-              child: FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: onAdd,
-                icon: const Icon(Icons.add_rounded, size: 20),
-                label: const Text('Add Service'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-            const SizedBox(height: 16),
-            Text('Something went wrong', style: AppTextStyles.headlineSmall),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: AppTextStyles.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

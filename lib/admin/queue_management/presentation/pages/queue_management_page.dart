@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 
 /// Queue management page for managing the live queue.
 ///
@@ -33,14 +34,8 @@ class QueueManagementPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.filter_list_rounded),
             color: AppColors.onSurfaceVariant,
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Filter - Coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            onPressed: () =>
+                AppSnackBar.showInfo(context, 'Filter - Coming soon'),
             tooltip: 'Filter',
           ),
         ],
@@ -93,14 +88,8 @@ class QueueManagementPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             OutlinedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('View history - Coming soon'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
+              onPressed: () =>
+                  AppSnackBar.showInfo(context, 'View history - Coming soon'),
               icon: const Icon(Icons.history),
               label: const Text('View History'),
               style: OutlinedButton.styleFrom(

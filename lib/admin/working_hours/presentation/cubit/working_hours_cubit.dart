@@ -8,18 +8,20 @@ import '../../../../core/error/result.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../shared/organization/domain/entities/working_hours_entity.dart';
 import '../../../../shared/organization/domain/repositories/working_hours_repository.dart';
+import '../../../working_hours/domain/repositories/admin_working_hours_repository.dart';
 import 'working_hours_state.dart';
 
 /// Manages working hours configuration state for an organization.
 ///
-/// Streams the current configuration via [watchWorkingHours] and persists
-/// changes via [saveAll]. The stream subscription is cancelled on [close].
+/// Uses [WorkingHoursRepository] for the real-time watch stream and
+/// [AdminWorkingHoursRepository] for save operations.
 @injectable
 class WorkingHoursCubit extends Cubit<WorkingHoursState> {
-  WorkingHoursCubit(this._repository, this._logger)
+  WorkingHoursCubit(this._repository, this._adminRepository, this._logger)
     : super(const WorkingHoursInitial());
 
   final WorkingHoursRepository _repository;
+  final AdminWorkingHoursRepository _adminRepository;
   final AppLogger _logger;
 
   StreamSubscription<List<WorkingHoursEntity>>? _subscription;
@@ -81,7 +83,7 @@ class WorkingHoursCubit extends Cubit<WorkingHoursState> {
     _logger.info('WorkingHoursCubit: saveAll → $orgId');
     emit(const WorkingHoursSaving());
 
-    final result = await _repository.saveAllWorkingHours(
+    final result = await _adminRepository.saveAllWorkingHours(
       orgId: orgId,
       days: days,
     );

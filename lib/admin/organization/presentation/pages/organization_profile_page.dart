@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_snack_bar.dart';
 import '../cubit/organization_cubit.dart';
 import '../cubit/organization_state.dart';
 
@@ -43,7 +44,7 @@ class OrganizationProfilePage extends StatelessWidget {
                   children: [
                     Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                     const SizedBox(height: 16),
-                    Text('Error', style: AppTextStyles.headlineMedium),
+                    const Text('Error', style: AppTextStyles.headlineMedium),
                     const SizedBox(height: 8),
                     Text(
                       state.message,
@@ -168,10 +169,9 @@ class OrganizationProfilePage extends StatelessWidget {
                       Clipboard.setData(
                         ClipboardData(text: org.bookingLinkSlug),
                       );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Booking link copied to clipboard'),
-                        ),
+                      AppSnackBar.showInfo(
+                        context,
+                        'Booking link copied to clipboard',
                       );
                     },
                   ),

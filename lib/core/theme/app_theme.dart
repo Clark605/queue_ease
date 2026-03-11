@@ -43,6 +43,22 @@ abstract final class AppTheme {
         elevation: 1,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        contentTextStyle: const TextStyle(color: AppColors.onPrimary),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.surface,
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
     );
   }
 }

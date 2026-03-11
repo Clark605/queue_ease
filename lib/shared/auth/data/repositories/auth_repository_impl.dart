@@ -4,7 +4,7 @@ import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/result.dart';
 import '../../../../core/services/user_session_service.dart';
 import '../../../../core/utils/app_logger.dart';
-import '../../../organization/domain/repositories/organization_repository.dart';
+import '../../../../admin/organization/domain/repositories/admin_organization_repository.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/user_role.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -17,14 +17,14 @@ class AuthRepositoryImpl implements AuthRepository {
     this._authDatasource,
     this._firestoreDatasource,
     this._sessionService,
-    this._organizationRepository,
+    this._adminOrganizationRepository,
     this._logger,
   );
 
   final FirebaseAuthDatasource _authDatasource;
   final FirestoreUserDatasource _firestoreDatasource;
   final UserSessionService _sessionService;
-  final OrganizationRepository _organizationRepository;
+  final AdminOrganizationRepository _adminOrganizationRepository;
   final AppLogger _logger;
 
   @override
@@ -107,7 +107,7 @@ class AuthRepositoryImpl implements AuthRepository {
       _logger.info(
         'AuthRepository: creating organization for new admin uid=$uid',
       );
-      final orgResult = await _organizationRepository.createOrganization(
+      final orgResult = await _adminOrganizationRepository.createOrganization(
         adminUid: uid,
         name: orgName ?? '',
       );

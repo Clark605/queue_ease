@@ -9,14 +9,14 @@ class AuthDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text('or', style: AppTextStyles.bodySmall),
         ),
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
       ],
     );
   }

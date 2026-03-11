@@ -48,7 +48,9 @@ FOLLOW-UP ACTIONS:
 # Queue Ease Constitution
 
 ## Core Principles
- - Follow all rules in .github/copilot-instructions.md in addition to the specific principles below
+ - Follow all rules in [.github/copilot-instructions.md](../../.github/copilot-instructions.md) in addition to the specific principles below
+ - Follow all Flutter patterns in the [flutter-patterns skill](c:/Users/Clark/.copilot/skills/flutter-patterns/SKILL.md): [widget patterns](c:/Users/Clark/.copilot/skills/flutter-patterns/patterns/flutter-widget-patterns.md), [testing patterns](c:/Users/Clark/.copilot/skills/flutter-patterns/patterns/flutter-testing-patterns.md), [performance checklist](c:/Users/Clark/.copilot/skills/flutter-patterns/patterns/flutter-performance-checklist.md), [security patterns](c:/Users/Clark/.copilot/skills/flutter-patterns/patterns/flutter-security-patterns.md), and [animation patterns](c:/Users/Clark/.copilot/skills/flutter-patterns/patterns/flutter-animation-patterns.md)
+ - This constitution is the supreme authority for all development decisions in Queue Ease. All team members, code reviews, and automated checks MUST verify compliance with these principles.
 ### I. Code Quality First
 
 All code MUST adhere to Clean Architecture principles with strict layer separation:
@@ -139,6 +141,13 @@ User interface MUST deliver consistent, accessible experiences across all screen
   - Color contrast ratio ≥4.5:1 for normal text, ≥3:1 for large text
   - Semantic labels for screen readers (use `Semantics` widget)
   - Form validation errors announced to screen readers
+- **Animation Standards**: All animations MUST follow these rules:
+  - Prefer implicit animations (`AnimatedContainer`, `AnimatedOpacity`, `AnimatedPositioned`) over explicit animations when possible
+  - Use `AnimatedBuilder` for custom explicit animations; never use raw `addListener` on an `AnimationController`
+  - Every `AnimationController` MUST be disposed in `dispose()` to prevent memory leaks
+  - Duration guidelines: 200–300ms for micro-interactions, 300–500ms for screen transitions
+  - Wrap widgets containing complex animations in `RepaintBoundary` to isolate repaints
+  - Use `CurvedAnimation` with appropriate `Curves` constants (e.g., `easeInOut`, `easeOut`)
 - **Offline-First Design**: Graceful degradation when network unavailable
   - Firestore cached queries enable offline reads
   - Queue writes when online returns, show "Waiting for connection" indicator
@@ -198,6 +207,12 @@ Application MUST meet quantifiable performance benchmarks for real-time operatio
 - **Frame Rate**: 60fps maintained during animations, scrolling, and real-time queue updates
   - No dropped frames during page transitions or queue position changes
   - Talker logging MUST use lazy evaluation to minimize overhead
+- **Widget Composition Rules** (enforced for all UI code):
+  - All reusable UI components MUST be `StatelessWidget` or `StatefulWidget` classes — never plain functions returning `Widget`; functions bypass Flutter's element diffing and cause unnecessary rebuilds
+  - Maximum widget nesting depth: 4–5 levels before extracting into a named sub-widget class
+  - Use `RepaintBoundary` to isolate expensive or frequently repainted widgets (e.g., queue position counters, real-time timers)
+  - Cache expensive computations outside `build()` — never perform heavy work inside a build method
+  - Use `compute()` (isolate) for CPU-intensive operations (e.g., bulk appointment sorting, queue reordering algorithms)
 - **Build Size**: APK <50MB, use bundle splits for feature APKs exceeding 10MB
 - **Critical Business Logic Performance**:
   - Time margin countdown accuracy: ±5s (countdown starts when customer's turn begins)
@@ -312,6 +327,15 @@ Application MUST meet quantifiable performance benchmarks for real-time operatio
   - No public write access without authentication
 - User data encrypted at rest (Firebase default) and in transit (HTTPS)
 - Authentication tokens refreshed automatically; handle expiration gracefully
+- **Secure Credential Storage**: Authentication tokens and sensitive credentials MUST use `flutter_secure_storage`, NOT `SharedPreferences`
+  - Configure `AndroidOptions(encryptedSharedPreferences: true)` and `IOSOptions(accessibility: KeychainAccessibility.first_unlock)`
+  - `SharedPreferences` is acceptable only for non-sensitive UI preferences (e.g., onboarding seen flag, theme selection)
+  - Tokens, refresh tokens, and any PII stored locally MUST go to the secure keychain/keystore
+- **Input Validation & Sanitization**: All user-supplied input MUST be validated before use
+  - Validate email, phone, and URL formats with regex before submitting to Firestore
+  - Sanitize text inputs to prevent XSS in any web-rendered content (replace `<`, `>`, `"` with HTML entities)
+  - Firestore security rules provide the server-side enforcement layer; client validation is UX only
+  - Never construct Firestore queries by string concatenation of user input — always use typed field filters
 - **PII Protection**: Names, phone numbers, email MUST NOT be logged in production Talker logs
 - Password reset flows MUST use Firebase email verification (no SMS in MVP)
 - Google Sign-In consent screens MUST disclose data usage per OAuth policies

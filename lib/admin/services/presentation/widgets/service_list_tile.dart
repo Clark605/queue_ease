@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
 
 /// Card tile for a [ServiceEntity] in the admin service list.
@@ -27,17 +28,6 @@ class ServiceListTile extends StatelessWidget {
   /// Called when the active switch is toggled.
   final VoidCallback onToggle;
 
-  String get _initials {
-    final parts = service.name
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((w) => w.isNotEmpty)
-        .toList();
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) return parts[0][0].toUpperCase();
-    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Opacity(
@@ -59,7 +49,7 @@ class ServiceListTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            _InitialsAvatar(initials: _initials),
+            InitialsAvatar(name: service.name),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -91,7 +81,7 @@ class ServiceListTile extends StatelessWidget {
               onChanged: (_) => onToggle(),
             ),
             PopupMenuButton<String>(
-              icon: Icon(
+              icon: const Icon(
                 Icons.more_vert,
                 color: AppColors.onSurfaceVariant,
                 size: 20,
@@ -100,17 +90,17 @@ class ServiceListTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               itemBuilder: (_) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'edit',
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.edit_outlined,
                         size: 18,
                         color: AppColors.primary,
                       ),
-                      const SizedBox(width: 8),
-                      const Text('Edit'),
+                      SizedBox(width: 8),
+                      Text('Edit'),
                     ],
                   ),
                 ),
@@ -135,33 +125,6 @@ class ServiceListTile extends StatelessWidget {
               },
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InitialsAvatar extends StatelessWidget {
-  const _InitialsAvatar({required this.initials});
-
-  final String initials;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        shape: BoxShape.circle,
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        initials,
-        style: AppTextStyles.bodySmall.copyWith(
-          color: AppColors.primary,
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
         ),
       ),
     );

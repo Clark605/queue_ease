@@ -93,7 +93,7 @@ void main() {
       });
 
       test('toString includes cause and message', () {
-        final e = UnknownException('boom', cause: 'root cause');
+        final e = const UnknownException('boom', cause: 'root cause');
         expect(e.toString(), contains('root cause'));
         expect(e.toString(), contains('boom'));
       });

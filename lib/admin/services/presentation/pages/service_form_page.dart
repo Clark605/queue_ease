@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/dialogs/delete_confirmation_dialog.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_snack_bar.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';
-import '../../../../core/dialogs/delete_confirmation_dialog.dart';
 import '../cubit/service_cubit.dart';
 import '../cubit/service_form_cubit.dart';
 import '../cubit/service_form_state.dart';
 import '../cubit/service_state.dart';
-import '../widgets/service_form_app_bar.dart';
-import '../widgets/service_form_bottom_bar.dart';
 import '../widgets/service_main_card.dart';
 import '../widgets/service_settings_card.dart';
 
@@ -94,13 +94,14 @@ class _ServiceFormBodyState extends State<_ServiceFormBody> {
               context.watch<ServiceCubit>().state is ServiceLoading;
           return Scaffold(
             backgroundColor: AppColors.background,
-            appBar: ServiceFormAppBar(
-              isEditMode: _isEditMode,
+            appBar: FormAppBar(
+              title: _isEditMode ? 'Edit Service' : 'Add Service',
               onBack: () => context.pop(),
             ),
-            bottomNavigationBar: ServiceFormBottomBar(
-              isLoading: isLoading,
+            bottomNavigationBar: FormActionBar(
+              label: 'Save Service',
               onSave: _onSave,
+              isLoading: isLoading,
             ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -154,24 +155,15 @@ class _ServiceFormBodyState extends State<_ServiceFormBody> {
 
   void _onServiceCubitChange(BuildContext context, ServiceState state) {
     if (state is ServiceOperationSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isEditMode
-                ? 'Service updated successfully'
-                : 'Service added successfully',
-          ),
-          duration: const Duration(milliseconds: 1500),
-        ),
+      AppSnackBar.showSuccess(
+        context,
+        _isEditMode
+            ? 'Service updated successfully'
+            : 'Service added successfully',
       );
       if (mounted) context.pop();
     } else if (state is ServiceMutationError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message),
-          backgroundColor: Colors.red[600],
-        ),
-      );
+      AppSnackBar.showError(context, state.message);
     }
   }
 
@@ -194,9 +186,7 @@ class _ServiceFormBodyState extends State<_ServiceFormBody> {
 
     final authState = context.read<AuthCubit>().state;
     if (authState is! Authenticated || authState.user.organizationId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to determine organization')),
-      );
+      AppSnackBar.showError(context, 'Unable to determine organization');
       return;
     }
 
