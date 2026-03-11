@@ -49,9 +49,9 @@
 
 **Verify**: Search for `_parse` and `_fmt` in `admin/working_hours/presentation/widgets/` — zero results.
 
-- [ ] T010 [US2] Create `lib/core/utils/time_picker_helper.dart` — `abstract final class TimePickerHelper` with four static methods: `parse(String hhmm) → TimeOfDay`, `format(TimeOfDay t) → String`, `display(String hhmm) → String` (12h AM/PM), `pick(BuildContext context, String current) → Future<TimeOfDay?>`; add malformed-input guard in `parse` (log warning, return `TimeOfDay(hour:0, minute:0)`)
-- [ ] T011 [P] [US2] Update `lib/admin/working_hours/presentation/widgets/day_working_hours_tile.dart` — replace local `_parse`, `_fmt`, `_display`, `_pickTime` implementations with calls to `TimePickerHelper.*`; delete the four private methods
-- [ ] T012 [P] [US2] Update `lib/admin/working_hours/presentation/widgets/break_time_section.dart` — replace local `_parse`, `_fmt`, `_display`, `_pickTime` implementations with calls to `TimePickerHelper.*`; delete the four private methods
+- [X] T010 [US2] Create `lib/core/utils/time_picker_helper.dart` — `abstract final class TimePickerHelper` with four static methods: `parse(String hhmm) → TimeOfDay`, `format(TimeOfDay t) → String`, `display(String hhmm) → String` (12h AM/PM), `pick(BuildContext context, String current) → Future<TimeOfDay?>`; add malformed-input guard in `parse` (log warning, return `TimeOfDay(hour:0, minute:0)`)
+- [X] T011 [P] [US2] Update `lib/admin/working_hours/presentation/widgets/day_working_hours_tile.dart` — replace local `_parse`, `_fmt`, `_display`, `_pickTime` implementations with calls to `TimePickerHelper.*`; delete the four private methods
+- [X] T012 [P] [US2] Update `lib/admin/working_hours/presentation/widgets/break_time_section.dart` — replace local `_parse`, `_fmt`, `_display`, `_pickTime` implementations with calls to `TimePickerHelper.*`; delete the four private methods
 
 > **Note**: T011 and T012 are parallel (different files) but both depend on T010.
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/time_picker_helper.dart';
 import '../../../../shared/organization/domain/entities/working_hours_entity.dart';
 import 'break_time_section.dart';
 
@@ -40,28 +41,6 @@ class _DayWorkingHoursTileState extends State<DayWorkingHoursTile> {
   WorkingHoursEntity get _e => widget.entity;
 
   String get _dayName => _dayNames[_e.dayOfWeek.clamp(0, 6)];
-
-  TimeOfDay _parse(String hhmm) {
-    final p = hhmm.split(':');
-    return TimeOfDay(hour: int.parse(p[0]), minute: int.parse(p[1]));
-  }
-
-  String _fmt(TimeOfDay t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
-
-  String _display(String hhmm) {
-    final t = _parse(hhmm);
-    final h = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
-    return '$h:${t.minute.toString().padLeft(2, '0')} ${t.hour < 12 ? 'AM' : 'PM'}';
-  }
-
-  Future<void> _pickTime(String current, ValueChanged<String> onPicked) async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _parse(current),
-    );
-    if (picked != null) onPicked(_fmt(picked));
-  }
 
   /// Returns a copy of the current entity with the specified fields overridden.
   ///
@@ -128,16 +107,32 @@ class _DayWorkingHoursTileState extends State<DayWorkingHoursTile> {
                     children: [
                       const Divider(height: 1, indent: 16, endIndent: 16),
                       _TimeRow(
-                        openTime: _display(_e.openTime),
-                        closeTime: _display(_e.closeTime),
-                        onOpenTap: () => _pickTime(
-                          _e.openTime,
-                          (t) => widget.onChanged(_clone(openTime: t)),
-                        ),
-                        onCloseTap: () => _pickTime(
-                          _e.closeTime,
-                          (t) => widget.onChanged(_clone(closeTime: t)),
-                        ),
+                        openTime: TimePickerHelper.display(_e.openTime),
+                        closeTime: TimePickerHelper.display(_e.closeTime),
+                        onOpenTap: () async {
+                          final picked = await TimePickerHelper.pick(
+                            context,
+                            _e.openTime,
+                          );
+                          if (picked != null) {
+                            widget.onChanged(
+                              _clone(openTime: TimePickerHelper.format(picked)),
+                            );
+                          }
+                        },
+                        onCloseTap: () async {
+                          final picked = await TimePickerHelper.pick(
+                            context,
+                            _e.closeTime,
+                          );
+                          if (picked != null) {
+                            widget.onChanged(
+                              _clone(
+                                closeTime: TimePickerHelper.format(picked),
+                              ),
+                            );
+                          }
+                        },
                       ),
                       const Divider(height: 1, indent: 16, endIndent: 16),
                       BreakTimeSection(
@@ -184,17 +179,10 @@ class _DayHeader extends StatelessWidget {
   final ValueChanged<bool> onToggle;
   final VoidCallback onExpand;
 
-  String _fmtDisplay(String hhmm) {
-    final p = hhmm.split(':');
-    final t = TimeOfDay(hour: int.parse(p[0]), minute: int.parse(p[1]));
-    final h = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
-    return '$h:${t.minute.toString().padLeft(2, '0')} ${t.hour < 12 ? 'AM' : 'PM'}';
-  }
-
   String get _subtitle {
     if (!isOpen) return 'Closed';
     if (breakStart != null && breakEnd != null) {
-      return 'Open · Break ${_fmtDisplay(breakStart!)}–${_fmtDisplay(breakEnd!)}';
+      return 'Open · Break ${TimePickerHelper.display(breakStart!)}–${TimePickerHelper.display(breakEnd!)}';
     }
     return 'Open';
   }
