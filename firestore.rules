@@ -226,9 +226,8 @@ service cloud.firestore {
           && (request.auth.uid == resource.data.customerId
               || ownsOrganization(orgId));
 
-        // T049-list: Only organization owner can list/query all appointments
-        allow list: if isAuthenticated()
-          && ownsOrganization(orgId);
+        // T049-list: Any authenticated user can list appointments (needed for slot conflict check)
+        allow list: if isAuthenticated();
         
         // T050: Customer can create appointment with matching customerId and validation
         allow create: if isAuthenticated()
@@ -243,7 +242,7 @@ service cloud.firestore {
           && request.resource.data.createdAt is timestamp
           // scheduledAt must be in the future
           && request.resource.data.scheduledAt > request.time
-          && hasOnlyAllowedFields(['orgId','customerId','serviceId','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
+          && hasOnlyAllowedFields(['orgId','customerId','serviceId','customerName','customerPhone','queuePosition','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
 
         // T051: Only organization owner can update/delete appointments; createdAt immutable
         allow update: if isAuthenticated()
@@ -260,7 +259,7 @@ service cloud.firestore {
           && request.resource.data.scheduledAt is timestamp
           // Re-validate status enum on update
           && request.resource.data.status in ['booked','inQueue','serving','completed','noShow']
-          && hasOnlyAllowedFields(['orgId','customerId','serviceId','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
+          && hasOnlyAllowedFields(['orgId','customerId','serviceId','customerName','customerPhone','queuePosition','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
 
         allow delete: if isAuthenticated() && ownsOrganization(orgId);
       }
