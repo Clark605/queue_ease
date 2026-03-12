@@ -57,9 +57,9 @@
 
 ## Phase 4: User Story 2 — Customer Selects a Service (Priority: P2)
 
-**Goal**: Customer taps "Book Appointment", is navigated to the service selection screen, sees all active services (name, duration, price, description), and taps one to proceed.
+**Goal**: Customer taps "Book Appointment", is navigated to the service selection screen, sees all active services (name, duration, price, description), taps one to view its details (duration, price, queueType), then taps "Continue to Booking" to proceed to slot selection.
 
-**Independent Test**: On the service selection screen, at least one active service renders with name + duration. Tapping it navigates to the slot picker. Empty state renders when no active services exist.
+**Independent Test**: On the service selection screen, at least one active service renders with name + duration. Tapping it navigates to the service details screen. On the service details screen, all populated fields render (duration always; price and queueType only when non-null). "Continue to Booking" navigates to slot picker. Empty state renders when no active services exist.
 
 - [x] T014 [US2] Create `GetActiveServicesUseCase` (`@lazySingleton`) that calls `ServiceRepository.watchServices(orgId)` and filters to `isActive == true`; logs `talker.error()` on failure in `lib/customer/booking_flow/domain/use_cases/get_active_services_use_case.dart`
 - [x] T015 [P] [US2] Create `ServiceSelectionState` sealed class with states: `ServiceSelectionInitial`, `ServiceSelectionLoading`, `ServiceSelectionLoaded(List<ServiceEntity> services)`, `ServiceSelectionError(String message)` in `lib/customer/booking_flow/presentation/cubit/service_selection_state.dart`
@@ -67,8 +67,10 @@
 - [x] T017 [US2] Create `ServiceSelectionCubit` (`@injectable`), injecting `GetActiveServicesUseCase`; method `loadServices(String orgId)` subscribes to the active-services stream in `lib/customer/booking_flow/presentation/cubit/service_selection_cubit.dart`
 - [x] T018 [US2] Create `ServiceSelectionPage` consuming `ServiceSelectionCubit`; render `ListView.builder` of `ServiceCard`; show empty-state widget when list is empty; show `AppLoadingIndicator` on loading in `lib/customer/booking_flow/presentation/pages/service_selection_page.dart`
 - [x] T019 [US2] Add `/c/org/:slug/services` route in `lib/core/router/app_router.dart`; wire "Book Appointment" button on `OrganizationLandingPage` to navigate here passing `orgId` as extra; provide `ServiceSelectionCubit` via `BlocProvider`
+- [x] T019a [US2] Create `ServiceDetailsPage` (stateless); accepts `ServiceEntity` and `orgId` via GoRouter extra; renders hero section (service name + optional description), 2×2 stats grid showing duration (always), price (omit tile when null), queueType (omit tile when null); "Continue to Booking" button fixed at bottom in `lib/customer/booking_flow/presentation/pages/service_details_page.dart`
+- [x] T019b [P] [US2] Add `/c/org/:slug/service-details` route in `lib/core/router/app_router.dart`; wire `ServiceSelectionPage` `ServiceCard` onTap to push here passing `serviceEntity` and `orgId` as extra; wire `ServiceDetailsPage` "Continue to Booking" button to navigate to `/c/org/:slug/slots` passing `orgId`, `serviceId`, `serviceDurationMinutes` as extra
 
-**Checkpoint**: User Stories 1 and 2 work — org landing page → service selection.
+**Checkpoint**: User Stories 1 and 2 work — org landing page → service selection → service details.
 
 ---
 
@@ -78,15 +80,15 @@
 
 **Independent Test**: With a 30-min service, org hours 09:00–17:00 with 12:00–13:00 break and one existing booking at 10:00, the slot at 10:00 is absent and no slots in 12:00–13:00 appear. All other 30-min boundary slots are present.
 
-- [ ] T020 [US3] Create `FirestoreAppointmentDatasource` (`@lazySingleton`) with: `getAppointmentsForDateAndService({orgId, serviceId, date})` (range query on `scheduledAt` + `serviceId` filter) and `createAppointmentTransactional(AppointmentEntity)` (Firestore transaction with re-check then write); log errors via `talker.error()` in `lib/shared/booking/data/datasources/firestore_appointment_datasource.dart`
-- [ ] T021 [US3] Create `AppointmentRepositoryImpl` (`@LazySingleton(as: AppointmentRepository)`), delegating both methods to `FirestoreAppointmentDatasource`, wrapping in `Result.guard()`; map `FirebaseException` codes to `AppException` subtypes in `lib/shared/booking/data/repositories/appointment_repository_impl.dart`
-- [ ] T022 [US3] Create `CalculateAvailableSlotsUseCase` (`@lazySingleton`): pure domain algorithm — (1) generate candidate slots at `durationMinutes` intervals from `openTime` to `closeTime`, (2) remove overlap with `breakStart–breakEnd`, (3) fetch existing appointments from `AppointmentRepository.getAppointmentsForDateAndService()`, (4) remove overlap with confirmed appointments (status ≠ `noShow`), (5) remove past slots for today; log `talker.warning()` on empty result in `lib/customer/booking_flow/domain/use_cases/calculate_available_slots_use_case.dart`
-- [ ] T023 [P] [US3] Create `SlotPickerState` sealed class with states: `SlotPickerInitial`, `SlotPickerLoading(DateTime selectedDate)`, `SlotPickerLoaded(DateTime selectedDate, List<DateTime> availableSlots, DateTime? selectedSlot)`, `SlotPickerNoSlots(DateTime selectedDate)`, `SlotPickerError(String message)` in `lib/customer/booking_flow/presentation/cubit/slot_picker_state.dart`
-- [ ] T024 [P] [US3] Create `DateSelector` widget: horizontal 7-day row (today → +6 days); closed days (per `WorkingHoursEntity.isOpen`) shown as disabled; selected day highlighted; emits `onDateSelected(DateTime)` callback in `lib/customer/booking_flow/presentation/widgets/date_selector.dart`
-- [ ] T025 [P] [US3] Create `TimeSlotGrid` widget: `ListView.builder` of time slot chips from `List<DateTime>`; tap-to-select highlights the slot (stores `selectedSlot`); empty state widget when list is empty in `lib/customer/booking_flow/presentation/widgets/time_slot_grid.dart`
-- [ ] T026 [US3] Create `SlotPickerCubit` (`@injectable`), injecting `CalculateAvailableSlotsUseCase` and `WorkingHoursRepository`; method `loadSlotsForDate({orgId, serviceId, date, durationMinutes})` fetches working hours then delegates to use case; method `selectSlot(DateTime)` updates `selectedSlot` on `SlotPickerLoaded` in `lib/customer/booking_flow/presentation/cubit/slot_picker_cubit.dart`
-- [ ] T027 [US3] Create `SlotPickerPage` consuming `SlotPickerCubit`; compose `DateSelector` + `TimeSlotGrid`; show `AppLoadingIndicator` on loading; enable "Continue" button only when `selectedSlot != null` in `lib/customer/booking_flow/presentation/pages/slot_picker_page.dart`
-- [ ] T028 [US3] Add `/c/org/:slug/slots` route in `lib/core/router/app_router.dart`; wire `ServiceSelectionPage` service-tap callback to navigate here passing `orgId`, `serviceId`, `serviceDurationMinutes` as extra; provide `SlotPickerCubit` via `BlocProvider`
+- [x] T020 [US3] Create `FirestoreAppointmentDatasource` (`@lazySingleton`) with: `getAppointmentsForDateAndService({orgId, serviceId, date})` (range query on `scheduledAt` + `serviceId` filter) and `createAppointmentTransactional(AppointmentEntity)` (Firestore transaction with re-check then write); log errors via `talker.error()` in `lib/shared/booking/data/datasources/firestore_appointment_datasource.dart`
+- [x] T021 [US3] Create `AppointmentRepositoryImpl` (`@LazySingleton(as: AppointmentRepository)`), delegating both methods to `FirestoreAppointmentDatasource`, wrapping in `Result.guard()`; map `FirebaseException` codes to `AppException` subtypes in `lib/shared/booking/data/repositories/appointment_repository_impl.dart`
+- [x] T022 [US3] Create `CalculateAvailableSlotsUseCase` (`@lazySingleton`): pure domain algorithm — (1) generate candidate slots at `durationMinutes` intervals from `openTime` to `closeTime`, (2) remove overlap with `breakStart–breakEnd`, (3) fetch existing appointments from `AppointmentRepository.getAppointmentsForDateAndService()`, (4) remove overlap with confirmed appointments (status ≠ `noShow`), (5) remove past slots for today; log `talker.warning()` on empty result in `lib/customer/booking_flow/domain/use_cases/calculate_available_slots_use_case.dart`
+- [x] T023 [P] [US3] Create `SlotPickerState` sealed class with states: `SlotPickerInitial`, `SlotPickerLoading(DateTime selectedDate)`, `SlotPickerLoaded(DateTime selectedDate, List<DateTime> availableSlots, DateTime? selectedSlot)`, `SlotPickerNoSlots(DateTime selectedDate)`, `SlotPickerError(String message)` in `lib/customer/booking_flow/presentation/cubit/slot_picker_state.dart`
+- [x] T024 [P] [US3] Create `DateSelector` widget: horizontal 7-day row (today → +6 days); closed days (per `WorkingHoursEntity.isOpen`) shown as disabled; selected day highlighted; emits `onDateSelected(DateTime)` callback in `lib/customer/booking_flow/presentation/widgets/date_selector.dart`
+- [x] T025 [P] [US3] Create `TimeSlotGrid` widget: `ListView.builder` of time slot chips from `List<DateTime>`; tap-to-select highlights the slot (stores `selectedSlot`); empty state widget when list is empty in `lib/customer/booking_flow/presentation/widgets/time_slot_grid.dart`
+- [x] T026 [US3] Create `SlotPickerCubit` (`@injectable`), injecting `CalculateAvailableSlotsUseCase` and `WorkingHoursRepository`; method `loadSlotsForDate({orgId, serviceId, date, durationMinutes})` fetches working hours then delegates to use case; method `selectSlot(DateTime)` updates `selectedSlot` on `SlotPickerLoaded` in `lib/customer/booking_flow/presentation/cubit/slot_picker_cubit.dart`
+- [x] T027 [US3] Create `SlotPickerPage` consuming `SlotPickerCubit`; compose `DateSelector` + `TimeSlotGrid`; show `AppLoadingIndicator` on loading; enable "Continue" button only when `selectedSlot != null` in `lib/customer/booking_flow/presentation/pages/slot_picker_page.dart`
+- [x] T028 [US3] Add `/c/org/:slug/slots` route in `lib/core/router/app_router.dart`; wire `ServiceDetailsPage` "Continue to Booking" button to navigate here passing `orgId`, `serviceId`, `serviceDurationMinutes` as extra (handled in T019b); provide `SlotPickerCubit` via `BlocProvider`
 
 **Checkpoint**: User Stories 1–3 work — org → service → slot picker with accurate conflict-aware slot list.
 
@@ -98,12 +100,12 @@
 
 **Independent Test**: Valid name + slot → appointment saved with `status = booked`, all required fields set. Empty name → inline validation error. Second concurrent write to same slot → conflict error shown, form stays mounted.
 
-- [ ] T029 [US4] Create `CreateBookingUseCase` (`@lazySingleton`), injecting `AppointmentRepository`; validate `customerName` not empty (emit `ValidationException`); construct `AppointmentEntity` with `status = booked`, `createdAt = DateTime.now()`; delegate to `AppointmentRepository.createAppointment()`; log `talker.warning()` on conflict, `talker.error()` on other failures in `lib/customer/booking_flow/domain/use_cases/create_booking_use_case.dart`
-- [ ] T030 [P] [US4] Create `BookingFormState` sealed class with states: `BookingFormInitial(String prefillName)`, `BookingFormSubmitting`, `BookingFormSuccess(AppointmentEntity appointment)`, `BookingFormConflict(String message)`, `BookingFormError(String message)` in `lib/customer/booking_flow/presentation/cubit/booking_form_state.dart`
-- [ ] T031 [P] [US4] Create `BookingSummaryCard` widget: displays org name, service name, formatted date + time, duration; uses `const` constructor; read-only in `lib/customer/booking_flow/presentation/widgets/booking_summary_card.dart`
-- [ ] T032 [US4] Create `BookingFormCubit` (`@injectable`), injecting `CreateBookingUseCase`; on submit: emits `BookingFormSubmitting` → calls use case → emits `BookingFormSuccess` or `BookingFormConflict` or `BookingFormError`; form data (name, phone) is held in the cubit so retry re-uses same inputs in `lib/customer/booking_flow/presentation/cubit/booking_form_cubit.dart`
-- [ ] T033 [US4] Create `BookingFormPage` consuming `BookingFormCubit`; render `BookingSummaryCard` + name `TextFormField` (required validation) + phone `TextFormField` (optional); on `BookingFormError` emit inline error banner with "Retry" button (form stays mounted, fields preserved); on `BookingFormConflict` show snackbar then pop back to slot picker in `lib/customer/booking_flow/presentation/pages/booking_form_page.dart`
-- [ ] T034 [US4] Add `/c/org/:slug/book` route in `lib/core/router/app_router.dart`; wire `SlotPickerPage` "Continue" button to navigate here passing `orgId`, `serviceId`, `serviceEntity`, `scheduledAt`, `customerId`; provide `BookingFormCubit` via `BlocProvider`
+- [x] T029 [US4] Create `CreateBookingUseCase` (`@lazySingleton`), injecting `AppointmentRepository`; validate `customerName` not empty (emit `ValidationException`); construct `AppointmentEntity` with `status = booked`, `createdAt = DateTime.now()`; delegate to `AppointmentRepository.createAppointment()`; log `talker.warning()` on conflict, `talker.error()` on other failures in `lib/customer/booking_flow/domain/use_cases/create_booking_use_case.dart`
+- [x] T030 [P] [US4] Create `BookingFormState` sealed class with states: `BookingFormInitial(String prefillName)`, `BookingFormSubmitting`, `BookingFormSuccess(AppointmentEntity appointment)`, `BookingFormConflict(String message)`, `BookingFormError(String message)` in `lib/customer/booking_flow/presentation/cubit/booking_form_state.dart`
+- [x] T031 [P] [US4] Create `BookingSummaryCard` widget: displays org name, service name, formatted date + time, duration; uses `const` constructor; read-only in `lib/customer/booking_flow/presentation/widgets/booking_summary_card.dart`
+- [x] T032 [US4] Create `BookingFormCubit` (`@injectable`), injecting `CreateBookingUseCase`; on submit: emits `BookingFormSubmitting` → calls use case → emits `BookingFormSuccess` or `BookingFormConflict` or `BookingFormError`; form data (name, phone) is held in the cubit so retry re-uses same inputs in `lib/customer/booking_flow/presentation/cubit/booking_form_cubit.dart`
+- [x] T033 [US4] Create `BookingFormPage` consuming `BookingFormCubit`; render `BookingSummaryCard` + name `TextFormField` (required validation) + phone `TextFormField` (optional); on `BookingFormError` emit inline error banner with "Retry" button (form stays mounted, fields preserved); on `BookingFormConflict` show snackbar then pop back to slot picker in `lib/customer/booking_flow/presentation/pages/booking_form_page.dart`
+- [x] T034 [US4] Add `/c/org/:slug/book` route in `lib/core/router/app_router.dart`; wire `SlotPickerPage` "Continue" button to navigate here passing `orgId`, `serviceId`, `serviceEntity`, `scheduledAt`, `customerId`; provide `BookingFormCubit` via `BlocProvider`
 
 **Checkpoint**: User Stories 1–4 work — full booking funnel through to successful appointment write.
 
@@ -115,8 +117,8 @@
 
 **Independent Test**: `BookingConfirmationPage` renders correct org + service + time data from the passed `AppointmentEntity`. "Back to Home" clears the `/c/org/:slug/...` stack and lands on customer home.
 
-- [ ] T035 [US5] Create `BookingConfirmationPage` (stateless): accepts `OrganizationEntity`, `ServiceEntity`, `AppointmentEntity` via GoRouter extra; displays org name, service name, formatted scheduled date/time, optional address; "Back to Home" button in `lib/customer/booking_flow/presentation/pages/booking_confirmation_page.dart`
-- [ ] T036 [US5] Add `/c/org/:slug/confirmation` route in `lib/core/router/app_router.dart`; on `BookingFormCubit` emitting `BookingFormSuccess`, navigate here with `go()` (not `push()`) to clear the booking stack; "Back to Home" calls `context.go('/c')` to land on customer home
+- [x] T035 [US5] Create `BookingConfirmationPage` (stateless): accepts `OrganizationEntity`, `ServiceEntity`, `AppointmentEntity` via GoRouter extra; displays org name, service name, formatted scheduled date/time, optional address; "Back to Home" button in `lib/customer/booking_flow/presentation/pages/booking_confirmation_page.dart`
+- [x] T036 [US5] Add `/c/org/:slug/confirmation` route in `lib/core/router/app_router.dart`; on `BookingFormCubit` emitting `BookingFormSuccess`, navigate here with `go()` (not `push()`) to clear the booking stack; "Back to Home" calls `context.go('/c')` to land on customer home
 
 **Checkpoint**: Complete end-to-end booking funnel is demoable: QR link → org → service → slot → form → confirmation → home.
 
@@ -169,7 +171,7 @@ This feature is a **linear booking funnel** — each story is a step that feeds 
 | Use case before cubit | T009 before T011; T014 before T017; T022 before T026; T029 before T032 |
 | State file before cubit | T010 before T011; T015 before T017; T023 before T026; T030 before T032 |
 | Cubit + widget before page | T011 before T012; T016+T017 before T018; T024+T025+T026 before T027; T031+T032 before T033 |
-| Page before route | T012 before T013; T018 before T019; T027 before T028; T033 before T034; T035 before T036 |
+| Page before route | T012 before T013; T018 before T019; T019a before T019b; T027 before T028; T033 before T034; T035 before T036 |
 
 ---
 
@@ -206,9 +208,12 @@ T015 [ServiceSelectionState]  ─┐
 T016 [ServiceCard widget]      ├─ parallel
 T014 [GetActiveServicesUseCase]─┘
   ↓
-T017 [Cubit]  ← T014 + T015
-T018 [Page]   ← T016 + T017
-T019 [Route]  ← T018
+T017 [Cubit]              ← T014 + T015
+T018 [Page]               ← T016 + T017
+T019a [ServiceDetailsPage] ─┐  parallel
+T019  [/services route]    ─┘  ← T018
+  ↓
+T019b [/service-details route] ← T018 + T019a
 ```
 
 ### Phase 5 — US3 parallel cluster:
@@ -268,16 +273,16 @@ T040 [smoke test]            (run last)
 
 | Metric | Value |
 |--------|-------|
-| Total tasks | 40 |
+| Total tasks | 42 |
 | Phase 1 (Setup) | 1 task |
 | Phase 2 (Foundational) | 4 tasks |
 | Phase 3 (US1 — Org Landing) | 8 tasks |
-| Phase 4 (US2 — Service Selection) | 6 tasks |
+| Phase 4 (US2 — Service Selection) | 8 tasks |
 | Phase 5 (US3 — Slot Picker) | 9 tasks |
 | Phase 6 (US4 — Booking Form) | 6 tasks |
 | Phase 7 (US5 — Confirmation) | 2 tasks |
 | Phase 8 (Polish) | 4 tasks |
-| Parallelizable tasks [P] | 17 tasks |
+| Parallelizable tasks [P] | 18 tasks |
 | New files | ~28 |
 | Modified files | 7 (`firestore.rules`, `firestore.indexes.json`, `organization_repository.dart`, `firestore_organization_datasource.dart`, `organization_repository_impl.dart`, `appointment_model.dart`, `app_router.dart`) |
 | Suggested MVP | Phase 1 + Phase 2 + Phase 3 (US1) — 13 tasks |

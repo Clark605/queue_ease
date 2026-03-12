@@ -30,6 +30,8 @@
 // SlotPickerNoSlots             — selected date has zero available slots
 // SlotPickerError               — failure
 
+// ignore_for_file: dangling_library_doc_comments
+
 // ---------------------------------------------------------------------------
 // 4. BookingFormCubit States
 // ---------------------------------------------------------------------------
