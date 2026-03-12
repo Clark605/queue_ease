@@ -29,6 +29,21 @@ class AppointmentModel {
   final String? customerPhone;
   final int? queuePosition;
 
+  /// Creates an [AppointmentModel] from a domain [AppointmentEntity].
+  ///
+  /// Used by the datasource write path: `AppointmentModel.fromEntity(entity).toMap()`.
+  AppointmentModel.fromEntity(AppointmentEntity entity)
+    : id = entity.id,
+      orgId = entity.orgId,
+      serviceId = entity.serviceId,
+      customerId = entity.customerId,
+      customerName = entity.customerName,
+      scheduledAt = entity.scheduledAt,
+      status = entity.status,
+      createdAt = entity.createdAt,
+      customerPhone = entity.customerPhone,
+      queuePosition = entity.queuePosition;
+
   /// Creates an [AppointmentModel] from a Firestore document.
   ///
   /// The [orgId] parameter is required since appointments are stored in a
