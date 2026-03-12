@@ -44,7 +44,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your Bookings', style: AppTextStyles.headlineMedium),
+            const Text('Your Bookings', style: AppTextStyles.headlineMedium),
             const SizedBox(height: 24),
             Row(
               children: [

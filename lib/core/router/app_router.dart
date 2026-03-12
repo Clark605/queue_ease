@@ -14,10 +14,16 @@ import '../../admin/share_access/presentation/cubit/share_access_cubit.dart';
 import '../../admin/share_access/presentation/pages/share_access_page.dart';
 import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart';
 import '../../admin/working_hours/presentation/pages/working_hours_page.dart';
+import '../../customer/booking_flow/presentation/cubit/booking_form_cubit.dart';
 import '../../customer/booking_flow/presentation/cubit/organization_landing_cubit.dart';
 import '../../customer/booking_flow/presentation/cubit/service_selection_cubit.dart';
+import '../../customer/booking_flow/presentation/cubit/slot_picker_cubit.dart';
+import '../../customer/booking_flow/presentation/pages/booking_confirmation_page.dart';
+import '../../customer/booking_flow/presentation/pages/booking_form_page.dart';
 import '../../customer/booking_flow/presentation/pages/organization_landing_page.dart';
+import '../../customer/booking_flow/presentation/pages/service_details_page.dart';
 import '../../customer/booking_flow/presentation/pages/service_selection_page.dart';
+import '../../customer/booking_flow/presentation/pages/slot_picker_page.dart';
 import '../../customer/entry/presentation/pages/customer_home_page.dart';
 import '../../shared/auth/domain/entities/user_role.dart';
 import '../../shared/auth/presentation/cubit/auth_cubit.dart';
@@ -48,6 +54,10 @@ abstract final class Routes {
   static const String customerHome = '/c/home';
   static const String customerOrgLanding = '/c/org/:slug';
   static const String customerServices = '/c/org/:slug/services';
+  static const String customerServiceDetails = '/c/org/:slug/service-details';
+  static const String customerSlots = '/c/org/:slug/slots';
+  static const String customerBook = '/c/org/:slug/book';
+  static const String customerConfirmation = '/c/org/:slug/confirmation';
 
   // Dev-only
   static const String debugLogs = '/debug/logs';
@@ -265,12 +275,64 @@ GoRouter createRouter(AuthCubit authCubit) {
       GoRoute(
         path: Routes.customerServices,
         builder: (context, state) {
-          final orgId = state.extra as String;
+          final (:orgId, :orgName) =
+              state.extra as ({String orgId, String orgName});
+          final slug = state.pathParameters['slug']!;
           return BlocProvider(
             create: (context) =>
                 getIt<ServiceSelectionCubit>()..loadServices(orgId),
-            child: ServiceSelectionPage(orgId: orgId),
+            child: ServiceSelectionPage(
+              orgId: orgId,
+              orgName: orgName,
+              slug: slug,
+            ),
           );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerServiceDetails,
+        builder: (context, state) {
+          final args = state.extra as ServiceDetailsArgs;
+          return ServiceDetailsPage(args: args);
+        },
+      ),
+      GoRoute(
+        path: Routes.customerSlots,
+        builder: (context, state) {
+          final args = state.extra as SlotPickerArgs;
+          return BlocProvider(
+            create: (context) => getIt<SlotPickerCubit>()
+              ..init(
+                orgId: args.orgId,
+                serviceId: args.serviceId,
+                durationMinutes: args.durationMinutes,
+              ),
+            child: SlotPickerPage(args: args),
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerBook,
+        builder: (context, state) {
+          final args = state.extra as BookingFormArgs;
+          return BlocProvider(
+            create: (context) => getIt<BookingFormCubit>()
+              ..init(
+                orgId: args.orgId,
+                serviceId: args.service.id,
+                scheduledAt: args.scheduledAt,
+                customerId: args.customerId,
+                prefillName: args.prefillName,
+              ),
+            child: BookingFormPage(args: args),
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerConfirmation,
+        builder: (context, state) {
+          final args = state.extra as BookingConfirmationArgs;
+          return BookingConfirmationPage(args: args);
         },
       ),
       // Dev-only: in-app log viewer

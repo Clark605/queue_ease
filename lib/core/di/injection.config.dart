@@ -41,14 +41,22 @@ import '../../admin/working_hours/domain/repositories/admin_working_hours_reposi
     as _i8;
 import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart'
     as _i991;
+import '../../customer/booking_flow/domain/use_cases/calculate_available_slots_use_case.dart'
+    as _i1001;
+import '../../customer/booking_flow/domain/use_cases/create_booking_use_case.dart'
+    as _i144;
 import '../../customer/booking_flow/domain/use_cases/get_active_services_use_case.dart'
     as _i921;
 import '../../customer/booking_flow/domain/use_cases/get_organization_by_slug_use_case.dart'
     as _i697;
+import '../../customer/booking_flow/presentation/cubit/booking_form_cubit.dart'
+    as _i985;
 import '../../customer/booking_flow/presentation/cubit/organization_landing_cubit.dart'
     as _i695;
 import '../../customer/booking_flow/presentation/cubit/service_selection_cubit.dart'
     as _i706;
+import '../../customer/booking_flow/presentation/cubit/slot_picker_cubit.dart'
+    as _i891;
 import '../../shared/auth/data/datasources/firebase_auth_datasource.dart'
     as _i992;
 import '../../shared/auth/data/datasources/firestore_user_datasource.dart'
@@ -56,6 +64,12 @@ import '../../shared/auth/data/datasources/firestore_user_datasource.dart'
 import '../../shared/auth/data/repositories/auth_repository_impl.dart' as _i607;
 import '../../shared/auth/domain/repositories/auth_repository.dart' as _i61;
 import '../../shared/auth/presentation/cubit/auth_cubit.dart' as _i728;
+import '../../shared/booking/data/datasources/firestore_appointment_datasource.dart'
+    as _i140;
+import '../../shared/booking/data/repositories/appointment_repository_impl.dart'
+    as _i119;
+import '../../shared/booking/domain/repositories/appointment_repository.dart'
+    as _i415;
 import '../../shared/organization/data/datasources/firestore_organization_datasource.dart'
     as _i543;
 import '../../shared/organization/data/datasources/firestore_service_datasource.dart'
@@ -126,6 +140,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i241.FirestoreUserDatasource>(
       () => _i241.FirestoreUserDatasource(
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i140.FirestoreAppointmentDatasource>(
+      () => _i140.FirestoreAppointmentDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
@@ -219,6 +239,23 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.lazySingleton<_i415.AppointmentRepository>(
+      () => _i119.AppointmentRepositoryImpl(
+        gh<_i140.FirestoreAppointmentDatasource>(),
+      ),
+    );
+    gh.lazySingleton<_i1001.CalculateAvailableSlotsUseCase>(
+      () => _i1001.CalculateAvailableSlotsUseCase(
+        gh<_i415.AppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i144.CreateBookingUseCase>(
+      () => _i144.CreateBookingUseCase(
+        gh<_i415.AppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.lazySingleton<_i57.WorkingHoursRepository>(
       () => _i590.WorkingHoursRepositoryImpl(
         gh<_i644.FirestoreWorkingHoursDatasource>(),
@@ -245,6 +282,19 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i214.ServiceCubit(
         gh<_i709.ServiceRepository>(),
         gh<_i333.AdminServiceRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i891.SlotPickerCubit>(
+      () => _i891.SlotPickerCubit(
+        gh<_i1001.CalculateAvailableSlotsUseCase>(),
+        gh<_i57.WorkingHoursRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i985.BookingFormCubit>(
+      () => _i985.BookingFormCubit(
+        gh<_i144.CreateBookingUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );
