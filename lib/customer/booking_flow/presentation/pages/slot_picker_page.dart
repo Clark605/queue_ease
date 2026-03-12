@@ -4,9 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:queue_ease/core/widgets/widgets.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_loading_indicator.dart';
-import '../../../../core/widgets/empty_state_view.dart';
-import '../../../../core/widgets/error_view.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../shared/auth/presentation/cubit/auth_state.dart';
 import '../../../../shared/organization/domain/entities/service_entity.dart';

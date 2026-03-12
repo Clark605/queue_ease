@@ -1,3 +1,5 @@
+// ignore_for_file: unintended_html_in_doc_comment
+
 import 'package:queue_ease/core/error/result.dart';
 import 'package:queue_ease/shared/booking/domain/entities/appointment_entity.dart';
 import 'package:queue_ease/shared/organization/domain/entities/organization_entity.dart';
