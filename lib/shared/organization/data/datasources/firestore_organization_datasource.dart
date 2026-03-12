@@ -30,6 +30,47 @@ class FirestoreOrganizationDatasource {
     });
   }
 
+  /// Returns the organization matching [slug], or `null` if not found.
+  Future<OrganizationEntity?> getBySlug(String slug) async {
+    _logger.debug('FirestoreOrganizationDatasource: getBySlug → slug=$slug');
+    try {
+      final query = await _orgs
+          .where('bookingLinkSlug', isEqualTo: slug.toLowerCase())
+          .limit(1)
+          .get();
+
+      if (query.docs.isEmpty) {
+        _logger.debug(
+          'FirestoreOrganizationDatasource: no org found for slug=$slug',
+        );
+        return null;
+      }
+      return OrganizationModel.fromDoc(query.docs.first).toEntity();
+    } on FirebaseException catch (e, st) {
+      _logger.error(
+        'FirestoreOrganizationDatasource: getBySlug failed slug=$slug',
+        e,
+        st,
+      );
+      throw DatabaseException(
+        'Failed to retrieve organization.',
+        stackTrace: st,
+      );
+    } catch (e, st) {
+      _logger.error(
+        'FirestoreOrganizationDatasource: getBySlug unexpected error '
+        'slug=$slug',
+        e,
+        st,
+      );
+      throw UnknownException(
+        'An unexpected error occurred while retrieving the organization.',
+        cause: e,
+        stackTrace: st,
+      );
+    }
+  }
+
   /// Returns the organization owned by [adminUid], or `null` if none exists.
   Future<OrganizationEntity?> getByAdminUid(String adminUid) async {
     _logger.debug(

@@ -31,4 +31,14 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
       return _datasource.getByAdminUid(adminUid);
     });
   }
+
+  @override
+  Future<Result<OrganizationEntity?>> getOrganizationBySlug(String slug) {
+    return Result.guard(() async {
+      _logger.debug(
+        'OrganizationRepository: getOrganizationBySlug → slug=$slug',
+      );
+      return _datasource.getBySlug(slug);
+    });
+  }
 }

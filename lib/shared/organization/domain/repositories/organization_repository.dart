@@ -13,4 +13,10 @@ abstract class OrganizationRepository {
   Future<Result<OrganizationEntity?>> getOrganizationByAdminUid(
     String adminUid,
   );
+
+  /// Returns the organization matching [slug], or `null` if not found.
+  ///
+  /// Slug matching is case-insensitive in the Firestore query.
+  /// Used by the customer booking flow to resolve deep links.
+  Future<Result<OrganizationEntity?>> getOrganizationBySlug(String slug);
 }

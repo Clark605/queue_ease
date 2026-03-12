@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/auth/presentation/cubit/auth_cubit.dart';
 
-class CustomerHomePage extends StatelessWidget {
+class CustomerHomePage extends StatefulWidget {
   const CustomerHomePage({super.key});
+
+  @override
+  State<CustomerHomePage> createState() => _CustomerHomePageState();
+}
+
+class _CustomerHomePageState extends State<CustomerHomePage> {
+  final _slugController = TextEditingController();
+
+  @override
+  void dispose() {
+    _slugController.dispose();
+    super.dispose();
+  }
+
+  void _goToOrg() {
+    final slug = _slugController.text.trim();
+    if (slug.isEmpty) return;
+    context.push('/c/org/$slug');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +39,31 @@ class CustomerHomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Your Bookings', style: AppTextStyles.headlineMedium),
-            SizedBox(height: 24),
-            Expanded(
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _slugController,
+                    decoration: const InputDecoration(
+                      labelText: 'Organization slug',
+                      hintText: 'e.g. clinic-123',
+                      border: OutlineInputBorder(),
+                    ),
+                    onSubmitted: (_) => _goToOrg(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                FilledButton(onPressed: _goToOrg, child: const Text('Go')),
+              ],
+            ),
+            const Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

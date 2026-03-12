@@ -41,6 +41,10 @@ import '../../admin/working_hours/domain/repositories/admin_working_hours_reposi
     as _i8;
 import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart'
     as _i991;
+import '../../customer/booking_flow/domain/use_cases/get_organization_by_slug_use_case.dart'
+    as _i697;
+import '../../customer/booking_flow/presentation/cubit/organization_landing_cubit.dart'
+    as _i695;
 import '../../shared/auth/data/datasources/firebase_auth_datasource.dart'
     as _i992;
 import '../../shared/auth/data/datasources/firestore_user_datasource.dart'
@@ -199,6 +203,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.lazySingleton<_i697.GetOrganizationBySlugUseCase>(
+      () => _i697.GetOrganizationBySlugUseCase(
+        gh<_i1058.OrganizationRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.lazySingleton<_i57.WorkingHoursRepository>(
       () => _i590.WorkingHoursRepositoryImpl(
         gh<_i644.FirestoreWorkingHoursDatasource>(),
@@ -220,6 +230,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i709.ServiceRepository>(),
         gh<_i333.AdminServiceRepository>(),
         gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i695.OrganizationLandingCubit>(
+      () => _i695.OrganizationLandingCubit(
+        gh<_i697.GetOrganizationBySlugUseCase>(),
+        gh<_i57.WorkingHoursRepository>(),
       ),
     );
     return this;

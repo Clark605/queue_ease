@@ -1,4 +1,5 @@
 export 'app_field_decoration.dart';
+export 'app_loading_indicator.dart';
 export 'empty_state_view.dart';
 export 'error_view.dart';
 export 'form_action_bar.dart';
