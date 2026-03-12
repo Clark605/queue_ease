@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../../shared/organization/domain/entities/organization_entity.dart';
+import '../../../../shared/organization/domain/entities/working_hours_entity.dart';
 
 sealed class OrganizationLandingState extends Equatable {
   const OrganizationLandingState();
@@ -21,13 +22,17 @@ final class OrganizationLandingLoaded extends OrganizationLandingState {
   const OrganizationLandingLoaded({
     required this.org,
     required this.isCurrentlyOpen,
+    this.todayWorkingHours,
   });
 
   final OrganizationEntity org;
   final bool isCurrentlyOpen;
 
+  /// Today's working hours entry, or null if the org has none configured.
+  final WorkingHoursEntity? todayWorkingHours;
+
   @override
-  List<Object?> get props => [org, isCurrentlyOpen];
+  List<Object?> get props => [org, isCurrentlyOpen, todayWorkingHours];
 }
 
 final class OrganizationLandingNotFound extends OrganizationLandingState {
