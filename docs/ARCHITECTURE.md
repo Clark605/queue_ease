@@ -1,8 +1,8 @@
-# Queue Ease - Architecture Documentation
+﻿# Queue Ease - Architecture Documentation
 
-**Last Updated:** March 10, 2026  
+**Last Updated:** March 12, 2026  
 **Version:** 1.1.0+1  
-**Architecture Pattern:** Clean Architecture with Feature-Based Modularization
+**Architecture Pattern:** Clean Architecture with Role-Based Feature Repositories (ADR-001)
 
 ---
 
@@ -25,11 +25,7 @@
 
 ## Overview
 
-Queue Ease is built using **Clean Architecture** principles with a **feature-based modular structure**. The app is divided into three main organizational layers:
-
-- **Core**: Shared infrastructure, utilities, and configuration
-- **Shared**: Domain logic and UI components shared across user roles
-- **Features**: Role-specific implementations (Admin & Customer)
+Queue Ease is built using **Clean Architecture** principles with a **Role-Based Feature Repository** structure (ADR-001). Each role (admin / customer) owns its own repository interface and implementation, eliminating shared mutable state and making permission boundaries explicit at the type level.
 
 ### Technology Stack
 
@@ -59,7 +55,8 @@ Queue Ease is built using **Clean Architecture** principles with a **feature-bas
                   ↓
 ┌─────────────────────────────────────────┐
 │          Domain Layer                   │
-│     (Entities, Repositories Interface)  │
+│  (Entities, Repository Interfaces,      │
+│   Use Cases)                            │
 └─────────────────────────────────────────┘
                   ↓
 ┌─────────────────────────────────────────┐
@@ -68,9 +65,18 @@ Queue Ease is built using **Clean Architecture** principles with a **feature-bas
 └─────────────────────────────────────────┘
 ```
 
-**Dependency Rule**: Dependencies flow **inward** only. Domain layer has no dependencies on external frameworks.
+**Dependency Rule**: Dependencies flow **inward** only. The domain layer has zero dependencies on Flutter or external packages.
 
-### 2. SOLID Principles
+### 2. Role-Based Feature Repositories (ADR-001)
+
+Repository interfaces are split by role rather than entity. Admins get full CRUD; customers get read-only access. This makes permission boundaries explicit and removes the need for access-control logic scattered across cubits.
+
+```
+admin_service_repository.dart   → watchServices, addService, updateService, deleteService
+customer_service_repository.dart → getActiveServices   (read-only)
+```
+
+### 3. SOLID Principles
 
 - **Single Responsibility**: Each class has one reason to change
 - **Open/Closed**: Open for extension, closed for modification
@@ -78,23 +84,22 @@ Queue Ease is built using **Clean Architecture** principles with a **feature-bas
 - **Interface Segregation**: Clients depend on abstractions they use
 - **Dependency Inversion**: Depend on abstractions, not concretions
 
-### 3. Feature-Based Organization
+### 4. Feature-Based Organization
 
 Each feature is self-contained with its own data/domain/presentation layers:
 
 ```
 feature_name/
 ├── data/
-│   ├── models/
 │   ├── datasources/
 │   └── repositories/
 ├── domain/
-│   ├── entities/
-│   └── repositories/
+│   ├── repositories/   # abstract interfaces
+│   └── use_cases/      # (where applicable)
 └── presentation/
     ├── pages/
     ├── widgets/
-    └── cubit/ (or bloc/)
+    └── cubit/
 ```
 
 ---
@@ -103,44 +108,82 @@ feature_name/
 
 ```
 lib/
-├── core/                           # Shared infrastructure
-│   ├── app/                        # Application-level setup
-│   │   ├── di/                     # Dependency injection
-│   │   │   ├── injection.dart      # GetIt configuration
-│   │   │   └── injection.config.dart
-│   │   └── router/                 # Navigation
-│   │       ├── app_router.dart     # GoRouter setup with RBAC
-│   │       └── go_router_refresh_stream.dart
-│   ├── config/                     # Configuration
-│   │   ├── flavor_config.dart      # Dev/Prod environment config
-│   │   └── app_constants.dart      # App-wide constants
-│   ├── error/                      # Error handling framework
-│   │   ├── result.dart             # Result<T> type
-│   │   ├── app_exception.dart      # Exception hierarchy
-│   │   └── error.dart              # Exports
-│   ├── services/                   # Core services
-│   │   ├── onboarding_service.dart # Onboarding state
-│   │   └── user_session_service.dart # Session persistence
-│   ├── utils/                      # Utilities
-│   │   ├── app_logger.dart         # Logging with Talker
-│   │   └── validators.dart         # Input validation
-│   └── widgets/                    # Reusable UI components
-│       ├── app_error_widget.dart
-│       └── app_loading_indicator.dart
+├── core/                                  # Shared infrastructure
+│   ├── config/
+│   │   ├── flavor_config.dart             # Dev/Prod environment config
+│   │   ├── auth_module.dart
+│   │   └── config_module.dart
+│   ├── di/
+│   │   ├── injection.dart                 # GetIt + Injectable setup
+│   │   └── injection.config.dart          # Generated registrations
+│   ├── dialogs/
+│   │   └── delete_confirmation_dialog.dart
+│   ├── error/
+│   │   ├── result.dart                    # Result<T> type
+│   │   ├── app_exception.dart             # Sealed exception hierarchy
+│   │   └── error.dart                     # Exports
+│   ├── router/
+│   │   ├── app_router.dart                # GoRouter with RBAC guards
+│   │   └── go_router_refresh_stream.dart
+│   ├── services/
+│   │   ├── onboarding_service.dart        # First-launch completion state
+│   │   └── user_session_service.dart      # Session persistence
+│   ├── theme/
+│   │   ├── app_colors.dart
+│   │   ├── app_text_styles.dart
+│   │   └── app_theme.dart
+│   ├── utils/
+│   │   ├── app_logger.dart                # Talker-based logger
+│   │   ├── app_snack_bar.dart             # Centralized snackbar helpers
+│   │   ├── snackbar_utils.dart
+│   │   ├── time_picker_helper.dart
+│   │   └── time_picker_utils.dart
+│   ├── widgets/                           # Reusable shared widgets
+│   │   ├── app_field_decoration.dart
+│   │   ├── app_loading_indicator.dart
+│   │   ├── empty_state_view.dart
+│   │   ├── error_view.dart
+│   │   ├── form_action_bar.dart
+│   │   ├── form_app_bar.dart
+│   │   ├── form_card.dart
+│   │   ├── form_field_label.dart
+│   │   ├── initials_avatar.dart
+│   │   ├── loading_button.dart
+│   │   ├── numeric_stepper_row.dart
+│   │   └── widgets.dart                   # Barrel export
+│   └── app.dart
 │
-├── shared/                         # Shared domain logic (role-agnostic)
-│   ├── auth/                       # Authentication feature
+├── features/                              # All role-based features
+│   │
+│   ├── shared_domain/                     # Entities & models shared across roles
+│   │   ├── entities/
+│   │   │   ├── organization_entity.dart
+│   │   │   ├── service_entity.dart
+│   │   │   ├── working_hours_entity.dart
+│   │   │   ├── appointment_entity.dart
+│   │   │   ├── appointment_status.dart    # enum
+│   │   │   ├── queue_entity.dart
+│   │   │   └── queue_status.dart          # enum
+│   │   └── models/                        # Firestore serialization models
+│   │       ├── organization_model.dart
+│   │       ├── service_model.dart
+│   │       ├── working_hours_model.dart
+│   │       ├── appointment_model.dart
+│   │       └── queue_model.dart
+│   │
+│   ├── authentication/                    # ✅ Complete
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   ├── firebase_auth_datasource.dart
-│   │   │   │   ├── firestore_user_datasource.dart
-│   │   │   │   └── google_sign_in_datasource.dart
+│   │   │   │   └── firestore_user_datasource.dart
+│   │   │   ├── models/
+│   │   │   │   └── user_model.dart
 │   │   │   └── repositories/
 │   │   │       └── auth_repository_impl.dart
 │   │   ├── domain/
 │   │   │   ├── entities/
 │   │   │   │   ├── user_entity.dart
-│   │   │   │   └── user_role.dart (enum: admin, customer)
+│   │   │   │   └── user_role.dart         # enum: admin, customer
 │   │   │   └── repositories/
 │   │   │       └── auth_repository.dart
 │   │   └── presentation/
@@ -151,14 +194,15 @@ lib/
 │   │       │   ├── login_page.dart
 │   │       │   └── sign_up_page.dart
 │   │       └── widgets/
+│   │           ├── auth_divider.dart
+│   │           ├── auth_footer_panel.dart
 │   │           ├── auth_header.dart
-│   │           ├── auth_text_field.dart
-│   │           ├── password_field.dart
-│   │           ├── google_sign_in_button.dart
 │   │           ├── auth_role_selector.dart
-│   │           └── forgot_password_bottom_sheet.dart
+│   │           ├── auth_text_field.dart
+│   │           ├── forgot_password_bottom_sheet.dart
+│   │           └── google_sign_in_button.dart
 │   │
-│   ├── onboarding/                 # First-time user experience
+│   ├── onboarding/                        # ✅ Complete
 │   │   ├── domain/
 │   │   │   └── models/
 │   │   │       └── onboarding_content_model.dart
@@ -166,134 +210,212 @@ lib/
 │   │       ├── pages/
 │   │       │   └── onboarding_page.dart
 │   │       └── widgets/
-│   │           ├── onboarding_content_widget.dart
-│   │           └── page_indicator.dart
+│   │           ├── fair_turns_illustration.dart
+│   │           ├── onboarding_content.dart
+│   │           ├── real_time_tracking_illustration.dart
+│   │           └── skip_the_wait_illustration.dart
 │   │
-│   ├── organization/               # Organization management
-│   │   ├── data/
-│   │   │   ├── datasources/
-│   │   │   │   ├── firestore_organization_datasource.dart
-│   │   │   │   ├── firestore_service_datasource.dart
-│   │   │   │   └── firestore_working_hours_datasource.dart
-│   │   │   ├── models/
-│   │   │   │   ├── organization_model.dart
-│   │   │   │   ├── service_model.dart
-│   │   │   │   └── working_hours_model.dart
-│   │   │   └── repositories/
-│   │   │       ├── organization_repository_impl.dart
-│   │   │       ├── service_repository_impl.dart
-│   │   │       └── working_hours_repository_impl.dart
-│   │   ├── domain/
-│   │   │   ├── entities/
-│   │   │   │   ├── organization_entity.dart
-│   │   │   │   ├── service_entity.dart
-│   │   │   │   └── working_hours_entity.dart
-│   │   │   └── repositories/
-│   │   │       ├── organization_repository.dart
-│   │   │       ├── service_repository.dart
-│   │   │       └── working_hours_repository.dart
-│   │   └── presentation/           # ✅ Organization & Service UI (COMPLETE)
+│   ├── admin/
+│   │   ├── organization_management/       # ✅ Complete
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── admin_organization_datasource.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── admin_organization_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   └── repositories/
+│   │   │   │       └── admin_organization_repository.dart
+│   │   │   └── presentation/
+│   │   │       ├── cubit/
+│   │   │       │   ├── organization_cubit.dart
+│   │   │       │   └── organization_state.dart
+│   │   │       ├── pages/
+│   │   │       │   ├── organization_profile_page.dart
+│   │   │       │   ├── organization_profile_edit_page.dart
+│   │   │       │   └── organization_setup_page.dart
+│   │   │       └── widgets/
+│   │   │           └── organization_profile_form.dart
+│   │   │
+│   │   ├── service_management/            # ✅ Complete
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── admin_service_datasource.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── admin_service_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   └── repositories/
+│   │   │   │       └── admin_service_repository.dart
+│   │   │   └── presentation/
+│   │   │       ├── cubit/
+│   │   │       │   ├── service_cubit.dart
+│   │   │       │   ├── service_state.dart
+│   │   │       │   ├── service_form_cubit.dart
+│   │   │       │   └── service_form_state.dart
+│   │   │       ├── pages/
+│   │   │       │   ├── service_list_page.dart
+│   │   │       │   └── service_form_page.dart
+│   │   │       └── widgets/
+│   │   │           ├── service_list_tile.dart
+│   │   │           ├── service_main_card.dart
+│   │   │           └── service_settings_card.dart
+│   │   │
+│   │   ├── working_hours_management/      # ✅ Complete
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── admin_working_hours_datasource.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── admin_working_hours_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   └── repositories/
+│   │   │   │       └── admin_working_hours_repository.dart
+│   │   │   └── presentation/
+│   │   │       ├── cubit/
+│   │   │       │   ├── working_hours_cubit.dart
+│   │   │       │   └── working_hours_state.dart
+│   │   │       ├── pages/
+│   │   │       │   └── working_hours_page.dart
+│   │   │       └── widgets/
+│   │   │           ├── break_time_section.dart
+│   │   │           ├── day_working_hours_tile.dart
+│   │   │           ├── working_hours_app_bar.dart
+│   │   │           └── working_hours_body.dart
+│   │   │
+│   │   ├── share_access/                  # ✅ Complete
+│   │   │   └── presentation/
+│   │   │       ├── cubit/
+│   │   │       │   ├── share_access_cubit.dart
+│   │   │       │   └── share_access_state.dart
+│   │   │       ├── pages/
+│   │   │       │   └── share_access_page.dart
+│   │   │       └── widgets/
+│   │   │           ├── qr_code_display.dart
+│   │   │           └── share_action_buttons.dart
+│   │   │
+│   │   ├── tutorial/                      # ✅ Complete
+│   │   │   └── presentation/
+│   │   │       ├── cubit/
+│   │   │       │   ├── tutorial_cubit.dart
+│   │   │       │   └── tutorial_state.dart
+│   │   │       └── widgets/
+│   │   │           └── tutorial_overlay.dart
+│   │   │
+│   │   ├── dashboard/                     # ✅ Complete
+│   │   │   └── presentation/
+│   │   │       ├── pages/
+│   │   │       │   └── admin_dashboard_tab.dart
+│   │   │       └── widgets/
+│   │   │           ├── management_card.dart
+│   │   │           ├── management_grid.dart
+│   │   │           └── now_serving_card.dart
+│   │   │
+│   │   └── queue_management/              # ⏳ Interface only (Sprint 5)
+│   │       └── domain/
+│   │           └── repositories/
+│   │               └── admin_appointment_repository.dart
 │   │
-│   ├── booking/                    # Appointment booking
-│   │   ├── data/
-│   │   │   └── models/
-│   │   │       └── appointment_model.dart
-│   │   ├── domain/
-│   │   │   └── entities/
-│   │   │       ├── appointment_entity.dart
-│   │   │       └── appointment_status.dart (enum)
-│   │   └── presentation/           # (Future: Shared booking widgets)
-│   │
-│   └── queue/                      # Queue management
-│       ├── data/
-│       │   └── models/
-│       │       └── queue_model.dart
-│       ├── domain/
-│       │   └── entities/
-│       │       ├── queue_entity.dart
-│       │       └── queue_status.dart (enum)
-│       └── presentation/           # (Future: Shared queue widgets)
+│   └── customer/
+│       └── booking/                       # ✅ Complete
+│           ├── data/
+│           │   ├── datasources/
+│           │   │   ├── customer_appointment_datasource.dart
+│           │   │   ├── customer_organization_datasource.dart
+│           │   │   ├── customer_service_datasource.dart
+│           │   │   └── customer_working_hours_datasource.dart
+│           │   └── repositories/
+│           │       ├── customer_appointment_repository_impl.dart
+│           │       ├── customer_organization_repository_impl.dart
+│           │       ├── customer_service_repository_impl.dart
+│           │       └── customer_working_hours_repository_impl.dart
+│           ├── domain/
+│           │   ├── repositories/
+│           │   │   ├── customer_appointment_repository.dart
+│           │   │   ├── customer_organization_repository.dart
+│           │   │   ├── customer_service_repository.dart
+│           │   │   └── customer_working_hours_repository.dart
+│           │   └── use_cases/
+│           │       ├── calculate_available_slots_use_case.dart
+│           │       ├── create_booking_use_case.dart
+│           │       ├── get_active_services_use_case.dart
+│           │       └── get_organization_by_slug_use_case.dart
+│           └── presentation/
+│               ├── cubit/
+│               │   ├── booking_form_cubit.dart
+│               │   ├── booking_form_state.dart
+│               │   ├── organization_landing_cubit.dart
+│               │   ├── organization_landing_state.dart
+│               │   ├── service_selection_cubit.dart
+│               │   ├── service_selection_state.dart
+│               │   ├── slot_picker_cubit.dart
+│               │   └── slot_picker_state.dart
+│               ├── pages/
+│               │   ├── booking_confirmation_page.dart
+│               │   ├── booking_form_page.dart
+│               │   ├── organization_landing_page.dart
+│               │   ├── service_details_page.dart
+│               │   ├── service_selection_page.dart
+│               │   └── slot_picker_page.dart
+│               └── widgets/
+│                   ├── booking_action_bar.dart
+│                   ├── booking_summary_card.dart
+│                   ├── continue_footer.dart
+│                   ├── date_selector.dart
+│                   ├── open_closed_badge.dart
+│                   ├── org_info_card.dart
+│                   ├── org_profile_header.dart
+│                   ├── service_card.dart
+│                   └── time_slot_grid.dart
 │
-├── admin/                          # Admin-specific features
-│   ├── dashboard/
+├── admin/                                 # Legacy shell (presentation only)
+│   ├── presentation/
+│   │   └── pages/
+│   │       ├── admin_main_page.dart       # Bottom-nav shell
+│   │       └── settings_page.dart
+│   ├── queue_management/
 │   │   └── presentation/
 │   │       └── pages/
-│   │           └── admin_dashboard_page.dart
-│   ├── services/                   # ✅ Service CRUD (COMPLETE)
-│   │   └── presentation/
-│   │       ├── cubit/
-│   │       │   ├── service_cubit.dart
-│   │       │   └── service_state.dart
-│   │       ├── pages/
-│   │       │   ├── service_list_page.dart
-│   │       │   └── service_form_page.dart
-│   │       └── widgets/
-│   │           └── service_list_tile.dart
-│   ├── working_hours/              # ✅ Working Hours Configuration (COMPLETE)
-│   │   └── presentation/
-│   │       ├── cubit/
-│   │       │   ├── working_hours_cubit.dart
-│   │       │   └── working_hours_state.dart
-│   │       ├── pages/
-│   │       │   └── working_hours_page.dart
-│   │       └── widgets/
-│   │           ├── day_working_hours_tile.dart
-│   │           └── break_time_section.dart
-│   ├── share_access/               # ✅ QR & Link Generation (COMPLETE)
-│   │   └── presentation/
-│   │       ├── cubit/
-│   │       │   ├── share_access_cubit.dart
-│   │       │   └── share_access_state.dart
-│   │       ├── pages/
-│   │       │   └── share_access_page.dart
-│   │       └── widgets/
-│   │           ├── qr_code_display.dart
-│   │           └── share_action_buttons.dart
-│   ├── queue_management/           # (Future: Live queue control)
-│   └── daily_summary/              # (Future: Daily reports)
+│   │           └── queue_management_page.dart  # Placeholder (Sprint 5)
+│   └── daily_summary/                     # Placeholder (Sprint 7)
 │
-├── customer/                       # Customer-specific features
+├── customer/                              # Legacy shell (presentation only)
 │   ├── entry/
 │   │   └── presentation/
 │   │       └── pages/
 │   │           └── customer_home_page.dart
-│   ├── booking_flow/               # (Future: Booking UI)
-│   └── queue_status/               # (Future: Queue tracking)
+│   └── queue_status/                      # Placeholder (future)
 │
-├── firebase_options.dart           # Firebase configuration
-├── main_dev.dart                   # Dev entrypoint
-└── main_prod.dart                  # Prod entrypoint
+├── firebase_options.dart
+├── main_dev.dart
+└── main_prod.dart
 
-test/                               # Mirror of lib/ structure
+test/                                      # Mirrors lib/ structure
 ├── core/
 │   └── error/
 │       ├── result_test.dart
 │       └── app_exception_test.dart
-└── shared/
-    ├── auth/
-    │   └── auth_cubit_test.dart
-    ├── onboarding/
-    │   └── onboarding_integration_test.dart
-    ├── organization/
-    │   ├── data/models/
-    │   │   ├── organization_model_test.dart
-    │   │   ├── service_model_test.dart
-    │   │   └── working_hours_model_test.dart
-    │   └── domain/entities/
-    │       ├── organization_entity_test.dart
-    │       ├── service_entity_test.dart
-    │       └── working_hours_entity_test.dart
-    ├── booking/
-    │   ├── data/models/
-    │   │   └── appointment_model_test.dart
-    │   └── domain/entities/
-    │       └── appointment_entity_test.dart
-    └── queue/
-        ├── data/models/
-        │   └── queue_model_test.dart
-        └── domain/entities/
-            └── queue_entity_test.dart
+├── shared/
+│   ├── auth/
+│   │   ├── auth_cubit_test.dart
+│   │   └── data/models/user_model_test.dart
+│   ├── onboarding/
+│   │   └── onboarding_integration_test.dart
+│   ├── organization/
+│   │   ├── data/models/
+│   │   │   ├── organization_model_test.dart
+│   │   │   └── working_hours_model_test.dart
+│   │   └── domain/entities/
+│   │       ├── organization_entity_test.dart
+│   │       ├── service_entity_test.dart
+│   │       └── working_hours_entity_test.dart
+│   ├── booking/
+│   │   ├── data/models/appointment_model_test.dart
+│   │   └── domain/entities/appointment_entity_test.dart
+│   └── queue/
+│       ├── data/models/queue_model_test.dart
+│       └── domain/entities/queue_entity_test.dart
+└── firebase_mocks.dart
 ```
+
+> **Note on `admin/` and `customer/` shell folders**: These contain the remaining presentation-only shell code (navigation scaffold, settings, placeholders) that has not yet been moved into `features/`. The full domain and data logic for all implemented features lives exclusively under `features/`.
 
 ---
 
@@ -301,356 +423,195 @@ test/                               # Mirror of lib/ structure
 
 ### 1. Presentation Layer
 
-**Location**: `lib/{shared,admin,customer}/*/presentation/`
+**Location**: `lib/features/{feature}/presentation/`
 
 **Responsibilities**:
 - UI rendering (Pages, Widgets)
 - User interaction handling
-- State management (Cubit/BLoC)
+- State management (Cubit)
 - Navigation
 - Displaying data from domain layer
 
 **Rules**:
-- ✅ Depend on domain layer (entities, repositories)
-- ✅ Use dependency injection for repositories/cubits
-- ❌ Never import data layer
-- ❌ No business logic (delegate to domain)
+- ✅ Depend on domain layer (entities, use cases, repository interfaces)
+- ✅ Use dependency injection for cubits
+- ❌ Never import the data layer directly
+- ❌ No business logic — delegate to use cases or repository
 - ❌ No direct Firebase/HTTP calls
-
-**Example**:
-```dart
-class AuthCubit extends Cubit<AuthState> {
-  final AuthRepository _repository; // Domain interface
-
-  Future<void> login(String email, String password) async {
-    emit(AuthLoading());
-    final result = await Result.guard(
-      () => _repository.login(email, password),
-    );
-    result.when(
-      success: (user) => emit(Authenticated(user)),
-      failure: (e) => emit(AuthError(e.message)),
-    );
-  }
-}
-```
 
 ### 2. Domain Layer
 
-**Location**: `lib/shared/*/domain/`
+**Location**: `lib/features/{feature}/domain/`
 
 **Responsibilities**:
-- Define business entities (pure Dart classes)
-- Define repository interfaces (abstractions)
-- Define use cases (future, not yet implemented)
+- Define business entities (pure Dart classes, Equatable)
+- Define repository interfaces (abstract contracts)
+- Define use cases (orchestrate repository calls)
 - Business rules and validation logic
 
 **Rules**:
-- ✅ Pure Dart (no Flutter, Firebase, HTTP imports)
-- ✅ Entities are `Equatable` for value comparison
+- ✅ Pure Dart — no Flutter, Firebase, or HTTP imports
+- ✅ Entities extend `Equatable` for value comparison
 - ✅ Enums for typed status values
 - ❌ No implementation details
 - ❌ No framework dependencies
 
-**Example**:
-```dart
-// Entity
-class OrganizationEntity extends Equatable {
-  const OrganizationEntity({
-    required this.id,
-    required this.name,
-    required this.adminUid,
-    required this.bookingLinkSlug,
-    required this.isOpen,
-    required this.createdAt,
-    this.qrCodeUrl,
-    this.address,
-    this.logoUrl,
-    this.description,
-  });
-
-  final String id;
-  final String name;
-  final String adminUid;
-  final String bookingLinkSlug;
-  final bool isOpen;
-  final DateTime createdAt;
-  final String? qrCodeUrl;
-  final String? address;
-  final String? logoUrl;
-  final String? description;
-
-  @override
-  List<Object?> get props => [
-    id, name, adminUid, bookingLinkSlug, isOpen, createdAt,
-    qrCodeUrl, address, logoUrl, description,
-  ];
-}
-
-// Repository interface
-abstract interface class AuthRepository {
-  Future<UserEntity> login(String email, String password);
-  Future<UserEntity> signUpWithEmail({
-    required String email,
-    required String password,
-    required String name,
-    required UserRole role,
-    String? organizationName,
-  });
-  Future<UserEntity> signInWithGoogle();
-  Future<void> signOut();
-  Future<void> sendPasswordResetEmail(String email);
-}
-```
-
 ### 3. Data Layer
 
-**Location**: `lib/shared/*/data/`
+**Location**: `lib/features/{feature}/data/`
 
 **Responsibilities**:
 - Implement domain repository interfaces
-- Define data models (with Firestore mapping)
-- Manage data sources (API, database, local storage)
-- Map between models and entities
-- Handle platform-specific exceptions
+- Firestore serialization via models in `features/shared_domain/models/`
+- Manage data sources
+- Map platform exceptions to `AppException` subtypes
 
 **Rules**:
 - ✅ Implement domain repository interfaces
-- ✅ Models are independent data classes (not entity subclasses) with their own fields
-- ✅ Models expose `toEntity()` to hand a clean domain type up to the repository
-- ✅ Datasources handle platform APIs
-- ✅ Map exceptions to `AppException` subtypes
+- ✅ Models expose `toEntity()` to hand a clean domain type upward
+- ✅ Models do not extend domain entities (preserves layer boundary)
+- ✅ Map all platform exceptions to typed `AppException` subtypes
 - ❌ No UI/presentation logic
-- ❌ Models do not extend domain entities (preserves layer boundary)
 
-**Example**:
-```dart
-// Model (independent data class — does NOT extend entity)
-class OrganizationModel {
-  const OrganizationModel({
-    required this.id,
-    required this.name,
-    required this.adminUid,
-    required this.bookingLinkSlug,
-    required this.isOpen,
-    required this.createdAt,
-    this.qrCodeUrl,
-    this.address,
-    this.logoUrl,
-    this.description,
-  });
+### 4. Shared Domain
 
-  final String id;
-  final String name;
-  final String adminUid;
-  final String bookingLinkSlug;
-  final bool isOpen;
-  final DateTime createdAt;
-  final String? qrCodeUrl;
-  final String? address;
-  final String? logoUrl;
-  final String? description;
+**Location**: `lib/features/shared_domain/`
 
-  factory OrganizationModel.fromDoc(
-    DocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
-    final data = doc.data()!;
-    return OrganizationModel(
-      id: doc.id,
-      name: data['name'] as String,
-      adminUid: data['adminUid'] as String,
-      bookingLinkSlug: data['bookingLinkSlug'] as String,
-      isOpen: data['isOpen'] as bool? ?? false,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      qrCodeUrl: data['qrCodeUrl'] as String?,
-      address: data['address'] as String?,
-      logoUrl: data['logoUrl'] as String?,
-      description: data['description'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'adminUid': adminUid,
-      'bookingLinkSlug': bookingLinkSlug,
-      'isOpen': isOpen,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'qrCodeUrl': qrCodeUrl,
-      'address': address,
-      'logoUrl': logoUrl,
-      'description': description,
-    };
-  }
-
-  /// Converts to a pure domain entity for use above the data layer.
-  OrganizationEntity toEntity() => OrganizationEntity(
-        id: id,
-        name: name,
-        adminUid: adminUid,
-        bookingLinkSlug: bookingLinkSlug,
-        isOpen: isOpen,
-        createdAt: createdAt,
-        qrCodeUrl: qrCodeUrl,
-        address: address,
-        logoUrl: logoUrl,
-        description: description,
-      );
-}
-
-// Repository implementation
-@LazySingleton(as: AuthRepository)
-class AuthRepositoryImpl implements AuthRepository {
-  final FirebaseAuthDatasource _authDatasource;
-  final FirestoreUserDatasource _userDatasource;
-  final GoogleSignInDatasource _googleSignInDatasource;
-
-  @override
-  Future<UserEntity> login(String email, String password) async {
-    try {
-      final uid = await _authDatasource.signInWithEmail(email, password);
-      return await _userDatasource.getUserById(uid);
-    } on FirebaseAuthException catch (e, st) {
-      throw AuthException.fromFirebase(e.code, stackTrace: st);
-    }
-  }
-}
-```
+Houses entities and Firestore models that are referenced by both admin and customer features. It is a **read-only supply layer** — no cubits, no repositories, no business logic.
 
 ---
 
 ## Feature Modules
 
-### Shared Features (Role-Agnostic)
+### Authentication (`features/authentication/`) — ✅ Complete
 
-#### 1. Authentication (`shared/auth`)
-
-**Status**: ✅ Complete
-
-**Responsibilities**:
-- Email/password authentication
+- Email/password login and signup
 - Google Sign-In
 - Password reset
-- User session management
-- Role-based access control
+- User session persistence
+- Role-based routing (`UserRole.admin` / `UserRole.customer`)
 
-**Key Components**:
-- `AuthCubit`: Manages authentication state
-- `AuthRepository`: Auth operations interface
-- `UserEntity`: User domain model with role
-- `FirebaseAuthDatasource`: Firebase Auth integration
-- `GoogleSignInDatasource`: Google Sign-In SDK integration
+**Key components**: `AuthCubit`, `AuthRepository`, `UserEntity`, `UserRole`
 
-#### 2. Onboarding (`shared/onboarding`)
+---
 
-**Status**: ✅ Complete
+### Onboarding (`features/onboarding/`) — ✅ Complete
 
-**Responsibilities**:
-- First-time user experience
-- Feature introduction (3 screens)
-- Completion state persistence
+- First-launch 3-screen PageView
+- Completion state persisted via `OnboardingService`
+- Custom SVG-style illustrations per screen
 
-**Key Components**:
-- `OnboardingPage`: PageView-based flow
-- `OnboardingService`: Tracks completion status
-- Custom illustrations for each screen
+**Key components**: `OnboardingPage`, `OnboardingContentModel`
 
-#### 3. Organization (`shared/organization`)
+---
 
-**Status**: ✅ Complete (Sprint 2 & 3)
+### Admin: Organization Management (`features/admin/organization_management/`) — ✅ Complete
 
-**Responsibilities**:
-- Organization profile management
-- Service definition and configuration
-- Working hours setup
+- Organization profile (name, address, logo, description)
+- `bookingLinkSlug` for customer deep-link URL generation
+- Setup wizard for first-time admins
 
-**Key Components**:
-- **Data Layer**:
-  - `OrganizationModel`, `ServiceModel`, `WorkingHoursModel`: Firestore serialization
-  - `FirestoreOrganizationDatasource`: Organization CRUD operations
-  - `FirestoreServiceDatasource`: Service CRUD operations
-  - `FirestoreWorkingHoursDatasource`: Working hours CRUD with default initialization
-  - `OrganizationRepositoryImpl`, `ServiceRepositoryImpl`, `WorkingHoursRepositoryImpl`: Repository implementations
-- **Domain Layer**:
-  - `OrganizationEntity`, `ServiceEntity`, `WorkingHoursEntity`: Domain models
-  - `OrganizationRepository`, `ServiceRepository`, `WorkingHoursRepository`: Repository interfaces
-- **Presentation Layer** (Admin):
-  - `OrganizationCubit`: Organization profile management
-  - `ServiceCubit`: Service list management
-  - `WorkingHoursCubit`: Working hours configuration with real-time streams
+**Key components**: `AdminOrganizationRepository` (watch + CRUD), `OrganizationCubit`
 
-#### 4. Booking (`shared/booking`)
+---
 
-**Status**: 🚧 Data models complete, booking flow pending
+### Admin: Service Management (`features/admin/service_management/`) — ✅ Complete
 
-**Responsibilities**:
-- Appointment creation and management
-- Time slot availability
-- Booking conflict prevention
+- Real-time service list (Firestore stream)
+- Add / edit / delete services with duration and active flag
+- Form validation
 
-**Key Entities**:
-- `AppointmentEntity`: Customer appointment
-- `AppointmentStatus`: Enum (booked, inQueue, serving, completed, noShow)
+**Key components**: `AdminServiceRepository`, `ServiceCubit`, `ServiceFormCubit`
 
-#### 5. Queue (`shared/queue`)
+---
 
-**Status**: 🚧 Data models complete, queue logic pending
+### Admin: Working Hours Management (`features/admin/working_hours_management/`) — ✅ Complete
 
-**Responsibilities**:
-- Daily queue generation
-- Queue order management
-- Real-time queue updates
-
-**Key Entities**:
-- `QueueEntity`: Daily queue state
-- `QueueStatus`: Enum (active, paused, closed)
-
-### Role-Specific Features
-
-#### Admin Features (`admin/`)
-
-**Status**: 🚧 In Progress (Sprint 2 & 3 Complete)
-
-**Completed Modules**:
-
-**1. Services (`admin/services/`) - ✅ Complete (Sprint 2)**
-- `ServiceCubit`: Service list state management with real-time Firestore streaming
-- `ServiceListPage`: Displays all services with add/edit/delete actions
-- `ServiceFormPage`: Add/edit service form with validation
-- `ServiceListTile`: Service card with active/inactive toggle
-- Real-time CRUD operations with Firestore
-
-**2. Working Hours (`admin/working_hours/`) - ✅ Complete (Sprint 3)**
-- `WorkingHoursCubit`: Working hours state management with real-time streaming
-- `WorkingHoursPage`: 7-day schedule configuration with time pickers
-- `DayWorkingHoursTile`: Individual day configuration (open/closed toggle, time pickers)
-- `BreakTimeSection`: Optional break period configuration
+- 7-day schedule configuration (open time, close time, optional break)
+- Atomic batch save for all days
+- Default initialization (Mon–Fri 09:00–17:00, Sat–Sun closed)
 - Schedule validation (open < close, break within working hours)
-- Batch save for all 7 days atomically
-- Default initialization (Mon-Fri 09:00-17:00, Sat-Sun closed)
 
-**3. Share Access (`admin/share_access/`) - ✅ Complete (Sprint 3)**
-- `ShareAccessCubit`: QR code sharing state management
-- `ShareAccessPage`: QR code display with booking URL
-- `QrCodeDisplay`: QR code rendering using `qr_flutter`
-- `ShareActionButtons`: Share, copy link, download QR
-- Native share integration using `share_plus`
-- QR code download to gallery using `gal`
-- QR code capture as PNG using `RepaintBoundary`
-- Clipboard integration for link copying
-- Platform permissions configured (Android & iOS)
+**Key components**: `AdminWorkingHoursRepository`, `WorkingHoursCubit`
 
-**Pending Modules**:
-- `queue_management/`: Live queue control (Sprint 5)
-- `daily_summary/`: Performance reports (Sprint 7)
+---
 
-#### Customer Features (`customer/`)
+### Admin: Share Access (`features/admin/share_access/`) — ✅ Complete
 
-**Status**: ⏳ Basic home page only
+- QR code display from `bookingLinkSlug`
+- Native share sheet (URL + PNG file)
+- Copy booking link to clipboard
+- Download QR code to device gallery
 
-**Planned Modules**:
-- `booking_flow/`: Service selection & booking
-- `queue_status/`: Real-time queue tracking
+**Key components**: `ShareAccessCubit`, `QrCodeDisplay`, `ShareActionButtons`
+
+---
+
+### Admin: Tutorial (`features/admin/tutorial/`) — ✅ Complete
+
+- First-time admin overlay surfaced from `AdminDashboardTab`
+- 3-step guided flow: confirm profile → add service → acknowledge ready
+- Completion persisted in Firestore via `FirestoreUserDatasource`
+
+**Key components**: `TutorialCubit`, `TutorialOverlay`, `TutorialStep`
+
+---
+
+### Admin: Dashboard (`features/admin/dashboard/`) — ✅ Complete
+
+- Greeting header with date and time-of-day salutation
+- Stats strip (in-queue / served / no-shows — hardcoded, live data Sprint 5)
+- Now Serving card (placeholder, Sprint 5)
+- Management grid (Services, Working Hours, Full Queue, Daily Summary)
+- Share Access quick-action card
+- Hosts `TutorialOverlay` as topmost Stack child
+
+**Key components**: `AdminDashboardTab`, `ManagementGrid`, `NowServingCard`
+
+---
+
+### Admin: Queue Management (`features/admin/queue_management/`) — ⏳ Sprint 5
+
+Interface only. `AdminAppointmentRepository` is defined; UI and cubit are pending.
+
+---
+
+### Customer: Booking (`features/customer/booking/`) — ✅ Complete
+
+Full end-to-end customer booking flow:
+
+1. **Organization landing** — org hero, open/closed status, services summary
+2. **Service selection** — active services list
+3. **Service details** — duration, description
+4. **Slot picker** — date selector + available time slots (FR-010 algorithm)
+5. **Booking form** — customer name, phone, notes
+6. **Confirmation** — booking summary
+
+**Domain repositories** (read-only):
+- `CustomerOrganizationRepository` — `getOrganizationBySlug`
+- `CustomerServiceRepository` — `getActiveServices`
+- `CustomerWorkingHoursRepository` — `getWorkingHours`, `getWorkingHoursForDay`
+- `CustomerAppointmentRepository` — `getAppointmentsForDate`, `createAppointment`
+
+**Use cases**:
+- `GetOrganizationBySlugUseCase`
+- `GetActiveServicesUseCase`
+- `CalculateAvailableSlotsUseCase` — FR-010 slot generation algorithm
+- `CreateBookingUseCase`
+
+**Key cubits**: `OrganizationLandingCubit`, `ServiceSelectionCubit`, `SlotPickerCubit`, `BookingFormCubit`
+
+---
+
+### Customer: Queue Status — ⏳ Future
+
+Placeholder. Real-time queue position tracking.
+
+---
+
+### Admin: Daily Summary — ⏳ Sprint 7
+
+Placeholder. Performance reports.
 
 ---
 
@@ -658,7 +619,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
 ### Setup: GetIt + Injectable
 
-**Configuration**: `lib/core/app/di/injection.dart`
+**Configuration**: `lib/core/di/injection.dart`
 
 ```dart
 import 'package:get_it/get_it.dart';
@@ -681,15 +642,15 @@ class AppLogger { ... }
 
 // Lazy Singleton (created on first access)
 @lazySingleton
-class AuthRepository { ... }
+class AdminServiceRepositoryImpl implements AdminServiceRepository { ... }
 
 // Factory (new instance on each request)
 @injectable
-class AuthCubit { ... }
+class ServiceCubit { ... }
 
-// Interface implementation
-@LazySingleton(as: AuthRepository)
-class AuthRepositoryImpl implements AuthRepository { ... }
+// Interface binding
+@LazySingleton(as: AdminServiceRepository)
+class AdminServiceRepositoryImpl implements AdminServiceRepository { ... }
 ```
 
 ### Initialization
@@ -699,9 +660,7 @@ class AuthRepositoryImpl implements AuthRepository { ... }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
-  configureDependencies(environment: Environment.dev); // or Environment.prod
-  
+  configureDependencies(environment: Environment.dev);
   runApp(const QueueEaseApp());
 }
 ```
@@ -709,13 +668,10 @@ void main() async {
 ### Usage
 
 ```dart
-// In widget
-final authCubit = getIt<AuthCubit>();
-
-// In provider
+// In router / widget
 BlocProvider(
-  create: (_) => getIt<AuthCubit>(),
-  child: LoginPage(),
+  create: (_) => getIt<ServiceCubit>(),
+  child: ServiceListPage(),
 )
 ```
 
@@ -738,16 +694,13 @@ BlocProvider(
 
 ```dart
 sealed class Result<T> {
-  // Factory: wraps async calls
   static Future<Result<T>> guard<T>(Future<T> Function() body);
-  
-  // Pattern matching
+
   R when<R>({
     required R Function(T data) success,
     required R Function(AppException exception) failure,
   });
-  
-  // Utilities
+
   T? getOrNull();
   T getOrElse(T fallback);
   Result<U> map<U>(U Function(T data) transform);
@@ -757,27 +710,15 @@ sealed class Result<T> {
 ### Usage Pattern
 
 ```dart
-// In repository
-Future<UserEntity> login(String email, String password) async {
-  try {
-    final uid = await _authDatasource.signInWithEmail(email, password);
-    return await _userDatasource.getUserById(uid);
-  } on FirebaseAuthException catch (e, st) {
-    throw AuthException.fromFirebase(e.code, stackTrace: st);
-  } catch (e, st) {
-    throw UnknownException('Login failed', cause: e, stackTrace: st);
-  }
-}
-
 // In cubit
-Future<void> login(String email, String password) async {
-  emit(AuthLoading());
-  final result = await Result.guard(
-    () => _repository.login(email, password),
-  );
+Future<void> loadOrganization(String slug) async {
+  emit(OrganizationLandingLoading());
+  final result = await _getOrgBySlugUseCase(slug);
   result.when(
-    success: (user) => emit(Authenticated(user)),
-    failure: (e) => emit(AuthError(e.message)),
+    success: (org) => emit(org != null
+        ? OrganizationLandingLoaded(org)
+        : const OrganizationLandingNotFound()),
+    failure: (e) => emit(OrganizationLandingError(e.message)),
   );
 }
 ```
@@ -788,41 +729,52 @@ Future<void> login(String email, String password) async {
 
 ### Router: GoRouter with RBAC
 
-**Configuration**: `lib/core/app/router/app_router.dart`
+**Configuration**: `lib/core/router/app_router.dart`
 
-**Route Convention**:
+**Route convention**:
 - `/onboarding`: First-launch flow
 - `/login`, `/signup`: Unauthenticated entry points
 - `/a/*`: Admin-only routes
 - `/c/*`: Customer-only routes
-- `/debug/logs`: Dev-only log viewer
+- `/debug/logs`: Dev-only log viewer (Talker)
+
+### Route Table
+
+| Route | Description |
+|-------|-------------|
+| `/onboarding` | Onboarding PageView |
+| `/login` | Login page |
+| `/signup` | Sign-up page |
+| `/a/dashboard` | Admin shell (bottom-nav) |
+| `/a/setup` | Organization setup wizard |
+| `/a/org/profile` | Organization profile |
+| `/a/org/edit` | Organization profile editor |
+| `/a/services` | Service list |
+| `/a/services/form` | Add / edit service |
+| `/a/working-hours` | Working hours configuration |
+| `/a/share-access` | QR code & link sharing |
+| `/c/home` | Customer home |
+| `/c/org/:slug` | Organization landing |
+| `/c/org/:slug/services` | Service selection |
+| `/c/org/:slug/service-details` | Service details |
+| `/c/org/:slug/slots` | Slot picker |
+| `/c/org/:slug/book` | Booking form |
+| `/c/org/:slug/confirmation` | Booking confirmation |
 
 ### Route Protection
 
 ```dart
 redirect: (context, state) async {
   final authState = authCubit.state;
-  final location = state.matchedLocation;
-  
-  // Authenticated guard
   if (authState is Authenticated) {
-    final user = authState.user;
-    
     // Cross-role guard
-    if (user.role == UserRole.admin && location.startsWith('/c/')) {
-      return Routes.adminDashboard;
-    }
-    if (user.role == UserRole.customer && location.startsWith('/a/')) {
-      return Routes.customerHome;
-    }
+    if (user.role == UserRole.admin && location.startsWith('/c/')) return Routes.adminDashboard;
+    if (user.role == UserRole.customer && location.startsWith('/a/')) return Routes.customerHome;
   }
-  
-  // Unauthenticated guard
   if (authState is Unauthenticated) {
     final isProtected = location.startsWith('/a/') || location.startsWith('/c/');
     return isProtected ? Routes.login : null;
   }
-  
   return null;
 }
 ```
@@ -833,149 +785,97 @@ redirect: (context, state) async {
 refreshListenable: GoRouterRefreshStream(authCubit.stream),
 ```
 
-This ensures the router re-evaluates guards whenever `AuthCubit` emits a new state.
-
 ---
 
 ## State Management
 
 ### Pattern: Cubit (from flutter_bloc)
 
-**Why Cubit over Bloc?**
-- Simpler API (direct methods vs. events)
-- Sufficient for current use cases
-- Easier to test
+All state in this project is managed with Cubit. Sealed classes are used for states to allow exhaustive pattern matching.
 
-### State Classes
+### State Class Conventions
 
 ```dart
-// Base sealed class for exhaustive pattern matching
-sealed class AuthState {}
-
-class AuthInitial extends AuthState {}
-class AuthLoading extends AuthState {}
-class Authenticated extends AuthState {
-  final UserEntity user;
-  Authenticated(this.user);
+// Sealed state hierarchy
+sealed class ServiceState extends Equatable {
+  const ServiceState();
 }
-class Unauthenticated extends AuthState {}
-class AuthError extends AuthState {
+
+final class ServiceInitial extends ServiceState { ... }
+final class ServiceLoading extends ServiceState { ... }
+final class ServiceLoaded extends ServiceState {
+  final List<ServiceEntity> services;
+  ...
+}
+final class ServiceError extends ServiceState {
   final String message;
-  AuthError(this.message);
+  ...
 }
 ```
 
-### Cubit Implementation
+### Cubit Implementation Pattern
 
 ```dart
 @injectable
-class AuthCubit extends Cubit<AuthState> {
-  final AuthRepository _repository;
-  final UserSessionService _sessionService;
+class ServiceCubit extends Cubit<ServiceState> {
+  ServiceCubit(this._repository) : super(const ServiceInitial());
 
-  AuthCubit(this._repository, this._sessionService) : super(AuthInitial()) {
-    _initialize();
+  final AdminServiceRepository _repository;
+  StreamSubscription<Result<List<ServiceEntity>>>? _subscription;
+
+  void watchServices(String orgId) {
+    _subscription?.cancel();
+    emit(const ServiceLoading());
+    _subscription = _repository.watchServices(orgId).listen(
+      (result) => result.when(
+        success: (services) => emit(ServiceLoaded(services)),
+        failure: (e) => emit(ServiceError(e.message)),
+      ),
+    );
   }
 
-  Future<void> _initialize() async {
-    emit(AuthLoading());
-    final user = await _sessionService.getStoredUser();
-    emit(user != null ? Authenticated(user) : Unauthenticated());
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
-
-  Future<void> login(String email, String password) async { ... }
-  Future<void> signOut() async { ... }
 }
-```
-
-### BLoC Provider Setup
-
-```dart
-// In main.dart
-BlocProvider<AuthCubit>(
-  create: (_) => getIt<AuthCubit>(),
-  child: MaterialApp.router(...),
-)
-
-// In widget
-context.read<AuthCubit>().login(email, password);
-
-// Listener
-BlocConsumer<AuthCubit, AuthState>(
-  listener: (context, state) {
-    if (state is Authenticated) {
-      // Navigate to dashboard
-    }
-  },
-  builder: (context, state) { ... },
-)
 ```
 
 ---
 
 ## Platform-Specific Configurations
 
-### Android Configuration
+### Android
 
-**Location**: `android/app/src/main/AndroidManifest.xml`
+- `minSdkVersion`: 21
+- `targetSdkVersion`: 34
+- Firebase via `google-services.json`
+- Gallery permissions for QR download (`WRITE_EXTERNAL_STORAGE` maxSdkVersion 32, `READ_MEDIA_IMAGES`)
 
-**Permissions** (added Sprint 3 for QR code download):
-```xml
-<!-- Gallery access for QR code download -->
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-                 android:maxSdkVersion="32" />
-<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-```
+### iOS
 
-**Build Configuration**: `android/app/build.gradle.kts`
-- minSdkVersion: 21
-- targetSdkVersion: 34
-- Firebase integration via `google-services.json`
+- Deployment Target: 12.0
+- Firebase via `GoogleService-Info.plist`
+- `NSPhotoLibraryAddUsageDescription` for QR code gallery save
 
-### iOS Configuration
+### Third-Party Package Notes
 
-**Location**: `ios/Runner/Info.plist`
-
-**Usage Descriptions** (added Sprint 3 for QR code download):
-```xml
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>We need access to save QR codes to your photo library</string>
-```
-
-**Build Configuration**: `ios/Runner.xcodeproj/project.pbxproj`
-- iOS Deployment Target: 12.0
-- Firebase integration via `GoogleService-Info.plist`
-
-### Third-Party Package Integration
-
-**Sprint 3 Additions**:
-
-1. **qr_flutter (^4.1.0)** - QR Code Generation
-   - Usage: `QrImageView` widget in `ShareAccessPage`
-   - Purpose: Generate QR codes from booking URLs
-   - Configuration: version auto, error correction level M
-
-2. **share_plus (^12.0.1)** - Native Sharing
-   - Usage: Share QR code image and booking link
-   - Supports: iOS Share Sheet, Android Share Intent
-   - Fallback: URL-only sharing if image fails
-
-3. **gal (^2.3.0)** - Gallery Access
-   - Usage: Save QR code PNG to device gallery
-   - Platform-specific: Uses MediaStore (Android) and Photos framework (iOS)
-   - Permission handling: Prompts user, graceful error on denial
+| Package | Version | Usage |
+|---------|---------|-------|
+| `qr_flutter` | ^4.1.0 | QR code generation in `ShareAccessPage` |
+| `share_plus` | ^12.0.1 | Native share sheet (URL + PNG) |
+| `gal` | ^2.3.0 | Save QR PNG to device gallery |
 
 ---
 
 ## Testing Strategy
 
-### Test Categories
+### Priority Order
 
-1. **Unit Tests**: Domain entities, error handling, utilities
-2. **Repository Tests**: Data layer with mocked datasources
-3. **Cubit Tests**: State management with mocked repositories
-4. **Integration Tests**: End-to-end flows
-5. **Widget Tests**: UI components (future)
+1. **Unit tests** — all use cases and domain logic (mandatory)
+2. **Integration tests** — critical user flows (auth, booking)
+3. **Widget tests** — complex stateful widget behavior
 
 ### Test Structure
 
@@ -983,82 +883,49 @@ BlocConsumer<AuthCubit, AuthState>(
 test/
 ├── core/
 │   └── error/
-│       ├── result_test.dart         # Result type behavior
-│       └── app_exception_test.dart   # Exception hierarchy
+│       ├── result_test.dart
+│       └── app_exception_test.dart
 ├── shared/
 │   ├── auth/
-│   │   └── auth_cubit_test.dart      # Auth state transitions
+│   │   ├── auth_cubit_test.dart
+│   │   └── data/models/user_model_test.dart
+│   ├── onboarding/
+│   │   └── onboarding_integration_test.dart
 │   ├── organization/
-│   │   ├── domain/entities/
-│   │   │   ├── organization_entity_test.dart  # Equatable props
-│   │   │   ├── service_entity_test.dart
-│   │   │   └── working_hours_entity_test.dart
-│   │   └── data/models/
-│   │       ├── organization_model_test.dart   # Firestore mapping
-│   │       ├── service_model_test.dart
-│   │       └── working_hours_model_test.dart
+│   │   ├── data/models/
+│   │   │   ├── organization_model_test.dart
+│   │   │   └── working_hours_model_test.dart
+│   │   └── domain/entities/
+│   │       ├── organization_entity_test.dart
+│   │       ├── service_entity_test.dart
+│   │       └── working_hours_entity_test.dart
 │   ├── booking/
-│   │   └── ...
+│   │   ├── data/models/appointment_model_test.dart
+│   │   └── domain/entities/appointment_entity_test.dart
 │   └── queue/
-│       └── ...
-└── firebase_mocks.dart               # Shared test helpers
+│       ├── data/models/queue_model_test.dart
+│       └── domain/entities/queue_entity_test.dart
+└── firebase_mocks.dart
 ```
 
-### Testing Approach
+### Testing Patterns
 
-**Entity Tests**: Verify `Equatable` props and equality
+**Entity tests** — verify `Equatable` props and equality
 
-```dart
-test('should have correct equality', () {
-  final entity1 = OrganizationEntity(/* ... */);
-  final entity2 = OrganizationEntity(/* ... */); // same values
-  expect(entity1, equals(entity2));
-});
-```
+**Model tests** — Firestore deserialization, serialization, `toEntity()` round-trip
 
-**Model Tests**: Firestore deserialization, serialization, entity conversion, and round-trip
+**Cubit tests** — state transitions with `bloc_test` and `mocktail`
 
 ```dart
-test('fromDoc -> toMap round trip', () {
-  final mockDoc = MockDocumentSnapshot();
-  when(() => mockDoc.id).thenReturn('org1');
-  when(() => mockDoc.data()).thenReturn({
-    'name': 'Test Clinic',
-    'adminUid': 'admin123',
-    'bookingLinkSlug': 'test-clinic',
-    'isOpen': true,
-    'createdAt': Timestamp.fromDate(testDate),
-  });
-
-  final model = OrganizationModel.fromDoc(mockDoc);
-  final map = model.toMap();
-
-  expect(map['name'], equals('Test Clinic'));
-});
-
-test('toEntity returns clean domain type', () {
-  final model = OrganizationModel(id: 'org1', name: 'Test Clinic', ...);
-  final entity = model.toEntity();
-  expect(entity, isA<OrganizationEntity>());
-  expect(entity.name, equals('Test Clinic'));
-});
-```
-
-**Cubit Tests**: State transitions with `bloc_test`
-
-```dart
-blocTest<AuthCubit, AuthState>(
-  'emits [Loading, Authenticated] on successful login',
+blocTest<ServiceCubit, ServiceState>(
+  'emits [Loading, Loaded] when watchServices succeeds',
   build: () {
-    when(() => mockRepository.login(any(), any()))
-        .thenAnswer((_) async => testUser);
-    return AuthCubit(mockRepository, mockSessionService);
+    when(() => mockRepo.watchServices(any()))
+        .thenAnswer((_) => Stream.value(Success([testService])));
+    return ServiceCubit(mockRepo);
   },
-  act: (cubit) => cubit.login('test@example.com', 'password'),
-  expect: () => [
-    AuthLoading(),
-    Authenticated(testUser),
-  ],
+  act: (cubit) => cubit.watchServices('org1'),
+  expect: () => [const ServiceLoading(), ServiceLoaded([testService])],
 );
 ```
 
@@ -1073,11 +940,11 @@ blocTest<AuthCubit, AuthState>(
 | Files | `snake_case.dart` | `auth_repository.dart` |
 | Classes | `PascalCase` | `AuthRepository` |
 | Variables/Methods | `camelCase` | `getUserById()` |
-| Constants | `camelCase` | `const apiTimeout = ...` |
+| Constants | `SCREAMING_SNAKE_CASE` | `const MAX_RETRIES = 3` |
 | Private | Leading `_` | `_privateMethod()` |
 | Enums | `PascalCase` values | `UserRole.admin` |
 
-### Import Organization
+### Import Ordering (Effective Dart)
 
 ```dart
 // 1. Dart SDK
@@ -1088,201 +955,16 @@ import 'package:flutter/material.dart';
 
 // 3. External packages (alphabetical)
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-// 4. Internal imports (alphabetical, relative when in same feature)
-import '../../../core/error/app_exception.dart';
-import '../domain/entities/user_entity.dart';
-import 'auth_state.dart';
+// 4. Internal imports (relative when in same feature)
+import '../../../../../core/error/result.dart';
+import '../../domain/repositories/admin_service_repository.dart';
+import 'service_state.dart';
 ```
 
 ### File Size Guidelines
 
-- **Maximum**: 300-400 lines
-- **Widgets**: Under 200 lines
-- **Repositories**: Under 300 lines
-- If larger, split into multiple files
-
-### Documentation Standards
-
-```dart
-/// Brief one-line summary.
-///
-/// Detailed explanation spanning multiple paragraphs if needed.
-///
-/// Example:
-/// ```dart
-/// final result = await repository.login(email, password);
-/// ```
-///
-/// See also:
-/// - [AuthRepository]
-/// - [UserEntity]
-class AuthRepositoryImpl implements AuthRepository {
-  /// Firebase authentication datasource.
-  final FirebaseAuthDatasource _authDatasource;
-  
-  // ...
-}
-```
-
----
-
-## Firestore Data Structure
-
-### Organizations Collection
-
-**Path**: `organizations/{orgId}`
-
-**Fields**:
-```json
-{
-  "name": "string",
-  "adminUid": "string",
-  "bookingLinkSlug": "string",
-  "qrCodeUrl": "string?",
-  "address": "string?",
-  "isOpen": "bool",
-  "logoUrl": "string?",
-  "description": "string?",
-  "createdAt": "timestamp"
-}
-```
-
-**Subcollections**:
-- `services/{serviceId}`: Services offered
-- `working_hours/{dayOfWeek}`: Hours (where `dayOfWeek` = 0-6)
-- `appointments/{appointmentId}`: Customer appointments
-- `queues/{date}`: Daily queues (where `date` = "YYYY-MM-DD")
-
-### Users Collection
-
-**Path**: `users/{uid}`
-
-**Fields**:
-```json
-{
-  "email": "string",
-  "name": "string",
-  "role": "string", // "admin" | "customer"
-  "organizationId": "string?", // For admins
-  "createdAt": "timestamp"
-}
-```
-
----
-
-## Environment Configuration
-
-### Flavors: Dev & Prod
-
-**Files**:
-- `lib/main_dev.dart`: Development entry point
-- `lib/main_prod.dart`: Production entry point
-- `lib/core/config/flavor_config.dart`: Flavor configuration
-
-**Configuration**:
-```dart
-class FlavorConfig {
-  final Flavor flavor;
-  final String apiBaseUrl;
-  final bool enableDevicePreview;
-  final LogLevel logLevel;
-
-  bool get isDev => flavor == Flavor.dev;
-  bool get isProd => flavor == Flavor.prod;
-}
-```
-
-**Running**:
-```bash
-# Dev build
-flutter run -t lib/main_dev.dart
-
-# Prod build
-flutter run -t lib/main_prod.dart
-```
-
----
-
-## Logging
-
-### AppLogger with Talker
-
-**Setup**: `lib/core/utils/app_logger.dart`
-
-```dart
-@singleton
-class AppLogger {
-  late final Talker talker;
-
-  AppLogger() {
-    talker = TalkerFlutter.init(
-      settings: TalkerSettings(
-        enabled: FlavorConfig.instance.isDev,
-      ),
-    );
-  }
-
-  void debug(String message) => talker.debug(message);
-  void info(String message) => talker.info(message);
-  void warning(String message) => talker.warning(message);
-  void error(String message, [Object? exception, StackTrace? stackTrace]) {
-    talker.error(message, exception, stackTrace);
-  }
-}
-```
-
-**Usage**:
-```dart
-final logger = getIt<AppLogger>();
-logger.info('User logged in: ${user.email}');
-logger.error('Login failed', exception, stackTrace);
-```
-
-**Dev-Only Log Viewer**: Navigate to `/debug/logs` in dev builds to view in-app logs.
-
----
-
-## Future Enhancements
-
-### Architectural Improvements
-
-1. **Use Cases Layer**: Extract business operations into dedicated use case classes
-   - Example: `LoginUseCase`, `BookAppointmentUseCase`
-   - Benefit: Better testability, cleaner cubits
-
-2. **Repository Pattern for All Features**: Implement repositories for organization, booking, and queue
-
-3. **Offline Support**: Add local caching with `sqflite` or `hive`
-
-4. **Advanced Error Recovery**: Retry logic, exponential backoff
-
-5. **Performance Monitoring**: Firebase Performance + custom metrics
-
-6. **CI/CD Pipeline**: GitHub Actions for testing and deployment
-
----
-
-## References
-
-### Internal Documents
-
-- [PRD.md](PRD.md) - Product requirements
-- [entities.md](entities.md) - Domain model specification
-- [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) - Implementation tracking
-- [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) - Development schedule
-
-### External Resources
-
-- [Clean Architecture by Uncle Bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Flutter & Clean Architecture Guide](https://resocoder.com/flutter-clean-architecture-tdd/)
-- [flutter_bloc Documentation](https://bloclibrary.dev/)
-- [GetIt Documentation](https://pub.dev/packages/get_it)
-- [GoRouter Documentation](https://pub.dev/packages/go_router)
-
----
-
-**Document Maintained By**: Architecture Team  
-**Review Cycle**: Updated after each major feature implementation  
-**Questions**: Open an issue or contact the tech lead
+- Functions over **30 lines** should be split
+- Files over **200–300 lines** should be split
+- These are warning signs, not hard rules — use judgment

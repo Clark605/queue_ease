@@ -1,10 +1,10 @@
 // ignore_for_file: unintended_html_in_doc_comment
 
 import 'package:queue_ease/core/error/result.dart';
-import 'package:queue_ease/shared/booking/domain/entities/appointment_entity.dart';
-import 'package:queue_ease/shared/organization/domain/entities/organization_entity.dart';
-import 'package:queue_ease/shared/organization/domain/entities/service_entity.dart';
-import 'package:queue_ease/shared/organization/domain/entities/working_hours_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/organization_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/service_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/working_hours_entity.dart';
 
 /// Use case contracts for the customer booking flow.
 ///

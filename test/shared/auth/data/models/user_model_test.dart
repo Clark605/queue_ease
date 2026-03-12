@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:queue_ease/shared/auth/data/models/user_model.dart';
-import 'package:queue_ease/shared/auth/domain/entities/user_entity.dart';
-import 'package:queue_ease/shared/auth/domain/entities/user_role.dart';
+import 'package:queue_ease/features/authentication/data/models/user_model.dart';
+import 'package:queue_ease/features/authentication/domain/entities/user_entity.dart';
+import 'package:queue_ease/features/authentication/domain/entities/user_role.dart';
 
 // ignore: subtype_of_sealed_class
 class MockDocumentSnapshot extends Mock

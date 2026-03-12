@@ -15,79 +15,84 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:google_sign_in/google_sign_in.dart' as _i116;
 import 'package:injectable/injectable.dart' as _i526;
 
-import '../../admin/organization/data/datasources/admin_organization_datasource.dart'
-    as _i391;
-import '../../admin/organization/data/repositories/admin_organization_repository_impl.dart'
-    as _i1012;
-import '../../admin/organization/domain/repositories/admin_organization_repository.dart'
-    as _i254;
-import '../../admin/organization/presentation/cubit/organization_cubit.dart'
-    as _i549;
-import '../../admin/services/data/datasources/admin_service_datasource.dart'
-    as _i853;
-import '../../admin/services/data/repositories/admin_service_repository_impl.dart'
-    as _i695;
-import '../../admin/services/domain/repositories/admin_service_repository.dart'
-    as _i333;
-import '../../admin/services/presentation/cubit/service_cubit.dart' as _i214;
-import '../../admin/share_access/presentation/cubit/share_access_cubit.dart'
-    as _i792;
-import '../../admin/tutorial/presentation/cubit/tutorial_cubit.dart' as _i960;
-import '../../admin/working_hours/data/datasources/admin_working_hours_datasource.dart'
-    as _i149;
-import '../../admin/working_hours/data/repositories/admin_working_hours_repository_impl.dart'
-    as _i1051;
-import '../../admin/working_hours/domain/repositories/admin_working_hours_repository.dart'
-    as _i8;
-import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart'
-    as _i991;
-import '../../customer/booking_flow/domain/use_cases/calculate_available_slots_use_case.dart'
-    as _i1001;
-import '../../customer/booking_flow/domain/use_cases/create_booking_use_case.dart'
-    as _i144;
-import '../../customer/booking_flow/domain/use_cases/get_active_services_use_case.dart'
-    as _i921;
-import '../../customer/booking_flow/domain/use_cases/get_organization_by_slug_use_case.dart'
-    as _i697;
-import '../../customer/booking_flow/presentation/cubit/booking_form_cubit.dart'
-    as _i985;
-import '../../customer/booking_flow/presentation/cubit/organization_landing_cubit.dart'
-    as _i695;
-import '../../customer/booking_flow/presentation/cubit/service_selection_cubit.dart'
-    as _i706;
-import '../../customer/booking_flow/presentation/cubit/slot_picker_cubit.dart'
-    as _i891;
-import '../../shared/auth/data/datasources/firebase_auth_datasource.dart'
-    as _i992;
-import '../../shared/auth/data/datasources/firestore_user_datasource.dart'
-    as _i241;
-import '../../shared/auth/data/repositories/auth_repository_impl.dart' as _i607;
-import '../../shared/auth/domain/repositories/auth_repository.dart' as _i61;
-import '../../shared/auth/presentation/cubit/auth_cubit.dart' as _i728;
-import '../../shared/booking/data/datasources/firestore_appointment_datasource.dart'
-    as _i140;
-import '../../shared/booking/data/repositories/appointment_repository_impl.dart'
-    as _i119;
-import '../../shared/booking/domain/repositories/appointment_repository.dart'
-    as _i415;
-import '../../shared/organization/data/datasources/firestore_organization_datasource.dart'
-    as _i543;
-import '../../shared/organization/data/datasources/firestore_service_datasource.dart'
-    as _i41;
-import '../../shared/organization/data/datasources/firestore_working_hours_datasource.dart'
-    as _i644;
-import '../../shared/organization/data/repositories/organization_repository_impl.dart'
-    as _i220;
-import '../../shared/organization/data/repositories/service_repository_impl.dart'
-    as _i423;
-import '../../shared/organization/data/repositories/working_hours_repository_impl.dart'
-    as _i590;
-import '../../shared/organization/domain/repositories/organization_repository.dart'
-    as _i1058;
-import '../../shared/organization/domain/repositories/service_repository.dart'
-    as _i709;
-import '../../shared/organization/domain/repositories/working_hours_repository.dart'
-    as _i57;
+import '../../features/admin/organization_management/data/datasources/admin_organization_datasource.dart'
+    as _i826;
+import '../../features/admin/organization_management/data/repositories/admin_organization_repository_impl.dart'
+    as _i397;
+import '../../features/admin/organization_management/domain/repositories/admin_organization_repository.dart'
+    as _i960;
+import '../../features/admin/organization_management/presentation/cubit/organization_cubit.dart'
+    as _i785;
+import '../../features/admin/service_management/data/datasources/admin_service_datasource.dart'
+    as _i380;
+import '../../features/admin/service_management/data/repositories/admin_service_repository_impl.dart'
+    as _i712;
+import '../../features/admin/service_management/domain/repositories/admin_service_repository.dart'
+    as _i557;
+import '../../features/admin/service_management/presentation/cubit/service_cubit.dart'
+    as _i984;
+import '../../features/admin/share_access/presentation/cubit/share_access_cubit.dart'
+    as _i173;
+import '../../features/admin/tutorial/presentation/cubit/tutorial_cubit.dart'
+    as _i1046;
+import '../../features/admin/working_hours_management/data/datasources/admin_working_hours_datasource.dart'
+    as _i85;
+import '../../features/admin/working_hours_management/data/repositories/admin_working_hours_repository_impl.dart'
+    as _i470;
+import '../../features/admin/working_hours_management/domain/repositories/admin_working_hours_repository.dart'
+    as _i441;
+import '../../features/admin/working_hours_management/presentation/cubit/working_hours_cubit.dart'
+    as _i132;
+import '../../features/authentication/data/datasources/firebase_auth_datasource.dart'
+    as _i529;
+import '../../features/authentication/data/datasources/firestore_user_datasource.dart'
+    as _i1039;
+import '../../features/authentication/data/repositories/auth_repository_impl.dart'
+    as _i317;
+import '../../features/authentication/domain/repositories/auth_repository.dart'
+    as _i742;
+import '../../features/authentication/presentation/cubit/auth_cubit.dart'
+    as _i678;
+import '../../features/customer/booking/data/datasources/customer_appointment_datasource.dart'
+    as _i371;
+import '../../features/customer/booking/data/datasources/customer_organization_datasource.dart'
+    as _i857;
+import '../../features/customer/booking/data/datasources/customer_service_datasource.dart'
+    as _i527;
+import '../../features/customer/booking/data/datasources/customer_working_hours_datasource.dart'
+    as _i1029;
+import '../../features/customer/booking/data/repositories/customer_appointment_repository_impl.dart'
+    as _i868;
+import '../../features/customer/booking/data/repositories/customer_organization_repository_impl.dart'
+    as _i740;
+import '../../features/customer/booking/data/repositories/customer_service_repository_impl.dart'
+    as _i255;
+import '../../features/customer/booking/data/repositories/customer_working_hours_repository_impl.dart'
+    as _i587;
+import '../../features/customer/booking/domain/repositories/customer_appointment_repository.dart'
+    as _i622;
+import '../../features/customer/booking/domain/repositories/customer_organization_repository.dart'
+    as _i636;
+import '../../features/customer/booking/domain/repositories/customer_service_repository.dart'
+    as _i948;
+import '../../features/customer/booking/domain/repositories/customer_working_hours_repository.dart'
+    as _i492;
+import '../../features/customer/booking/domain/use_cases/calculate_available_slots_use_case.dart'
+    as _i499;
+import '../../features/customer/booking/domain/use_cases/create_booking_use_case.dart'
+    as _i1040;
+import '../../features/customer/booking/domain/use_cases/get_active_services_use_case.dart'
+    as _i48;
+import '../../features/customer/booking/domain/use_cases/get_organization_by_slug_use_case.dart'
+    as _i952;
+import '../../features/customer/booking/presentation/cubit/booking_form_cubit.dart'
+    as _i651;
+import '../../features/customer/booking/presentation/cubit/organization_landing_cubit.dart'
+    as _i912;
+import '../../features/customer/booking/presentation/cubit/service_selection_cubit.dart'
+    as _i986;
+import '../../features/customer/booking/presentation/cubit/slot_picker_cubit.dart'
+    as _i968;
 import '../config/auth_module.dart' as _i322;
 import '../config/config_module.dart' as _i557;
 import '../config/flavor_config.dart' as _i636;
@@ -117,191 +122,187 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i343.UserSessionService>(
       () => _i343.UserSessionService(gh<_i924.AppLogger>()),
     );
-    gh.factory<_i792.ShareAccessCubit>(
-      () => _i792.ShareAccessCubit(gh<_i924.AppLogger>()),
+    gh.factory<_i173.ShareAccessCubit>(
+      () => _i173.ShareAccessCubit(gh<_i924.AppLogger>()),
     );
-    gh.lazySingleton<_i391.AdminOrganizationDatasource>(
-      () => _i391.AdminOrganizationDatasource(
+    gh.lazySingleton<_i826.AdminOrganizationDatasource>(
+      () => _i826.AdminOrganizationDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i853.AdminServiceDatasource>(
-      () => _i853.AdminServiceDatasource(
+    gh.lazySingleton<_i380.AdminServiceDatasource>(
+      () => _i380.AdminServiceDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i149.AdminWorkingHoursDatasource>(
-      () => _i149.AdminWorkingHoursDatasource(
+    gh.lazySingleton<_i85.AdminWorkingHoursDatasource>(
+      () => _i85.AdminWorkingHoursDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i241.FirestoreUserDatasource>(
-      () => _i241.FirestoreUserDatasource(
+    gh.lazySingleton<_i1039.FirestoreUserDatasource>(
+      () => _i1039.FirestoreUserDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i140.FirestoreAppointmentDatasource>(
-      () => _i140.FirestoreAppointmentDatasource(
+    gh.lazySingleton<_i371.CustomerAppointmentDatasource>(
+      () => _i371.CustomerAppointmentDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i543.FirestoreOrganizationDatasource>(
-      () => _i543.FirestoreOrganizationDatasource(
+    gh.lazySingleton<_i857.CustomerOrganizationDatasource>(
+      () => _i857.CustomerOrganizationDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i41.FirestoreServiceDatasource>(
-      () => _i41.FirestoreServiceDatasource(
+    gh.lazySingleton<_i527.CustomerServiceDatasource>(
+      () => _i527.CustomerServiceDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i644.FirestoreWorkingHoursDatasource>(
-      () => _i644.FirestoreWorkingHoursDatasource(
+    gh.lazySingleton<_i1029.CustomerWorkingHoursDatasource>(
+      () => _i1029.CustomerWorkingHoursDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i254.AdminOrganizationRepository>(
-      () => _i1012.AdminOrganizationRepositoryImpl(
-        gh<_i391.AdminOrganizationDatasource>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.lazySingleton<_i992.FirebaseAuthDatasource>(
-      () => _i992.FirebaseAuthDatasource(
+    gh.lazySingleton<_i529.FirebaseAuthDatasource>(
+      () => _i529.FirebaseAuthDatasource(
         gh<_i59.FirebaseAuth>(),
         gh<_i116.GoogleSignIn>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i333.AdminServiceRepository>(
-      () => _i695.AdminServiceRepositoryImpl(
-        gh<_i853.AdminServiceDatasource>(),
+    gh.factory<_i1046.TutorialCubit>(
+      () => _i1046.TutorialCubit(
+        gh<_i1039.FirestoreUserDatasource>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i8.AdminWorkingHoursRepository>(
-      () => _i1051.AdminWorkingHoursRepositoryImpl(
-        gh<_i149.AdminWorkingHoursDatasource>(),
+    gh.lazySingleton<_i948.CustomerServiceRepository>(
+      () => _i255.CustomerServiceRepositoryImpl(
+        gh<_i527.CustomerServiceDatasource>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i1058.OrganizationRepository>(
-      () => _i220.OrganizationRepositoryImpl(
-        gh<_i543.FirestoreOrganizationDatasource>(),
+    gh.lazySingleton<_i557.AdminServiceRepository>(
+      () => _i712.AdminServiceRepositoryImpl(
+        gh<_i380.AdminServiceDatasource>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i61.AuthRepository>(
-      () => _i607.AuthRepositoryImpl(
-        gh<_i992.FirebaseAuthDatasource>(),
-        gh<_i241.FirestoreUserDatasource>(),
+    gh.lazySingleton<_i636.CustomerOrganizationRepository>(
+      () => _i740.CustomerOrganizationRepositoryImpl(
+        gh<_i857.CustomerOrganizationDatasource>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i984.ServiceCubit>(
+      () => _i984.ServiceCubit(
+        gh<_i557.AdminServiceRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i952.GetOrganizationBySlugUseCase>(
+      () => _i952.GetOrganizationBySlugUseCase(
+        gh<_i636.CustomerOrganizationRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i960.AdminOrganizationRepository>(
+      () => _i397.AdminOrganizationRepositoryImpl(
+        gh<_i826.AdminOrganizationDatasource>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i492.CustomerWorkingHoursRepository>(
+      () => _i587.CustomerWorkingHoursRepositoryImpl(
+        gh<_i1029.CustomerWorkingHoursDatasource>(),
+      ),
+    );
+    gh.lazySingleton<_i441.AdminWorkingHoursRepository>(
+      () => _i470.AdminWorkingHoursRepositoryImpl(
+        gh<_i85.AdminWorkingHoursDatasource>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i912.OrganizationLandingCubit>(
+      () => _i912.OrganizationLandingCubit(
+        gh<_i952.GetOrganizationBySlugUseCase>(),
+        gh<_i492.CustomerWorkingHoursRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i785.OrganizationCubit>(
+      () => _i785.OrganizationCubit(
+        gh<_i960.AdminOrganizationRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i622.CustomerAppointmentRepository>(
+      () => _i868.CustomerAppointmentRepositoryImpl(
+        gh<_i371.CustomerAppointmentDatasource>(),
+      ),
+    );
+    gh.factory<_i132.WorkingHoursCubit>(
+      () => _i132.WorkingHoursCubit(
+        gh<_i441.AdminWorkingHoursRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i48.GetActiveServicesUseCase>(
+      () => _i48.GetActiveServicesUseCase(
+        gh<_i948.CustomerServiceRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i986.ServiceSelectionCubit>(
+      () => _i986.ServiceSelectionCubit(
+        gh<_i48.GetActiveServicesUseCase>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i742.AuthRepository>(
+      () => _i317.AuthRepositoryImpl(
+        gh<_i529.FirebaseAuthDatasource>(),
+        gh<_i1039.FirestoreUserDatasource>(),
         gh<_i343.UserSessionService>(),
-        gh<_i254.AdminOrganizationRepository>(),
+        gh<_i960.AdminOrganizationRepository>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.factory<_i960.TutorialCubit>(
-      () => _i960.TutorialCubit(
-        gh<_i241.FirestoreUserDatasource>(),
+    gh.lazySingleton<_i499.CalculateAvailableSlotsUseCase>(
+      () => _i499.CalculateAvailableSlotsUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.factory<_i549.OrganizationCubit>(
-      () => _i549.OrganizationCubit(
-        gh<_i1058.OrganizationRepository>(),
-        gh<_i254.AdminOrganizationRepository>(),
+    gh.lazySingleton<_i1040.CreateBookingUseCase>(
+      () => _i1040.CreateBookingUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i709.ServiceRepository>(
-      () => _i423.ServiceRepositoryImpl(
-        gh<_i41.FirestoreServiceDatasource>(),
+    gh.factory<_i968.SlotPickerCubit>(
+      () => _i968.SlotPickerCubit(
+        gh<_i499.CalculateAvailableSlotsUseCase>(),
+        gh<_i492.CustomerWorkingHoursRepository>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i921.GetActiveServicesUseCase>(
-      () => _i921.GetActiveServicesUseCase(
-        gh<_i709.ServiceRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
+    gh.lazySingleton<_i678.AuthCubit>(
+      () => _i678.AuthCubit(gh<_i742.AuthRepository>(), gh<_i924.AppLogger>()),
     );
-    gh.lazySingleton<_i697.GetOrganizationBySlugUseCase>(
-      () => _i697.GetOrganizationBySlugUseCase(
-        gh<_i1058.OrganizationRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.lazySingleton<_i415.AppointmentRepository>(
-      () => _i119.AppointmentRepositoryImpl(
-        gh<_i140.FirestoreAppointmentDatasource>(),
-      ),
-    );
-    gh.lazySingleton<_i1001.CalculateAvailableSlotsUseCase>(
-      () => _i1001.CalculateAvailableSlotsUseCase(
-        gh<_i415.AppointmentRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.lazySingleton<_i144.CreateBookingUseCase>(
-      () => _i144.CreateBookingUseCase(
-        gh<_i415.AppointmentRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.lazySingleton<_i57.WorkingHoursRepository>(
-      () => _i590.WorkingHoursRepositoryImpl(
-        gh<_i644.FirestoreWorkingHoursDatasource>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i706.ServiceSelectionCubit>(
-      () => _i706.ServiceSelectionCubit(
-        gh<_i921.GetActiveServicesUseCase>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.lazySingleton<_i728.AuthCubit>(
-      () => _i728.AuthCubit(gh<_i61.AuthRepository>(), gh<_i924.AppLogger>()),
-    );
-    gh.factory<_i991.WorkingHoursCubit>(
-      () => _i991.WorkingHoursCubit(
-        gh<_i57.WorkingHoursRepository>(),
-        gh<_i8.AdminWorkingHoursRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i214.ServiceCubit>(
-      () => _i214.ServiceCubit(
-        gh<_i709.ServiceRepository>(),
-        gh<_i333.AdminServiceRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i891.SlotPickerCubit>(
-      () => _i891.SlotPickerCubit(
-        gh<_i1001.CalculateAvailableSlotsUseCase>(),
-        gh<_i57.WorkingHoursRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i985.BookingFormCubit>(
-      () => _i985.BookingFormCubit(
-        gh<_i144.CreateBookingUseCase>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i695.OrganizationLandingCubit>(
-      () => _i695.OrganizationLandingCubit(
-        gh<_i697.GetOrganizationBySlugUseCase>(),
-        gh<_i57.WorkingHoursRepository>(),
+    gh.factory<_i651.BookingFormCubit>(
+      () => _i651.BookingFormCubit(
+        gh<_i1040.CreateBookingUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );

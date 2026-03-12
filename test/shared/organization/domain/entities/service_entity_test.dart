@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:queue_ease/shared/organization/domain/entities/service_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/service_entity.dart';
 
 void main() {
   group('ServiceEntity', () {
