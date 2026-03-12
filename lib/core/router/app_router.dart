@@ -15,7 +15,9 @@ import '../../admin/share_access/presentation/pages/share_access_page.dart';
 import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart';
 import '../../admin/working_hours/presentation/pages/working_hours_page.dart';
 import '../../customer/booking_flow/presentation/cubit/organization_landing_cubit.dart';
+import '../../customer/booking_flow/presentation/cubit/service_selection_cubit.dart';
 import '../../customer/booking_flow/presentation/pages/organization_landing_page.dart';
+import '../../customer/booking_flow/presentation/pages/service_selection_page.dart';
 import '../../customer/entry/presentation/pages/customer_home_page.dart';
 import '../../shared/auth/domain/entities/user_role.dart';
 import '../../shared/auth/presentation/cubit/auth_cubit.dart';
@@ -45,6 +47,7 @@ abstract final class Routes {
   static const String adminShareAccess = '/a/share-access';
   static const String customerHome = '/c/home';
   static const String customerOrgLanding = '/c/org/:slug';
+  static const String customerServices = '/c/org/:slug/services';
 
   // Dev-only
   static const String debugLogs = '/debug/logs';
@@ -256,6 +259,17 @@ GoRouter createRouter(AuthCubit authCubit) {
             create: (context) =>
                 getIt<OrganizationLandingCubit>()..loadOrganization(slug),
             child: OrganizationLandingPage(slug: slug),
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerServices,
+        builder: (context, state) {
+          final orgId = state.extra as String;
+          return BlocProvider(
+            create: (context) =>
+                getIt<ServiceSelectionCubit>()..loadServices(orgId),
+            child: ServiceSelectionPage(orgId: orgId),
           );
         },
       ),

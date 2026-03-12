@@ -15,7 +15,7 @@
 
 **Purpose**: Create the booking flow directory scaffold so all subsequent tasks have a valid target path.
 
-- [ ] T001 Create `lib/customer/booking_flow/domain/use_cases/` and `lib/customer/booking_flow/presentation/{cubit,pages,widgets}/` directory structure (add `.gitkeep` files — removed when first real file is added)
+- [x] T001 Create `lib/customer/booking_flow/domain/use_cases/` and `lib/customer/booking_flow/presentation/{cubit,pages,widgets}/` directory structure (add `.gitkeep` files — removed when first real file is added)
 
 **Checkpoint**: Directory skeleton exists — all Phase 3+ tasks have a valid target path.
 
@@ -27,10 +27,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until T002–T003 are deployed and T004–T005 are committed.
 
-- [ ] T002 [P] Fix appointment `create`/`update` allowed fields and add customer `list` permission in `firestore.rules` (add `customerName`, `customerPhone`, `queuePosition` to `hasOnlyAllowedFields`; change appointment `allow list` from `ownsOrganization(orgId)` to `isAuthenticated()`)
-- [ ] T003 [P] Add `serviceId ASC` + `scheduledAt ASC` compound index for the `organizations/{orgId}/appointments` subcollection in `firestore.indexes.json`
-- [ ] T004 [P] Create `AppointmentRepository` abstract interface with `createAppointment()` and `getAppointmentsForDateAndService()` in `lib/shared/booking/domain/repositories/appointment_repository.dart` (follow contract in `contracts/appointment_repository.dart`)
-- [ ] T005 [P] Add `AppointmentModel.fromEntity(AppointmentEntity)` named constructor to `lib/shared/booking/data/models/appointment_model.dart` (write path: datasource calls `AppointmentModel.fromEntity(entity).toMap()` when writing to Firestore)
+- [x] T002 [P] Fix appointment `create`/`update` allowed fields and add customer `list` permission in `firestore.rules` (add `customerName`, `customerPhone`, `queuePosition` to `hasOnlyAllowedFields`; change appointment `allow list` from `ownsOrganization(orgId)` to `isAuthenticated()`)
+- [x] T003 [P] Add `serviceId ASC` + `scheduledAt ASC` compound index for the `organizations/{orgId}/appointments` subcollection in `firestore.indexes.json`
+- [x] T004 [P] Create `AppointmentRepository` abstract interface with `createAppointment()` and `getAppointmentsForDateAndService()` in `lib/shared/booking/domain/repositories/appointment_repository.dart` (follow contract in `contracts/appointment_repository.dart`)
+- [x] T005 [P] Add `AppointmentModel.fromEntity(AppointmentEntity)` named constructor to `lib/shared/booking/data/models/appointment_model.dart` (write path: datasource calls `AppointmentModel.fromEntity(entity).toMap()` when writing to Firestore)
 
 **Checkpoint**: Deploy rules + index (`firebase deploy --only firestore:rules,firestore:indexes --project queue-ease-dev`). Foundation is ready — user story implementation can now begin sequentially per the funnel dependency chain.
 
@@ -42,14 +42,14 @@
 
 **Independent Test**: Open `/c/org/<valid-slug>` — org name and open/closed badge render. Open `/c/org/unknown-slug` — not-found screen renders. GoRouter redirect fires for unauthenticated user.
 
-- [ ] T006 [P] [US1] Add `Future<Result<OrganizationEntity?>> getOrganizationBySlug(String slug)` to `OrganizationRepository` in `lib/shared/organization/domain/repositories/organization_repository.dart` (follow contract in `contracts/organization_repository_extension.dart`)
-- [ ] T007 [P] [US1] Add `getBySlug(String slug)` Firestore query (`where('bookingLinkSlug', isEqualTo: slug.toLowerCase()).limit(1)`) to `FirestoreOrganizationDatasource` in `lib/shared/organization/data/datasources/firestore_organization_datasource.dart`
-- [ ] T008 [US1] Implement `getOrganizationBySlug()` in `OrganizationRepositoryImpl`, wrapping the datasource call in `Result.guard()`; add `@lazySingleton` registration scope remains unchanged in `lib/shared/organization/data/repositories/organization_repository_impl.dart`
-- [ ] T009 [US1] Create `GetOrganizationBySlugUseCase` (`@lazySingleton`) that calls `OrganizationRepository.getOrganizationBySlug()`; logs `talker.warning()` on not-found, `talker.error()` on `DatabaseException` in `lib/customer/booking_flow/domain/use_cases/get_organization_by_slug_use_case.dart`
-- [ ] T010 [P] [US1] Create `OrganizationLandingState` as a sealed class with states: `OrganizationLandingInitial`, `OrganizationLandingLoading`, `OrganizationLandingLoaded(OrganizationEntity org, bool isCurrentlyOpen)`, `OrganizationLandingNotFound`, `OrganizationLandingError(String message)` in `lib/customer/booking_flow/presentation/cubit/organization_landing_state.dart`
-- [ ] T011 [US1] Create `OrganizationLandingCubit` (`@injectable`), injecting `GetOrganizationBySlugUseCase`; method `loadOrganization(String slug)` resolves slug to entity and derives `isCurrentlyOpen` from `WorkingHoursEntity` list via `WorkingHoursRepository` in `lib/customer/booking_flow/presentation/cubit/organization_landing_cubit.dart`
-- [ ] T012 [US1] Create `OrganizationLandingPage` consuming `OrganizationLandingCubit`; display name, description, address, open/closed badge; show `AppLoadingIndicator` on loading, not-found screen on `OrganizationLandingNotFound`, "Book Appointment" button (enabled only when `isCurrentlyOpen`) in `lib/customer/booking_flow/presentation/pages/organization_landing_page.dart`
-- [ ] T013 [US1] Add `/c/org/:slug` route to `GoRouter` in `lib/core/router/app_router.dart`; wire RBAC redirect (unauthenticated → `/login` with `from` param pointing back to `/c/org/:slug`); provide `OrganizationLandingCubit` via `BlocProvider` in the route builder
+- [x] T006 [P] [US1] Add `Future<Result<OrganizationEntity?>> getOrganizationBySlug(String slug)` to `OrganizationRepository` in `lib/shared/organization/domain/repositories/organization_repository.dart` (follow contract in `contracts/organization_repository_extension.dart`)
+- [x] T007 [P] [US1] Add `getBySlug(String slug)` Firestore query (`where('bookingLinkSlug', isEqualTo: slug.toLowerCase()).limit(1)`) to `FirestoreOrganizationDatasource` in `lib/shared/organization/data/datasources/firestore_organization_datasource.dart`
+- [x] T008 [US1] Implement `getOrganizationBySlug()` in `OrganizationRepositoryImpl`, wrapping the datasource call in `Result.guard()`; add `@lazySingleton` registration scope remains unchanged in `lib/shared/organization/data/repositories/organization_repository_impl.dart`
+- [x] T009 [US1] Create `GetOrganizationBySlugUseCase` (`@lazySingleton`) that calls `OrganizationRepository.getOrganizationBySlug()`; logs `talker.warning()` on not-found, `talker.error()` on `DatabaseException` in `lib/customer/booking_flow/domain/use_cases/get_organization_by_slug_use_case.dart`
+- [x] T010 [P] [US1] Create `OrganizationLandingState` as a sealed class with states: `OrganizationLandingInitial`, `OrganizationLandingLoading`, `OrganizationLandingLoaded(OrganizationEntity org, bool isCurrentlyOpen)`, `OrganizationLandingNotFound`, `OrganizationLandingError(String message)` in `lib/customer/booking_flow/presentation/cubit/organization_landing_state.dart`
+- [x] T011 [US1] Create `OrganizationLandingCubit` (`@injectable`), injecting `GetOrganizationBySlugUseCase`; method `loadOrganization(String slug)` resolves slug to entity and derives `isCurrentlyOpen` from `WorkingHoursEntity` list via `WorkingHoursRepository` in `lib/customer/booking_flow/presentation/cubit/organization_landing_cubit.dart`
+- [x] T012 [US1] Create `OrganizationLandingPage` consuming `OrganizationLandingCubit`; display name, description, address, open/closed badge; show `AppLoadingIndicator` on loading, not-found screen on `OrganizationLandingNotFound`, "Book Appointment" button (enabled only when `isCurrentlyOpen`) in `lib/customer/booking_flow/presentation/pages/organization_landing_page.dart`
+- [x] T013 [US1] Add `/c/org/:slug` route to `GoRouter` in `lib/core/router/app_router.dart`; wire RBAC redirect (unauthenticated → `/login` with `from` param pointing back to `/c/org/:slug`); provide `OrganizationLandingCubit` via `BlocProvider` in the route builder
 
 **Checkpoint**: User Story 1 is fully functional — tap a booking link, see the org landing page.
 
@@ -61,12 +61,12 @@
 
 **Independent Test**: On the service selection screen, at least one active service renders with name + duration. Tapping it navigates to the slot picker. Empty state renders when no active services exist.
 
-- [ ] T014 [US2] Create `GetActiveServicesUseCase` (`@lazySingleton`) that calls `ServiceRepository.watchServices(orgId)` and filters to `isActive == true`; logs `talker.error()` on failure in `lib/customer/booking_flow/domain/use_cases/get_active_services_use_case.dart`
-- [ ] T015 [P] [US2] Create `ServiceSelectionState` sealed class with states: `ServiceSelectionInitial`, `ServiceSelectionLoading`, `ServiceSelectionLoaded(List<ServiceEntity> services)`, `ServiceSelectionError(String message)` in `lib/customer/booking_flow/presentation/cubit/service_selection_state.dart`
-- [ ] T016 [P] [US2] Create `ServiceCard` widget displaying service name, duration, optional price, optional description; accepts an `onTap` callback in `lib/customer/booking_flow/presentation/widgets/service_card.dart`
-- [ ] T017 [US2] Create `ServiceSelectionCubit` (`@injectable`), injecting `GetActiveServicesUseCase`; method `loadServices(String orgId)` subscribes to the active-services stream in `lib/customer/booking_flow/presentation/cubit/service_selection_cubit.dart`
-- [ ] T018 [US2] Create `ServiceSelectionPage` consuming `ServiceSelectionCubit`; render `ListView.builder` of `ServiceCard`; show empty-state widget when list is empty; show `AppLoadingIndicator` on loading in `lib/customer/booking_flow/presentation/pages/service_selection_page.dart`
-- [ ] T019 [US2] Add `/c/org/:slug/services` route in `lib/core/router/app_router.dart`; wire "Book Appointment" button on `OrganizationLandingPage` to navigate here passing `orgId` as extra; provide `ServiceSelectionCubit` via `BlocProvider`
+- [x] T014 [US2] Create `GetActiveServicesUseCase` (`@lazySingleton`) that calls `ServiceRepository.watchServices(orgId)` and filters to `isActive == true`; logs `talker.error()` on failure in `lib/customer/booking_flow/domain/use_cases/get_active_services_use_case.dart`
+- [x] T015 [P] [US2] Create `ServiceSelectionState` sealed class with states: `ServiceSelectionInitial`, `ServiceSelectionLoading`, `ServiceSelectionLoaded(List<ServiceEntity> services)`, `ServiceSelectionError(String message)` in `lib/customer/booking_flow/presentation/cubit/service_selection_state.dart`
+- [x] T016 [P] [US2] Create `ServiceCard` widget displaying service name, duration, optional price, optional description; accepts an `onTap` callback in `lib/customer/booking_flow/presentation/widgets/service_card.dart`
+- [x] T017 [US2] Create `ServiceSelectionCubit` (`@injectable`), injecting `GetActiveServicesUseCase`; method `loadServices(String orgId)` subscribes to the active-services stream in `lib/customer/booking_flow/presentation/cubit/service_selection_cubit.dart`
+- [x] T018 [US2] Create `ServiceSelectionPage` consuming `ServiceSelectionCubit`; render `ListView.builder` of `ServiceCard`; show empty-state widget when list is empty; show `AppLoadingIndicator` on loading in `lib/customer/booking_flow/presentation/pages/service_selection_page.dart`
+- [x] T019 [US2] Add `/c/org/:slug/services` route in `lib/core/router/app_router.dart`; wire "Book Appointment" button on `OrganizationLandingPage` to navigate here passing `orgId` as extra; provide `ServiceSelectionCubit` via `BlocProvider`
 
 **Checkpoint**: User Stories 1 and 2 work — org landing page → service selection.
 
