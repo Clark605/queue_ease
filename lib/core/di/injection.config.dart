@@ -23,6 +23,24 @@ import '../../features/admin/organization_management/domain/repositories/admin_o
     as _i960;
 import '../../features/admin/organization_management/presentation/cubit/organization_cubit.dart'
     as _i785;
+import '../../features/admin/queue_management/data/datasources/admin_queue_datasource.dart'
+    as _i702;
+import '../../features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart'
+    as _i454;
+import '../../features/admin/queue_management/domain/repositories/admin_appointment_repository.dart'
+    as _i761;
+import '../../features/admin/queue_management/domain/use_cases/advance_queue_use_case.dart'
+    as _i244;
+import '../../features/admin/queue_management/domain/use_cases/mark_no_show_use_case.dart'
+    as _i174;
+import '../../features/admin/queue_management/domain/use_cases/rejoin_skipped_use_case.dart'
+    as _i241;
+import '../../features/admin/queue_management/domain/use_cases/skip_queue_entry_use_case.dart'
+    as _i388;
+import '../../features/admin/queue_management/domain/use_cases/watch_daily_queue_use_case.dart'
+    as _i774;
+import '../../features/admin/queue_management/presentation/cubit/queue_management_cubit.dart'
+    as _i463;
 import '../../features/admin/service_management/data/datasources/admin_service_datasource.dart'
     as _i380;
 import '../../features/admin/service_management/data/repositories/admin_service_repository_impl.dart'
@@ -93,6 +111,8 @@ import '../../features/customer/booking/presentation/cubit/service_selection_cub
     as _i986;
 import '../../features/customer/booking/presentation/cubit/slot_picker_cubit.dart'
     as _i968;
+import '../../features/customer/entry/presentation/cubit/customer_queue_status_cubit.dart'
+    as _i28;
 import '../config/auth_module.dart' as _i322;
 import '../config/config_module.dart' as _i557;
 import '../config/flavor_config.dart' as _i636;
@@ -122,11 +142,23 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i343.UserSessionService>(
       () => _i343.UserSessionService(gh<_i924.AppLogger>()),
     );
+    gh.factory<_i463.QueueManagementCubit>(
+      () => _i463.QueueManagementCubit(gh<_i924.AppLogger>()),
+    );
     gh.factory<_i173.ShareAccessCubit>(
       () => _i173.ShareAccessCubit(gh<_i924.AppLogger>()),
     );
+    gh.factory<_i28.CustomerQueueStatusCubit>(
+      () => _i28.CustomerQueueStatusCubit(gh<_i924.AppLogger>()),
+    );
     gh.lazySingleton<_i826.AdminOrganizationDatasource>(
       () => _i826.AdminOrganizationDatasource(
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i702.AdminQueueDatasource>(
+      () => _i702.AdminQueueDatasource(
         gh<_i974.FirebaseFirestore>(),
         gh<_i924.AppLogger>(),
       ),
@@ -177,6 +209,42 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i529.FirebaseAuthDatasource(
         gh<_i59.FirebaseAuth>(),
         gh<_i116.GoogleSignIn>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i761.AdminAppointmentRepository>(
+      () => _i454.AdminQueueRepositoryImpl(
+        gh<_i702.AdminQueueDatasource>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i244.AdvanceQueueUseCase>(
+      () => _i244.AdvanceQueueUseCase(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i174.MarkNoShowUseCase>(
+      () => _i174.MarkNoShowUseCase(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i241.RejoinSkippedUseCase>(
+      () => _i241.RejoinSkippedUseCase(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i388.SkipQueueEntryUseCase>(
+      () => _i388.SkipQueueEntryUseCase(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i774.WatchDailyQueueUseCase>(
+      () => _i774.WatchDailyQueueUseCase(
+        gh<_i761.AdminAppointmentRepository>(),
         gh<_i924.AppLogger>(),
       ),
     );

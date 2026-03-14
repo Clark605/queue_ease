@@ -25,6 +25,8 @@ import '../../features/customer/booking/presentation/pages/service_details_page.
 import '../../features/customer/booking/presentation/pages/service_selection_page.dart';
 import '../../features/customer/booking/presentation/pages/slot_picker_page.dart';
 import '../../features/customer/entry/presentation/pages/customer_home_page.dart';
+import '../../features/customer/entry/presentation/cubit/customer_queue_status_cubit.dart';
+import '../../features/customer/entry/presentation/pages/customer_queue_status_page.dart';
 import '../../features/authentication/domain/entities/user_role.dart';
 import '../../features/authentication/presentation/cubit/auth_cubit.dart';
 import '../../features/authentication/presentation/cubit/auth_state.dart';
@@ -58,6 +60,7 @@ abstract final class Routes {
   static const String customerSlots = '/c/org/:slug/slots';
   static const String customerBook = '/c/org/:slug/book';
   static const String customerConfirmation = '/c/org/:slug/confirmation';
+  static const String customerQueueStatus = '/c/queue-status';
 
   // Dev-only
   static const String debugLogs = '/debug/logs';
@@ -334,6 +337,14 @@ GoRouter createRouter(AuthCubit authCubit) {
           final args = state.extra as BookingConfirmationArgs;
           return BookingConfirmationPage(args: args);
         },
+      ),
+      // Customer live queue status
+      GoRoute(
+        path: Routes.customerQueueStatus,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<CustomerQueueStatusCubit>(),
+          child: const CustomerQueueStatusPage(),
+        ),
       ),
       // Dev-only: in-app log viewer
       if (FlavorConfig.instance.isDev)

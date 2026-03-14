@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:queue_ease/core/error/result.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/queue_entity.dart';
 
 import '../../domain/repositories/customer_appointment_repository.dart';
 import '../datasources/customer_appointment_datasource.dart';
@@ -31,4 +32,25 @@ class CustomerAppointmentRepositoryImpl
       date: date,
     ),
   );
+
+  // -- Queue status streams (Phase 4, T021/T022) ----------------------------
+
+  @override
+  Stream<Result<AppointmentEntity?>> watchCustomerQueueAppointment({
+    required String orgId,
+    required String customerId,
+    required DateTime date,
+  }) {
+    // TODO(T021): Implement customer active-appointment watch in Phase 4 (US2).
+    throw UnimplementedError('T021: Implement in Phase 4 (US2)');
+  }
+
+  @override
+  Stream<Result<QueueEntity?>> watchDailyQueue({
+    required String orgId,
+    required DateTime date,
+  }) {
+    // TODO(T021): Implement daily queue document watch in Phase 4 (US2).
+    throw UnimplementedError('T021: Implement in Phase 4 (US2)');
+  }
 }
