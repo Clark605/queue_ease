@@ -7,7 +7,7 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../shared_domain/entities/service_entity.dart';
 import '../cubit/service_selection_cubit.dart';
 import '../cubit/service_selection_state.dart';
-import '../widgets/service_card.dart';
+import '../widgets/service_selection/service_card.dart';
 import 'service_details_page.dart';
 
 class ServiceSelectionPage extends StatelessWidget {

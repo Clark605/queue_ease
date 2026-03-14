@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:queue_ease/core/widgets/widgets.dart';
-
-import '../../../../../core/theme/app_colors.dart';
 import '../../../../authentication/presentation/cubit/auth_cubit.dart';
 import '../../../../authentication/presentation/cubit/auth_state.dart';
 import '../../../../shared_domain/entities/service_entity.dart';
 import '../cubit/slot_picker_cubit.dart';
 import '../cubit/slot_picker_state.dart';
-import '../widgets/date_selector.dart';
-import '../widgets/time_slot_grid.dart';
+import '../widgets/slot_picker/date_selector.dart';
+import '../widgets/slot_picker/service_summary_strip.dart';
+import '../widgets/slot_picker/slot_picker_footer.dart';
+import '../widgets/slot_picker/time_slot_grid.dart';
 import 'booking_form_page.dart';
 
 /// Arguments passed via GoRouter [extra] to [SlotPickerPage].
@@ -103,8 +103,7 @@ class _SlotPickerBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Service info summary strip
-        _ServiceSummaryStrip(
+        ServiceSummaryStrip(
           serviceName: args.serviceName,
           durationMinutes: args.durationMinutes,
         ),
@@ -144,8 +143,7 @@ class _SlotPickerBody extends StatelessWidget {
                 ),
         ),
 
-        // Sticky footer
-        _SlotPickerFooter(
+        SlotPickerFooter(
           selectedSlot: selectedSlot,
           onConfirm: selectedSlot != null
               ? () => _onConfirm(context, selectedSlot!)
@@ -171,146 +169,5 @@ class _SlotPickerBody extends StatelessWidget {
       prefillName: prefillName,
     );
     context.push('/c/org/${args.slug}/book', extra: bookingArgs);
-  }
-}
-
-class _ServiceSummaryStrip extends StatelessWidget {
-  const _ServiceSummaryStrip({
-    required this.serviceName,
-    required this.durationMinutes,
-  });
-
-  final String serviceName;
-  final int durationMinutes;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
-      child: Row(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.calendar_month_outlined,
-              color: AppColors.primary,
-              size: 28,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  serviceName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.onSurface,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$durationMinutes min appointment',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SlotPickerFooter extends StatelessWidget {
-  const _SlotPickerFooter({
-    required this.selectedSlot,
-    required this.onConfirm,
-  });
-
-  final DateTime? selectedSlot;
-  final VoidCallback? onConfirm;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(
-          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Info note — matches design
-          Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.blue.shade100),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline, size: 18, color: Colors.blue.shade700),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Please arrive 10 minutes before your scheduled '
-                    'appointment time.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.blue.shade900,
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: FilledButton(
-              onPressed: onConfirm,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                disabledBackgroundColor: AppColors.outline,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Confirm Booking',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

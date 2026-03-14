@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
 import '../../../../shared_domain/entities/appointment_entity.dart';
 import '../../../../shared_domain/entities/service_entity.dart';
+import '../widgets/confirmation/confirmation_bottom_actions.dart';
+import '../widgets/confirmation/confirmation_card.dart';
 
 /// Arguments passed via GoRouter [extra] to [BookingConfirmationPage].
 typedef BookingConfirmationArgs = ({
@@ -53,12 +54,20 @@ class BookingConfirmationPage extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
-                    _ConfirmationCard(args: args),
+                    ConfirmationCard(
+                      orgName: args.orgName,
+                      orgAddress: args.orgAddress,
+                      service: args.service,
+                      appointment: args.appointment,
+                    ),
                   ],
                 ),
               ),
             ),
-            _HomeButton(onTap: () => context.go('/c/home')),
+            ConfirmationBottomActions(
+              orgId: args.appointment.orgId,
+              onHomeTap: () => context.go('/c/home'),
+            ),
           ],
         ),
       ),
@@ -80,153 +89,6 @@ class _SuccessIcon extends StatelessWidget {
         Icons.check_circle_outline_rounded,
         color: AppColors.success,
         size: 52,
-      ),
-    );
-  }
-}
-
-class _ConfirmationCard extends StatelessWidget {
-  const _ConfirmationCard({required this.args});
-
-  final BookingConfirmationArgs args;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheduledAt = args.appointment.scheduledAt;
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.outline.withValues(alpha: 0.5)),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Appointment Details',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: AppColors.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.4,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1),
-          const SizedBox(height: 16),
-          _DetailRow(
-            icon: Icons.business_outlined,
-            label: 'Organisation',
-            value: args.orgName,
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(
-            icon: Icons.medical_services_outlined,
-            label: 'Service',
-            value: args.service.name,
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(
-            icon: Icons.event_outlined,
-            label: 'Date',
-            value: DateFormat('EEEE, MMMM d, yyyy').format(scheduledAt),
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(
-            icon: Icons.access_time_outlined,
-            label: 'Time',
-            value: DateFormat('h:mm a').format(scheduledAt),
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(
-            icon: Icons.timer_outlined,
-            label: 'Duration',
-            value: '${args.service.durationMinutes} min',
-          ),
-          if (args.orgAddress != null) ...[
-            const SizedBox(height: 12),
-            _DetailRow(
-              icon: Icons.location_on_outlined,
-              label: 'Address',
-              value: args.orgAddress!,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: AppColors.primary),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: AppTextStyles.bodySmall),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HomeButton extends StatelessWidget {
-  const _HomeButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.outline.withValues(alpha: 0.4)),
-        ),
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 48,
-        child: FilledButton(
-          onPressed: onTap,
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text(
-            'Back to Home',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
       ),
     );
   }

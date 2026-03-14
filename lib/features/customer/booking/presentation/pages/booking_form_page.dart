@@ -8,7 +8,9 @@ import '../../../../../core/widgets/loading_button.dart';
 import '../../../../shared_domain/entities/service_entity.dart';
 import '../cubit/booking_form_cubit.dart';
 import '../cubit/booking_form_state.dart';
-import '../widgets/booking_summary_card.dart';
+import '../widgets/booking_form/booking_summary_card.dart';
+import '../widgets/booking_form/contact_fields.dart';
+import '../widgets/booking_form/inline_error_banner.dart';
 import 'booking_confirmation_page.dart';
 
 /// Arguments passed via GoRouter [extra] to [BookingFormPage].
@@ -85,7 +87,7 @@ class _BookingFormPageState extends State<BookingFormPage> {
                           durationMinutes: widget.args.service.durationMinutes,
                         ),
                         const SizedBox(height: 24),
-                        _ContactFields(
+                        ContactFields(
                           formKey: _formKey,
                           nameController: _nameController,
                           phoneController: _phoneController,
@@ -93,7 +95,7 @@ class _BookingFormPageState extends State<BookingFormPage> {
                         ),
                         if (errorMessage != null) ...[
                           const SizedBox(height: 16),
-                          _ErrorBanner(
+                          InlineErrorBanner(
                             message: errorMessage,
                             onRetry: context
                                 .read<BookingFormCubit>()
@@ -151,106 +153,6 @@ class _BookingFormPageState extends State<BookingFormPage> {
       default:
         break;
     }
-  }
-}
-
-class _ContactFields extends StatelessWidget {
-  const _ContactFields({
-    required this.formKey,
-    required this.nameController,
-    required this.phoneController,
-    required this.enabled,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final TextEditingController nameController;
-  final TextEditingController phoneController;
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Your Details',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.onSurface,
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: nameController,
-            enabled: enabled,
-            textCapitalization: TextCapitalization.words,
-            textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Full Name *',
-              hintText: 'Enter your name',
-              prefixIcon: Icon(Icons.person_outline),
-            ),
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Name is required' : null,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: phoneController,
-            enabled: enabled,
-            keyboardType: TextInputType.phone,
-            textInputAction: TextInputAction.done,
-            decoration: const InputDecoration(
-              labelText: 'Phone Number (optional)',
-              hintText: 'Enter your phone number',
-              prefixIcon: Icon(Icons.phone_outlined),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ErrorBanner extends StatelessWidget {
-  const _ErrorBanner({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
-      decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline, color: AppColors.error, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: AppColors.error),
-            ),
-          ),
-          TextButton(
-            onPressed: onRetry,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.error,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-            ),
-            child: const Text('Retry'),
-          ),
-        ],
-      ),
-    );
   }
 }
 
