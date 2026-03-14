@@ -1,16 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
-import 'package:queue_ease/core/error/result.dart';
-import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
-import 'package:queue_ease/features/shared_domain/entities/appointment_status.dart';
+import 'package:intl/intl.dart';
 
+import '../../../../../core/error/app_exception.dart';
+import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
+import '../../../../shared_domain/entities/appointment_entity.dart';
+import '../../../../shared_domain/entities/appointment_status.dart';
 import '../../domain/repositories/admin_appointment_repository.dart';
 import '../datasources/admin_queue_datasource.dart';
 
 /// Firestore-backed implementation of [AdminAppointmentRepository].
 ///
 /// Bridges [AdminQueueDatasource] with the domain layer.
-/// Method implementations are added per phase:
+/// Method implementations added per phase:
 /// - Phase 2 (T010): Declares interface binding and stub overrides.
 /// - Phase 3 (T014): Implements all queue action methods.
 @LazySingleton(as: AdminAppointmentRepository)
@@ -19,6 +22,45 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
 
   final AdminQueueDatasource _datasource;
   final AppLogger _logger;
+
+  static final _dateFormatter = DateFormat('yyyy-MM-dd');
+
+  String _maskId(String value) {
+    if (value.isEmpty) return '***';
+    if (value.length <= 4) return '***$value';
+    return '***${value.substring(value.length - 4)}';
+  }
+
+  String _sanitizeMessage(String message) {
+    return message
+        .replaceAll(
+          RegExp(
+            r'customer(Name|Phone)?\s*[:=]\s*[^,\s]+',
+            caseSensitive: false,
+          ),
+          'customer=***',
+        )
+        .replaceAll(
+          RegExp(r'phone\s*[:=]\s*[^,\s]+', caseSensitive: false),
+          'phone=***',
+        );
+  }
+
+  Map<String, Object?> _queueLogContext({
+    required String operation,
+    required String orgId,
+    String? appointmentId,
+    String? date,
+  }) {
+    return {
+      'operation': operation,
+      'orgId': _maskId(orgId),
+      ...?(appointmentId == null
+          ? null
+          : {'appointmentId': _maskId(appointmentId)}),
+      ...?(date == null ? null : {'date': date}),
+    };
+  }
 
   // ---------------------------------------------------------------------------
   // Appointment watch — T013 (Phase 3 / US1)
@@ -29,8 +71,33 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required String orgId,
     required DateTime date,
   }) {
-    // TODO(T013): Implement real-time appointment watch for admin queue.
-    throw UnimplementedError('T013: Implement in Phase 3 (US1)');
+    _logger.debug(
+      'AdminQueueRepositoryImpl.watchAppointmentsByDate',
+      _queueLogContext(
+        operation: 'watchAppointmentsByDate',
+        orgId: orgId,
+        date: _dateFormatter.format(date),
+      ),
+    );
+    return _datasource
+        .watchAppointmentsByDate(orgId, date)
+        .map(
+          (docs) => docs.map((doc) {
+            final data = doc.data();
+            return AppointmentEntity(
+              id: doc.id,
+              orgId: orgId,
+              serviceId: data['serviceId'] as String,
+              customerId: data['customerId'] as String,
+              customerName: data['customerName'] as String,
+              customerPhone: data['customerPhone'] as String?,
+              scheduledAt: (data['scheduledAt'] as Timestamp).toDate(),
+              status: AppointmentStatus.values.byName(data['status'] as String),
+              queuePosition: data['queuePosition'] as int?,
+              createdAt: (data['createdAt'] as Timestamp).toDate(),
+            );
+          }).toList(),
+        );
   }
 
   @override
@@ -39,8 +106,28 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required String appointmentId,
     required AppointmentStatus status,
   }) {
-    // TODO(T014): Implement via datasource transaction in Phase 3 (US1).
-    throw UnimplementedError('T014: Implement in Phase 3 (US1)');
+    return Result.guard(() async {
+      final context = _queueLogContext(
+        operation: 'updateAppointmentStatus',
+        orgId: orgId,
+        appointmentId: appointmentId,
+      );
+      try {
+        _logger.info('Admin queue status update requested', {
+          ...context,
+          'status': status.name,
+        });
+        await _datasource.appointments(orgId).doc(appointmentId).update({
+          'status': status.name,
+        });
+      } on FirebaseException catch (e, st) {
+        _logger.error('Admin queue status update failed', context, st);
+        throw DatabaseException(
+          'Failed to update appointment status: ${e.message}',
+          stackTrace: st,
+        );
+      }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -52,8 +139,18 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required String orgId,
     required DateTime date,
   }) {
-    // TODO(T030): Implement idempotent daily queue generation.
-    throw UnimplementedError('T030: Implement in Phase 3 (US3)');
+    final dateStr = _dateFormatter.format(date);
+    _logger.info(
+      'Admin queue generation requested',
+      _queueLogContext(
+        operation: 'generateDailyQueue',
+        orgId: orgId,
+        date: dateStr,
+      ),
+    );
+    return Result.guard(
+      () => _datasource.generateDailyQueue(orgId: orgId, date: dateStr),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -65,8 +162,135 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required String orgId,
     required DateTime date,
   }) {
-    // TODO(T014): Implement AdminQueueSnapshot stream from queue doc.
-    throw UnimplementedError('T014: Implement in Phase 3 (US1)');
+    final dateStr = _dateFormatter.format(date);
+    _logger.debug(
+      'AdminQueueRepositoryImpl.watchDailyQueue',
+      _queueLogContext(
+        operation: 'watchDailyQueue',
+        orgId: orgId,
+        date: dateStr,
+      ),
+    );
+    return _datasource.watchDailyQueue(orgId, dateStr).asyncMap((
+      queueData,
+    ) async {
+      return Result.guard(() async {
+        if (queueData == null) {
+          return AdminQueueSnapshot(
+            queueDate: date,
+            current: null,
+            waiting: [],
+          );
+        }
+
+        final orderedIds = List<String>.from(
+          queueData['orderedAppointmentIds'] as List? ?? [],
+        );
+        final currentIndex = queueData['currentServingIndex'] as int? ?? 0;
+
+        if (orderedIds.isEmpty) {
+          return AdminQueueSnapshot(
+            queueDate: date,
+            current: null,
+            waiting: [],
+          );
+        }
+
+        // Bulk-fetch all ordered appointments in a single whereIn query.
+        // Firestore supports up to 30 items in whereIn; sufficient for a
+        // daily queue. Chunking is deferred to a later task if needed.
+        final apptSnap = await _datasource
+            .appointments(orgId)
+            .where(FieldPath.documentId, whereIn: orderedIds)
+            .get();
+
+        final apptMap = <String, Map<String, dynamic>>{
+          for (final doc in apptSnap.docs) doc.id: doc.data(),
+        };
+
+        final serviceIds = apptMap.values
+            .map((data) => data['serviceId'] as String?)
+            .whereType<String>()
+            .toSet()
+            .toList();
+        final serviceDurationById = <String, int>{};
+
+        for (final serviceIdChunk in _chunks(serviceIds, 30)) {
+          final serviceSnap = await _datasource
+              .services(orgId)
+              .where(FieldPath.documentId, whereIn: serviceIdChunk)
+              .get();
+          for (final serviceDoc in serviceSnap.docs) {
+            final data = serviceDoc.data();
+            final duration = data['durationMinutes'] as int?;
+            serviceDurationById[serviceDoc.id] =
+                duration == null || duration < 0 ? 0 : duration;
+          }
+        }
+
+        final durationByAppointmentId = <String, int>{};
+        for (final entry in apptMap.entries) {
+          final serviceId = entry.value['serviceId'] as String?;
+          durationByAppointmentId[entry.key] = serviceId == null
+              ? 0
+              : serviceDurationById[serviceId] ?? 0;
+        }
+
+        QueueEntryView? current;
+        final waiting = <QueueEntryView>[];
+        var runningWaitMinutes = 0;
+
+        for (var i = 0; i < orderedIds.length; i++) {
+          final id = orderedIds[i];
+          final data = apptMap[id];
+          if (data == null) continue;
+
+          final status = AppointmentStatus.values.byName(
+            data['status'] as String? ?? AppointmentStatus.inQueue.name,
+          );
+          final duration = durationByAppointmentId[id] ?? 0;
+
+          final estimatedWaitMinutes = i > currentIndex
+              ? (status == AppointmentStatus.noShow ? null : runningWaitMinutes)
+              : null;
+
+          final entry = QueueEntryView(
+            appointmentId: id,
+            position: i + 1,
+            customerName: data['customerName'] as String? ?? 'Unknown',
+            serviceDurationMinutes: duration,
+            status: status,
+            estimatedWaitMinutes: estimatedWaitMinutes,
+          );
+
+          if (i == currentIndex) {
+            current = entry;
+          } else if (i > currentIndex) {
+            waiting.add(entry);
+          }
+
+          if (i >= currentIndex &&
+              status != AppointmentStatus.noShow &&
+              status != AppointmentStatus.completed) {
+            runningWaitMinutes += duration;
+          }
+        }
+
+        return AdminQueueSnapshot(
+          queueDate: date,
+          current: current,
+          waiting: waiting,
+        );
+      });
+    });
+  }
+
+  Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {
+    if (values.isEmpty) return;
+    for (var index = 0; index < values.length; index += size) {
+      final end = index + size > values.length ? values.length : index + size;
+      yield values.sublist(index, end);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -79,8 +303,23 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required DateTime date,
     required String appointmentId,
   }) {
-    // TODO(T014): Implement serving→completed transition + promote next.
-    throw UnimplementedError('T014: Implement in Phase 3 (US1)');
+    final dateStr = _dateFormatter.format(date);
+    _logger.info('Admin queue action requested', {
+      ..._queueLogContext(
+        operation: 'next',
+        orgId: orgId,
+        appointmentId: appointmentId,
+        date: dateStr,
+      ),
+      'action': 'next',
+    });
+    return Result.guard(
+      () => _datasource.transactionNext(
+        orgId: orgId,
+        date: dateStr,
+        appointmentId: appointmentId,
+      ),
+    );
   }
 
   @override
@@ -89,8 +328,23 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required DateTime date,
     required String appointmentId,
   }) {
-    // TODO(T014): Implement serving→inQueue reinsert at end.
-    throw UnimplementedError('T014: Implement in Phase 3 (US1)');
+    final dateStr = _dateFormatter.format(date);
+    _logger.info('Admin queue action requested', {
+      ..._queueLogContext(
+        operation: 'skip',
+        orgId: orgId,
+        appointmentId: appointmentId,
+        date: dateStr,
+      ),
+      'action': 'skip',
+    });
+    return Result.guard(
+      () => _datasource.transactionSkip(
+        orgId: orgId,
+        date: dateStr,
+        appointmentId: appointmentId,
+      ),
+    );
   }
 
   @override
@@ -99,8 +353,23 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required DateTime date,
     required String appointmentId,
   }) {
-    // TODO(T014): Implement serving→noShow transition + promote next.
-    throw UnimplementedError('T014: Implement in Phase 3 (US1)');
+    final dateStr = _dateFormatter.format(date);
+    _logger.info('Admin queue action requested', {
+      ..._queueLogContext(
+        operation: 'markNoShow',
+        orgId: orgId,
+        appointmentId: appointmentId,
+        date: dateStr,
+      ),
+      'action': 'markNoShow',
+    });
+    return Result.guard(
+      () => _datasource.transactionMarkNoShow(
+        orgId: orgId,
+        date: dateStr,
+        appointmentId: appointmentId,
+      ),
+    );
   }
 
   @override
@@ -109,7 +378,38 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
     required DateTime date,
     required String appointmentId,
   }) {
-    // TODO(T014): Implement noShow→inQueue append to end.
-    throw UnimplementedError('T014: Implement in Phase 3 (US1)');
+    final dateStr = _dateFormatter.format(date);
+    _logger.info('Admin queue action requested', {
+      ..._queueLogContext(
+        operation: 'rejoinSkipped',
+        orgId: orgId,
+        appointmentId: appointmentId,
+        date: dateStr,
+      ),
+      'action': 'rejoin',
+    });
+    return Result.guard(
+      () => _datasource.transactionRejoin(
+        orgId: orgId,
+        date: dateStr,
+        appointmentId: appointmentId,
+      ),
+    ).then(
+      (result) => switch (result) {
+        Success() => result,
+        Failure(:final exception) => () {
+          _logger.error('Admin queue action failed', {
+            ..._queueLogContext(
+              operation: 'rejoinSkipped',
+              orgId: orgId,
+              appointmentId: appointmentId,
+              date: dateStr,
+            ),
+            'message': _sanitizeMessage(exception.message),
+          });
+          return result;
+        }(),
+      },
+    );
   }
 }
