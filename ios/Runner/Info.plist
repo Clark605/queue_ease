@@ -45,6 +45,10 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>NSCameraUsageDescription</key>
+		<string>Scan a QR code to quickly access your organization's booking queue.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Select a photo containing a QR code to access your organization's queue.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
 		<string>Save QR code image to your photo library.</string>
 		<key>UIStatusBarHidden</key>

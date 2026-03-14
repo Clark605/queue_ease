@@ -40,6 +40,8 @@ dependencies:
   # QR sharing / gallery
   share_plus: ^11.1.0
   gal: ^2.3.0
+  mobile_scanner: ^6.0.0
+  image_picker: ^1.1.0
 
   # Logging
   talker: ^4.9.3
