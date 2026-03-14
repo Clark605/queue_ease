@@ -31,6 +31,7 @@ class QueueEntryView {
     required this.customerName,
     required this.serviceDurationMinutes,
     required this.status,
+    this.estimatedWaitMinutes,
   });
 
   final String appointmentId;
@@ -38,6 +39,7 @@ class QueueEntryView {
   final String customerName;
   final int serviceDurationMinutes;
   final AppointmentStatus status;
+  final int? estimatedWaitMinutes;
 }
 
 // ---------------------------------------------------------------------------
