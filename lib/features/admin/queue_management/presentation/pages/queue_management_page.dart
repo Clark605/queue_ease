@@ -1,21 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:queue_ease/core/theme/app_colors.dart';
+import 'package:queue_ease/core/theme/app_text_styles.dart';
+import 'package:queue_ease/core/utils/app_snack_bar.dart';
+import 'package:queue_ease/core/widgets/widgets.dart';
+import 'package:queue_ease/features/authentication/presentation/cubit/auth_cubit.dart';
+import 'package:queue_ease/features/authentication/presentation/cubit/auth_state.dart';
 
-import '../../../../../core/theme/app_colors.dart';
-import '../../../../../core/theme/app_text_styles.dart';
-import '../../../../../core/utils/app_snack_bar.dart';
+import '../cubit/queue_management_cubit.dart';
+import '../cubit/queue_management_state.dart';
+import '../widgets/queue_content.dart';
 
-/// Queue management page for managing the live queue.
+/// The live admin queue management screen.
 ///
-/// Displays the current queue and allows admins to:
-/// - View waiting customers
-/// - Call next customer
-/// - Mark as no-show
-/// - Complete appointments
+/// Wires [QueueManagementCubit] (provided by AdminMainPage) to the UI.
+/// Renders the currently-serving card, the waiting list, and a summary bar.
+/// Action errors are surfaced as snackbars; initial load errors show a
+/// full-screen error view with a retry button.
 class QueueManagementPage extends StatelessWidget {
   const QueueManagementPage({super.key});
 
+  /// Extracts the authenticated admin's organisation ID from [AuthCubit].
+  /// Returns an empty string if the auth state is not [Authenticated].
+  String _getOrgId(BuildContext context) {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is Authenticated && authState.user.organizationId != null) {
+      return authState.user.organizationId!;
+    }
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final orgId = _getOrgId(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -24,19 +43,40 @@ class QueueManagementPage extends StatelessWidget {
         elevation: 0,
         scrolledUnderElevation: 1,
         centerTitle: true,
-        title: Text(
-          'Queue Management',
-          style: AppTextStyles.headlineSmall.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Queue Management',
+              style: AppTextStyles.headlineSmall.copyWith(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Today, ${DateFormat('EEE d MMM').format(now)}',
+              style: AppTextStyles.bodySmall.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.playlist_add_check_rounded),
+            color: AppColors.primary,
+            tooltip: 'Generate today\'s queue',
+            onPressed: () => context.read<QueueManagementCubit>().generateQueue(
+              orgId: orgId,
+              date: DateTime.now(),
+            ),
+          ),
+          IconButton(
             icon: const Icon(Icons.filter_list_rounded),
             color: AppColors.onSurfaceVariant,
+            tooltip: 'Filter',
             onPressed: () =>
                 AppSnackBar.showInfo(context, 'Filter - Coming soon'),
-            tooltip: 'Filter',
           ),
         ],
         bottom: PreferredSize(
@@ -47,78 +87,45 @@ class QueueManagementPage extends StatelessWidget {
           ),
         ),
       ),
-      body: _buildEmptyState(context),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.queue_outlined,
-                size: 64,
-                color: AppColors.primary,
+      body: BlocConsumer<QueueManagementCubit, QueueManagementState>(
+        // Only show the snackbar for errors that fire while queue content is
+        // already visible — i.e., action failures.  Initial load failures
+        // are covered by the full-screen error view in the builder.
+        listenWhen: (previous, current) =>
+            current is QueueManagementError &&
+            (previous is QueueManagementLoaded ||
+                previous is QueueManagementActionInFlight),
+        listener: (ctx, state) {
+          if (state is QueueManagementError) {
+            AppSnackBar.showError(ctx, state.message);
+          }
+        },
+        builder: (ctx, state) {
+          return switch (state) {
+            QueueManagementInitial() ||
+            QueueManagementLoading() => const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            ),
+            QueueManagementError(:final message) => ErrorView(
+              message: message,
+              onRetry: () => ctx.read<QueueManagementCubit>().watchQueue(
+                orgId: orgId,
+                date: DateTime.now(),
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              'No Queue Today',
-              style: AppTextStyles.headlineSmall.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.onSurface,
-              ),
+            QueueManagementLoaded(:final snapshot) => QueueContent(
+              snapshot: snapshot,
+              isActionInFlight: false,
+              orgId: orgId,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Queue management will be available when customers join the queue',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
+            QueueManagementActionInFlight(:final snapshot) => QueueContent(
+              snapshot: snapshot,
+              isActionInFlight: true,
+              orgId: orgId,
             ),
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              onPressed: () =>
-                  AppSnackBar.showInfo(context, 'View history - Coming soon'),
-              icon: const Icon(Icons.history),
-              label: const Text('View History'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
+          };
+        },
       ),
     );
   }
-
-  // Future implementation: List view of queue items
-  // Widget _buildQueueList() {
-  //   return ListView.separated(
-  //     padding: const EdgeInsets.all(16),
-  //     itemCount: 10,
-  //     separatorBuilder: (context, index) => const SizedBox(height: 8),
-  //     itemBuilder: (context, index) {
-  //       return _QueueItemCard(
-  //         position: index + 1,
-  //         customerName: 'Customer ${index + 1}',
-  //         serviceName: 'Service Name',
-  //         status: index == 0 ? 'Current' : 'Waiting',
-  //       );
-  //     },
-  //   );
-  // }
 }
