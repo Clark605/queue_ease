@@ -1,6 +1,6 @@
 # Queue Ease - Feature Implementation Checklist
 
-**Last Updated:** March 10, 2026  
+**Last Updated:** March 14, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 
 ---
@@ -215,35 +215,45 @@
 - ⏳ Link-based navigation implementation
 - ⏳ Deep linking setup
 
-### 5.2 Organization Landing Screen
-- ⏳ Organization landing page
-- ⏳ Organization name and logo display
-- ⏳ Open/closed status indicator
-- ⏳ Branch/location information
-- ⏳ Available services list
-- ⏳ Service duration display
-- ⏳ "Book Appointment" / "Join Queue" CTA
-- ⏳ Organization repository
+### 5.2 Organization Landing Screen - ✅ COMPLETE (Sprint 4)
+- ✅ Organization landing page (OrganizationLandingPage)
+- ✅ Organization name and description display
+- ✅ Open/closed status indicator (derived from WorkingHoursEntity)
+- ✅ Address display
+- ⏳ Branch/location information (future enhancement)
+- ✅ "Book Appointment" CTA (enabled only when organization is open)
+- ✅ Organization lookup by booking link slug (getOrganizationBySlug)
+- ✅ Not-found screen for unrecognized slugs
+- ✅ OrganizationLandingCubit with state management
+- ✅ Deep link route `/c/org/:slug` with RBAC redirect
 
-### 5.3 Service Selection & Details
-- ⏳ Service selection page
-- ⏳ Service details page
-- ⏳ Service description display
-- ⏳ Duration information
-- ⏳ Time margin explanation
-- ⏳ Available booking types
-- ⏳ "Continue" navigation
+### 5.3 Service Selection & Details - ✅ COMPLETE (Sprint 4)
+- ✅ Service selection page (ServiceSelectionPage with real-time stream)
+- ✅ Service card widget (ServiceCard with name, duration, price, description)
+- ✅ Service details page (ServiceDetailsPage with stats grid)
+- ✅ Service description display
+- ✅ Duration information
+- ✅ Price display (omitted when null)
+- ✅ Queue type display (omitted when null)
+- ✅ Empty state widget when no active services exist
+- ✅ "Continue to Booking" navigation to slot picker
+- ✅ ServiceSelectionCubit with state management
 
-### 5.4 Booking & Appointment Flow
+### 5.4 Booking & Appointment Flow - ✅ COMPLETE (Sprint 4)
 - ✅ Appointment entity/model definition (complete with Firestore serialization)
-- ⏳ Appointment repository implementation
-- ⏳ Time slot selection page
-- ⏳ Available slots calculation
-- ⏳ Conflict prevention logic
-- ⏳ Customer information form (name, phone)
-- ⏳ Selected service summary
-- ⏳ Booking confirmation
-- ⏳ Booking state management (Cubit)
+- ✅ Appointment repository implementation (AppointmentRepositoryImpl)
+- ✅ FirestoreAppointmentDatasource (transactional create + date/service query)
+- ✅ Time slot selection page (SlotPickerPage)
+- ✅ Available slots calculation (CalculateAvailableSlotsUseCase)
+- ✅ Conflict prevention logic (excludes confirmed appointments, break times, past times)
+- ✅ Date selector widget (DateSelector — 7-day row, closed days disabled)
+- ✅ Time slot grid widget (TimeSlotGrid — tap-to-select chips)
+- ✅ Customer information form (name required, phone optional) (BookingFormPage)
+- ✅ Booking summary card (BookingSummaryCard — org, service, date/time, duration)
+- ✅ Booking state management (BookingFormCubit with retry support)
+- ✅ Transactional write with slot conflict detection
+- ✅ Inline error banner with "Retry" on network error
+- ✅ Slot conflict snackbar + pop back to slot picker
 
 ### 5.5 Queue Joining
 - ⏳ Join queue functionality
@@ -251,12 +261,13 @@
 - ⏳ Queue number assignment
 - ⏳ Queue position tracking
 
-### 5.6 Booking Confirmation
-- ⏳ Confirmation screen
-- ⏳ Booking ID / Queue number display
-- ⏳ Organization details recap
-- ⏳ Check-in instructions
-- ⏳ "Track Status" CTA
+### 5.6 Booking Confirmation - ✅ COMPLETE (Sprint 4)
+- ✅ Confirmation screen (BookingConfirmationPage)
+- ✅ Organization name and service name display
+- ✅ Scheduled date/time display
+- ✅ Optional address display
+- ✅ "Back to Home" clears booking stack and navigates to customer home
+- ⏳ "Track Status" CTA (planned for Sprint 5 — Queue Status)
 
 ### 5.7 Queue Status Tracking
 - ⏳ Queue status page
@@ -507,9 +518,9 @@
 - [ ] App deployed to Firebase Hosting / App Stores (internal testing)
 
 ### Current Progress Summary
-**Completed:** ~35-40% (Core infrastructure complete, authentication fully implemented, onboarding complete, ALL domain entities & models complete with tests, basic admin/customer dashboard pages)  
-**In Progress:** 0%  
-**Pending:** ~60%
+**Completed:** ~55-60% (Core infrastructure, authentication, onboarding, admin features, ALL domain entities & models, customer booking flow)
+**In Progress:** Sprint 4 Polish (T037–T040 — build_runner, Talker audit, auth redirect verification, smoke test)
+**Pending:** ~40%
 
 **Key Achievements:**
 - ✅ Complete authentication system (email/password, Google Sign-In, password reset)
@@ -521,15 +532,19 @@
 - ✅ ALL 5 Firestore models with serialization (fromFirestore/toFirestore)
 - ✅ Comprehensive test coverage (15+ test files covering entities, models, auth, error handling)
 - ✅ Complete architectural documentation
+- ✅ Organization setup and service management (Sprint 2)
+- ✅ Working hours configuration and QR/share access (Sprint 3)
+- ✅ **Customer booking flow — end-to-end (Sprint 4)**: org landing → service selection → slot picker → booking form → confirmation
 
 **Critical Path Next Steps:**
 1. ~~Define all Firestore entity models~~ ✅ COMPLETE
-2. Implement Firestore security rules
-3. Implement repositories for organization, service, working hours, appointment, queue
-4. Build Service Management CRUD operations (admin UI)
-5. Build Working Hours configuration (admin UI)
-6. Implement booking flow with conflict prevention
-7. Build queue generation and management system
+2. ~~Implement Firestore security rules~~ ✅ COMPLETE
+3. ~~Implement repositories (organization, service, working hours, appointment)~~ ✅ COMPLETE
+4. ~~Build Service Management CRUD (admin UI)~~ ✅ COMPLETE
+5. ~~Build Working Hours configuration (admin UI)~~ ✅ COMPLETE
+6. ~~Implement booking flow with conflict prevention~~ ✅ COMPLETE
+7. Build queue generation and management system (Sprint 5 — next)
+8. Build customer queue status view (Sprint 5)
 
 ---
 
@@ -558,11 +573,11 @@
 5. Working hours configuration
 6. QR code and link generation
 
-### Phase 4: Customer Core (Weeks 3-4)
-7. Organization landing screen
-8. Service selection and details
-9. Appointment booking flow
-10. Conflict prevention logic
+### Phase 4: Customer Core (Weeks 3-4) - ✅ COMPLETE (Sprint 4)
+7. ✅ Organization landing screen
+8. ✅ Service selection and details
+9. ✅ Appointment booking flow (slot picker + booking form)
+10. ✅ Conflict prevention logic
 
 ### Phase 5: Queue System (Weeks 4-5)
 11. Client-side queue generation from appointments (triggered by admin app)
@@ -591,6 +606,11 @@
 
 ## Notes
 
+- This checklist was last updated on **March 14, 2026** to reflect:
+  - **Sprint 4 (Customer Booking Flow) COMPLETE** — 38/42 tasks done (T001–T036); Phase 8 Polish (T037–T040) pending (build_runner, Talker audit, auth-redirect verification, smoke test)
+  - Organization landing page, service selection & details, slot picker, booking form, and booking confirmation all implemented
+  - AppointmentRepository, FirestoreAppointmentDatasource, and CalculateAvailableSlotsUseCase implemented
+  - GoRouter routes: `/c/org/:slug`, `/c/org/:slug/services`, `/c/org/:slug/service-details`, `/c/org/:slug/slots`, `/c/org/:slug/book`, `/c/org/:slug/confirmation`
 - This checklist was updated on **February 26, 2026** to reflect:
   - **Removed Cloud Functions** due to Firebase Spark plan limitations
   - **Client-side architecture** for queue generation, no-show detection, and notifications
