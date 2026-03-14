@@ -31,6 +31,8 @@ import '../../features/admin/queue_management/domain/repositories/admin_appointm
     as _i761;
 import '../../features/admin/queue_management/domain/use_cases/advance_queue_use_case.dart'
     as _i244;
+import '../../features/admin/queue_management/domain/use_cases/generate_daily_queue_use_case.dart'
+    as _i175;
 import '../../features/admin/queue_management/domain/use_cases/mark_no_show_use_case.dart'
     as _i174;
 import '../../features/admin/queue_management/domain/use_cases/rejoin_skipped_use_case.dart'
@@ -71,6 +73,10 @@ import '../../features/authentication/domain/repositories/auth_repository.dart'
     as _i742;
 import '../../features/authentication/presentation/cubit/auth_cubit.dart'
     as _i678;
+import '../../features/customer/access_portal/domain/use_cases/parse_access_url_use_case.dart'
+    as _i1012;
+import '../../features/customer/access_portal/presentation/cubit/access_portal_cubit.dart'
+    as _i454;
 import '../../features/customer/booking/data/datasources/customer_appointment_datasource.dart'
     as _i371;
 import '../../features/customer/booking/data/datasources/customer_organization_datasource.dart'
@@ -111,6 +117,14 @@ import '../../features/customer/booking/presentation/cubit/service_selection_cub
     as _i986;
 import '../../features/customer/booking/presentation/cubit/slot_picker_cubit.dart'
     as _i968;
+import '../../features/customer/entry/domain/use_cases/calculate_wait_time_use_case.dart'
+    as _i451;
+import '../../features/customer/entry/domain/use_cases/watch_customer_dashboard_use_case.dart'
+    as _i979;
+import '../../features/customer/entry/domain/use_cases/watch_customer_queue_status_use_case.dart'
+    as _i263;
+import '../../features/customer/entry/presentation/cubit/customer_dashboard_cubit.dart'
+    as _i424;
 import '../../features/customer/entry/presentation/cubit/customer_queue_status_cubit.dart'
     as _i28;
 import '../config/auth_module.dart' as _i322;
@@ -129,10 +143,16 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final authModule = _$AuthModule();
     final configModule = _$ConfigModule();
+    gh.factory<_i451.CalculateWaitTimeUseCase>(
+      () => const _i451.CalculateWaitTimeUseCase(),
+    );
     gh.lazySingleton<_i59.FirebaseAuth>(() => authModule.firebaseAuth);
     gh.lazySingleton<_i974.FirebaseFirestore>(() => authModule.firestore);
     gh.lazySingleton<_i116.GoogleSignIn>(() => authModule.googleSignIn);
     gh.lazySingleton<_i636.FlavorConfig>(() => configModule.config);
+    gh.lazySingleton<_i1012.ParseAccessUrlUseCase>(
+      () => _i1012.ParseAccessUrlUseCase(),
+    );
     gh.singleton<_i924.AppLogger>(
       () => _i924.AppLogger(gh<_i636.FlavorConfig>()),
     );
@@ -142,14 +162,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i343.UserSessionService>(
       () => _i343.UserSessionService(gh<_i924.AppLogger>()),
     );
-    gh.factory<_i463.QueueManagementCubit>(
-      () => _i463.QueueManagementCubit(gh<_i924.AppLogger>()),
-    );
     gh.factory<_i173.ShareAccessCubit>(
       () => _i173.ShareAccessCubit(gh<_i924.AppLogger>()),
-    );
-    gh.factory<_i28.CustomerQueueStatusCubit>(
-      () => _i28.CustomerQueueStatusCubit(gh<_i924.AppLogger>()),
     );
     gh.lazySingleton<_i826.AdminOrganizationDatasource>(
       () => _i826.AdminOrganizationDatasource(
@@ -224,6 +238,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.factory<_i175.GenerateDailyQueueUseCase>(
+      () => _i175.GenerateDailyQueueUseCase(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.factory<_i174.MarkNoShowUseCase>(
       () => _i174.MarkNoShowUseCase(
         gh<_i761.AdminAppointmentRepository>(),
@@ -266,9 +286,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.factory<_i454.AccessPortalCubit>(
+      () => _i454.AccessPortalCubit(gh<_i1012.ParseAccessUrlUseCase>()),
+    );
     gh.lazySingleton<_i636.CustomerOrganizationRepository>(
       () => _i740.CustomerOrganizationRepositoryImpl(
         gh<_i857.CustomerOrganizationDatasource>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i622.CustomerAppointmentRepository>(
+      () => _i868.CustomerAppointmentRepositoryImpl(
+        gh<_i371.CustomerAppointmentDatasource>(),
         gh<_i924.AppLogger>(),
       ),
     );
@@ -295,9 +324,28 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1029.CustomerWorkingHoursDatasource>(),
       ),
     );
+    gh.lazySingleton<_i499.CalculateAvailableSlotsUseCase>(
+      () => _i499.CalculateAvailableSlotsUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.lazySingleton<_i1040.CreateBookingUseCase>(
+      () => _i1040.CreateBookingUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.lazySingleton<_i441.AdminWorkingHoursRepository>(
       () => _i470.AdminWorkingHoursRepositoryImpl(
         gh<_i85.AdminWorkingHoursDatasource>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i968.SlotPickerCubit>(
+      () => _i968.SlotPickerCubit(
+        gh<_i499.CalculateAvailableSlotsUseCase>(),
+        gh<_i492.CustomerWorkingHoursRepository>(),
         gh<_i924.AppLogger>(),
       ),
     );
@@ -314,9 +362,22 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i622.CustomerAppointmentRepository>(
-      () => _i868.CustomerAppointmentRepositoryImpl(
-        gh<_i371.CustomerAppointmentDatasource>(),
+    gh.factory<_i651.BookingFormCubit>(
+      () => _i651.BookingFormCubit(
+        gh<_i1040.CreateBookingUseCase>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i463.QueueManagementCubit>(
+      () => _i463.QueueManagementCubit(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i175.GenerateDailyQueueUseCase>(),
+        gh<_i774.WatchDailyQueueUseCase>(),
+        gh<_i244.AdvanceQueueUseCase>(),
+        gh<_i388.SkipQueueEntryUseCase>(),
+        gh<_i174.MarkNoShowUseCase>(),
+        gh<_i241.RejoinSkippedUseCase>(),
+        gh<_i924.AppLogger>(),
       ),
     );
     gh.factory<_i132.WorkingHoursCubit>(
@@ -331,9 +392,23 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.factory<_i263.WatchCustomerQueueStatusUseCase>(
+      () => _i263.WatchCustomerQueueStatusUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
+        gh<_i451.CalculateWaitTimeUseCase>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.factory<_i986.ServiceSelectionCubit>(
       () => _i986.ServiceSelectionCubit(
         gh<_i48.GetActiveServicesUseCase>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i979.WatchCustomerDashboardUseCase>(
+      () => _i979.WatchCustomerDashboardUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
+        gh<_i263.WatchCustomerQueueStatusUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );
@@ -346,33 +421,20 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i499.CalculateAvailableSlotsUseCase>(
-      () => _i499.CalculateAvailableSlotsUseCase(
-        gh<_i622.CustomerAppointmentRepository>(),
+    gh.factory<_i28.CustomerQueueStatusCubit>(
+      () => _i28.CustomerQueueStatusCubit(
+        gh<_i263.WatchCustomerQueueStatusUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i1040.CreateBookingUseCase>(
-      () => _i1040.CreateBookingUseCase(
-        gh<_i622.CustomerAppointmentRepository>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i968.SlotPickerCubit>(
-      () => _i968.SlotPickerCubit(
-        gh<_i499.CalculateAvailableSlotsUseCase>(),
-        gh<_i492.CustomerWorkingHoursRepository>(),
+    gh.factory<_i424.CustomerDashboardCubit>(
+      () => _i424.CustomerDashboardCubit(
+        gh<_i979.WatchCustomerDashboardUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );
     gh.lazySingleton<_i678.AuthCubit>(
       () => _i678.AuthCubit(gh<_i742.AuthRepository>(), gh<_i924.AppLogger>()),
-    );
-    gh.factory<_i651.BookingFormCubit>(
-      () => _i651.BookingFormCubit(
-        gh<_i1040.CreateBookingUseCase>(),
-        gh<_i924.AppLogger>(),
-      ),
     );
     return this;
   }

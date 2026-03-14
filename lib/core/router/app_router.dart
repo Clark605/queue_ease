@@ -24,6 +24,9 @@ import '../../features/customer/booking/presentation/pages/organization_landing_
 import '../../features/customer/booking/presentation/pages/service_details_page.dart';
 import '../../features/customer/booking/presentation/pages/service_selection_page.dart';
 import '../../features/customer/booking/presentation/pages/slot_picker_page.dart';
+import '../../features/customer/access_portal/presentation/cubit/access_portal_cubit.dart';
+import '../../features/customer/access_portal/presentation/pages/access_portal_page.dart';
+import '../../features/customer/entry/presentation/cubit/customer_dashboard_cubit.dart';
 import '../../features/customer/entry/presentation/pages/customer_home_page.dart';
 import '../../features/customer/entry/presentation/cubit/customer_queue_status_cubit.dart';
 import '../../features/customer/entry/presentation/pages/customer_queue_status_page.dart';
@@ -61,6 +64,7 @@ abstract final class Routes {
   static const String customerBook = '/c/org/:slug/book';
   static const String customerConfirmation = '/c/org/:slug/confirmation';
   static const String customerQueueStatus = '/c/queue-status';
+  static const String customerAccess = '/c/access';
 
   // Dev-only
   static const String debugLogs = '/debug/logs';
@@ -262,7 +266,27 @@ GoRouter createRouter(AuthCubit authCubit) {
       // Customer routes
       GoRoute(
         path: Routes.customerHome,
-        builder: (context, state) => const CustomerHomePage(),
+        builder: (context, state) => BlocProvider(
+          create: (ctx) {
+            final cubit = getIt<CustomerDashboardCubit>();
+            final authState = ctx.read<AuthCubit>().state;
+            if (authState is Authenticated) {
+              cubit.watchDashboard(
+                customerId: authState.user.uid,
+                date: DateTime.now(),
+              );
+            }
+            return cubit;
+          },
+          child: const CustomerHomePage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.customerAccess,
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<AccessPortalCubit>(),
+          child: const AccessPortalPage(),
+        ),
       ),
       GoRoute(
         path: Routes.customerOrgLanding,
@@ -338,13 +362,27 @@ GoRouter createRouter(AuthCubit authCubit) {
           return BookingConfirmationPage(args: args);
         },
       ),
-      // Customer live queue status
+      // Customer live queue status — extra must be the orgId String
       GoRoute(
         path: Routes.customerQueueStatus,
-        builder: (context, state) => BlocProvider(
-          create: (context) => getIt<CustomerQueueStatusCubit>(),
-          child: const CustomerQueueStatusPage(),
-        ),
+        builder: (context, state) {
+          final orgId = state.extra as String;
+          return BlocProvider(
+            create: (ctx) {
+              final cubit = getIt<CustomerQueueStatusCubit>();
+              final authState = ctx.read<AuthCubit>().state;
+              if (authState is Authenticated) {
+                cubit.watchStatus(
+                  orgId: orgId,
+                  customerId: authState.user.uid,
+                  date: DateTime.now(),
+                );
+              }
+              return cubit;
+            },
+            child: const CustomerQueueStatusPage(),
+          );
+        },
       ),
       // Dev-only: in-app log viewer
       if (FlavorConfig.instance.isDev)
