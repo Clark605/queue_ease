@@ -58,8 +58,21 @@ Expected outcomes:
 - Empty queue: admin/customer empty-state messaging is clear.
 - Retry behavior: reconnect after temporary offline state; queue remains consistent.
 - Past-date access: customer receives no-active-queue message.
+- Error messaging consistency: admin/customer queue flows show aligned fallback text
+   (`Unable to load queue data right now. Please try again.`) when upstream
+   errors are unavailable or empty.
 
-## 6) Test commands
+## 6) Logging and privacy verification
+
+1. Perform queue actions (`next`, `skip`, `no-show`, `rejoin`) in admin flow.
+2. Open in-app logs (dev) and verify structured queue context is emitted.
+3. Confirm logs do not expose raw customer phone/name tokens or full IDs.
+
+Expected outcomes:
+- Queue logs include operation context (action/date/masked IDs).
+- PII is masked/sanitized in queue repository log output.
+
+## 7) Test commands
 
 Run targeted tests first:
 
@@ -75,7 +88,7 @@ Optionally run all tests:
 flutter test
 ```
 
-## 7) Analyze
+## 8) Analyze
 
 ```bash
 flutter analyze
