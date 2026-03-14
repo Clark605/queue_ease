@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 
+import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
 import '../repositories/admin_appointment_repository.dart';
 
@@ -7,7 +8,6 @@ import '../repositories/admin_appointment_repository.dart';
 ///
 /// This is an explicit admin action to give a skipped customer another turn.
 /// Executes an atomic Firestore transaction.
-/// Implementation is added in Phase 3 (T015).
 @injectable
 class RejoinSkippedUseCase {
   const RejoinSkippedUseCase(this._repository, this._logger);
@@ -15,5 +15,19 @@ class RejoinSkippedUseCase {
   final AdminAppointmentRepository _repository;
   final AppLogger _logger;
 
-  // TODO(T015): Implement call() — returns Future<Result<void>>.
+  Future<Result<void>> call({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  }) {
+    _logger.info(
+      'RejoinSkippedUseCase',
+      'Rejoining skipped entry for $orgId on $date',
+    );
+    return _repository.rejoinSkipped(
+      orgId: orgId,
+      date: date,
+      appointmentId: appointmentId,
+    );
+  }
 }
