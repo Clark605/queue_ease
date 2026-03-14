@@ -1,6 +1,20 @@
 import 'package:queue_ease/core/error/result.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/appointment_status.dart';
 import 'package:queue_ease/features/shared_domain/entities/queue_entity.dart';
+
+/// Minimal queue appointment projection used for wait-time computation.
+class QueueAppointmentWaitEntry {
+  const QueueAppointmentWaitEntry({
+    required this.appointmentId,
+    required this.status,
+    required this.serviceDurationMinutes,
+  });
+
+  final String appointmentId;
+  final AppointmentStatus status;
+  final int serviceDurationMinutes;
+}
 
 /// Domain contract for customer appointment operations.
 ///
@@ -45,6 +59,30 @@ abstract class CustomerAppointmentRepository {
   /// Used by [WatchCustomerQueueStatusUseCase] to compute position.
   Stream<Result<QueueEntity?>> watchDailyQueue({
     required String orgId,
+    required DateTime date,
+  });
+
+  /// Watches queue-day appointments enriched with service durations.
+  ///
+  /// Used by customer queue status to compute deterministic wait estimates
+  /// from entries ahead in the ordered queue.
+  Stream<Result<List<QueueAppointmentWaitEntry>>>
+  watchQueueAppointmentsForDate({
+    required String orgId,
+    required DateTime date,
+  });
+
+  // -- Dashboard streams (Phase 8, T045) ------------------------------------
+
+  /// Watches the customer's dashboard appointments across orgs.
+  ///
+  /// Returns appointments with status in `{booked, inQueue, serving}`,
+  /// ordered by [scheduledAt] ascending. `inQueue`/`serving` are today-only
+  /// in practice; `booked` covers a 30-day horizon to include upcoming
+  /// future appointments. Used by [WatchCustomerDashboardUseCase] to derive
+  /// the active queue entry and the next upcoming booking.
+  Stream<Result<List<AppointmentEntity>>> watchTodayActiveAppointments({
+    required String customerId,
     required DateTime date,
   });
 }
