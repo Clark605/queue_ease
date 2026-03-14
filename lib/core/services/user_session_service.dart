@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../shared/auth/domain/entities/user_role.dart';
+import '../../../features/authentication/domain/entities/user_role.dart';
 import '../error/app_exception.dart';
 import '../utils/app_logger.dart';
 

@@ -8,7 +8,7 @@
 /// FILE: lib/shared/organization/domain/repositories/working_hours_repository.dart
 
 import 'package:queue_ease/core/error/result.dart';
-import 'package:queue_ease/shared/organization/domain/entities/working_hours_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/working_hours_entity.dart';
 
 abstract class WorkingHoursRepository {
   /// Returns a live stream of all 7 working hours documents for the given

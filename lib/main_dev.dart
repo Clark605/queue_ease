@@ -13,7 +13,7 @@ import 'core/di/injection.dart';
 import 'core/config/flavor_config.dart';
 import 'core/utils/app_logger.dart';
 import 'firebase_options.dart';
-import 'shared/auth/presentation/cubit/auth_cubit.dart';
+import 'features/authentication/presentation/cubit/auth_cubit.dart';
 
 /// Development flavor entrypoint.
 ///

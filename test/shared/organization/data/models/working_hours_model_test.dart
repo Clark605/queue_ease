@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:queue_ease/shared/organization/data/models/working_hours_model.dart';
+import 'package:queue_ease/features/shared_domain/models/working_hours_model.dart';
 
 // ignore: subtype_of_sealed_class
 class MockDocumentSnapshot extends Mock

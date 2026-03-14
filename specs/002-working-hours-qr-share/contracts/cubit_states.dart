@@ -5,7 +5,7 @@
 /// FILE: lib/admin/working_hours/presentation/cubit/working_hours_state.dart
 
 import 'package:equatable/equatable.dart';
-import 'package:queue_ease/shared/organization/domain/entities/working_hours_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/working_hours_entity.dart';
 
 sealed class WorkingHoursState extends Equatable {
   const WorkingHoursState();

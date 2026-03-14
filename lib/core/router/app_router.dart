@@ -1,27 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:queue_ease/features/admin/organization_management/presentation/cubit/organization_cubit.dart';
+import 'package:queue_ease/features/admin/organization_management/presentation/pages/organization_profile_edit_page.dart';
+import 'package:queue_ease/features/admin/organization_management/presentation/pages/organization_profile_page.dart';
+import 'package:queue_ease/features/admin/organization_management/presentation/pages/organization_setup_page.dart';
+import 'package:queue_ease/features/admin/service_management/presentation/pages/service_form_page.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
-import '../../admin/organization/presentation/cubit/organization_cubit.dart';
-import '../../admin/organization/presentation/pages/organization_profile_edit_page.dart';
-import '../../admin/organization/presentation/pages/organization_profile_page.dart';
-import '../../admin/organization/presentation/pages/organization_setup_page.dart';
-import '../../admin/presentation/pages/admin_main_page.dart';
-import '../../admin/services/presentation/cubit/service_cubit.dart';
-import '../../admin/services/presentation/pages/service_form_page.dart';
-import '../../admin/share_access/presentation/cubit/share_access_cubit.dart';
-import '../../admin/share_access/presentation/pages/share_access_page.dart';
-import '../../admin/working_hours/presentation/cubit/working_hours_cubit.dart';
-import '../../admin/working_hours/presentation/pages/working_hours_page.dart';
-import '../../customer/entry/presentation/pages/customer_home_page.dart';
-import '../../shared/auth/domain/entities/user_role.dart';
-import '../../shared/auth/presentation/cubit/auth_cubit.dart';
-import '../../shared/auth/presentation/cubit/auth_state.dart';
-import '../../shared/auth/presentation/pages/login_page.dart';
-import '../../shared/auth/presentation/pages/sign_up_page.dart';
-import '../../shared/onboarding/presentation/pages/onboarding_page.dart';
-import '../../shared/organization/domain/entities/service_entity.dart';
+import '../../features/admin/app_section/presentation/pages/admin_main_page.dart';
+import '../../features/admin/service_management/presentation/cubit/service_cubit.dart';
+import '../../features/admin/share_access/presentation/cubit/share_access_cubit.dart';
+import '../../features/admin/share_access/presentation/pages/share_access_page.dart';
+import '../../features/admin/working_hours_management/presentation/cubit/working_hours_cubit.dart';
+import '../../features/admin/working_hours_management/presentation/pages/working_hours_page.dart';
+import '../../features/customer/booking/presentation/cubit/booking_form_cubit.dart';
+import '../../features/customer/booking/presentation/cubit/organization_landing_cubit.dart';
+import '../../features/customer/booking/presentation/cubit/service_selection_cubit.dart';
+import '../../features/customer/booking/presentation/cubit/slot_picker_cubit.dart';
+import '../../features/customer/booking/presentation/pages/booking_confirmation_page.dart';
+import '../../features/customer/booking/presentation/pages/booking_form_page.dart';
+import '../../features/customer/booking/presentation/pages/organization_landing_page.dart';
+import '../../features/customer/booking/presentation/pages/service_details_page.dart';
+import '../../features/customer/booking/presentation/pages/service_selection_page.dart';
+import '../../features/customer/booking/presentation/pages/slot_picker_page.dart';
+import '../../features/customer/entry/presentation/pages/customer_home_page.dart';
+import '../../features/authentication/domain/entities/user_role.dart';
+import '../../features/authentication/presentation/cubit/auth_cubit.dart';
+import '../../features/authentication/presentation/cubit/auth_state.dart';
+import '../../features/authentication/presentation/pages/login_page.dart';
+import '../../features/authentication/presentation/pages/sign_up_page.dart';
+import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/shared_domain/entities/service_entity.dart';
 import '../config/flavor_config.dart';
 import '../services/onboarding_service.dart';
 import '../utils/app_logger.dart';
@@ -42,6 +52,12 @@ abstract final class Routes {
   static const String adminWorkingHours = '/a/working-hours';
   static const String adminShareAccess = '/a/share-access';
   static const String customerHome = '/c/home';
+  static const String customerOrgLanding = '/c/org/:slug';
+  static const String customerServices = '/c/org/:slug/services';
+  static const String customerServiceDetails = '/c/org/:slug/service-details';
+  static const String customerSlots = '/c/org/:slug/slots';
+  static const String customerBook = '/c/org/:slug/book';
+  static const String customerConfirmation = '/c/org/:slug/confirmation';
 
   // Dev-only
   static const String debugLogs = '/debug/logs';
@@ -133,7 +149,11 @@ GoRouter createRouter(AuthCubit authCubit) {
       if (authState is Unauthenticated) {
         final isProtected =
             location.startsWith('/a/') || location.startsWith('/c/');
-        return isProtected ? Routes.login : null;
+        if (isProtected) {
+          final from = Uri.encodeComponent(state.uri.toString());
+          return '${Routes.login}?from=$from';
+        }
+        return null;
       }
 
       return null;
@@ -240,6 +260,80 @@ GoRouter createRouter(AuthCubit authCubit) {
       GoRoute(
         path: Routes.customerHome,
         builder: (context, state) => const CustomerHomePage(),
+      ),
+      GoRoute(
+        path: Routes.customerOrgLanding,
+        builder: (context, state) {
+          final slug = state.pathParameters['slug']!;
+          return BlocProvider(
+            create: (context) =>
+                getIt<OrganizationLandingCubit>()..loadOrganization(slug),
+            child: OrganizationLandingPage(slug: slug),
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerServices,
+        builder: (context, state) {
+          final (:orgId, :orgName) =
+              state.extra as ({String orgId, String orgName});
+          final slug = state.pathParameters['slug']!;
+          return BlocProvider(
+            create: (context) =>
+                getIt<ServiceSelectionCubit>()..loadServices(orgId),
+            child: ServiceSelectionPage(
+              orgId: orgId,
+              orgName: orgName,
+              slug: slug,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerServiceDetails,
+        builder: (context, state) {
+          final args = state.extra as ServiceDetailsArgs;
+          return ServiceDetailsPage(args: args);
+        },
+      ),
+      GoRoute(
+        path: Routes.customerSlots,
+        builder: (context, state) {
+          final args = state.extra as SlotPickerArgs;
+          return BlocProvider(
+            create: (context) => getIt<SlotPickerCubit>()
+              ..init(
+                orgId: args.orgId,
+                serviceId: args.serviceId,
+                durationMinutes: args.durationMinutes,
+              ),
+            child: SlotPickerPage(args: args),
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerBook,
+        builder: (context, state) {
+          final args = state.extra as BookingFormArgs;
+          return BlocProvider(
+            create: (context) => getIt<BookingFormCubit>()
+              ..init(
+                orgId: args.orgId,
+                serviceId: args.service.id,
+                scheduledAt: args.scheduledAt,
+                customerId: args.customerId,
+                prefillName: args.prefillName,
+              ),
+            child: BookingFormPage(args: args),
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.customerConfirmation,
+        builder: (context, state) {
+          final args = state.extra as BookingConfirmationArgs;
+          return BookingConfirmationPage(args: args);
+        },
       ),
       // Dev-only: in-app log viewer
       if (FlavorConfig.instance.isDev)

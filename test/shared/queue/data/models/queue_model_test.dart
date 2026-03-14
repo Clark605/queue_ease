@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:queue_ease/shared/queue/data/models/queue_model.dart';
-import 'package:queue_ease/shared/queue/domain/entities/queue_status.dart';
+import 'package:queue_ease/features/shared_domain/models/queue_model.dart';
+import 'package:queue_ease/features/shared_domain/entities/queue_status.dart';
 
 // ignore: subtype_of_sealed_class
 class MockDocumentSnapshot extends Mock

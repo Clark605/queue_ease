@@ -1,13 +1,13 @@
-﻿import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:queue_ease/core/error/app_exception.dart';
 import 'package:queue_ease/core/utils/app_logger.dart';
-import 'package:queue_ease/shared/auth/domain/entities/user_entity.dart';
-import 'package:queue_ease/shared/auth/domain/entities/user_role.dart';
-import 'package:queue_ease/shared/auth/domain/repositories/auth_repository.dart';
-import 'package:queue_ease/shared/auth/presentation/cubit/auth_cubit.dart';
-import 'package:queue_ease/shared/auth/presentation/cubit/auth_state.dart';
+import 'package:queue_ease/features/authentication/domain/entities/user_entity.dart';
+import 'package:queue_ease/features/authentication/domain/entities/user_role.dart';
+import 'package:queue_ease/features/authentication/domain/repositories/auth_repository.dart';
+import 'package:queue_ease/features/authentication/presentation/cubit/auth_cubit.dart';
+import 'package:queue_ease/features/authentication/presentation/cubit/auth_state.dart';
 
 // ignore_for_file: discarded_futures
 
@@ -42,7 +42,7 @@ void main() {
     when(() => mockLogger.error(any(), any(), any())).thenReturn(null);
   });
 
-  // ── checkAuthStatus ──────────────────────────────────────────────────────
+  // -- checkAuthStatus ------------------------------------------------------
 
   group('checkAuthStatus', () {
     blocTest<AuthCubit, AuthState>(
@@ -78,7 +78,7 @@ void main() {
     );
   });
 
-  // ── signInWithEmailPassword ───────────────────────────────────────────────
+  // -- signInWithEmailPassword -----------------------------------------------
 
   group('signInWithEmailPassword', () {
     blocTest<AuthCubit, AuthState>(
@@ -150,7 +150,7 @@ void main() {
     );
   });
 
-  // ── signUpWithEmailPassword ───────────────────────────────────────────────
+  // -- signUpWithEmailPassword -----------------------------------------------
 
   group('signUpWithEmailPassword', () {
     blocTest<AuthCubit, AuthState>(
@@ -247,7 +247,7 @@ void main() {
     );
   });
 
-  // ── signInWithGoogle ──────────────────────────────────────────────────────
+  // -- signInWithGoogle ------------------------------------------------------
 
   group('signInWithGoogle', () {
     blocTest<AuthCubit, AuthState>(
@@ -292,7 +292,7 @@ void main() {
     );
   });
 
-  // ── signOut ───────────────────────────────────────────────────────────────
+  // -- signOut ---------------------------------------------------------------
 
   group('signOut', () {
     blocTest<AuthCubit, AuthState>(
@@ -337,7 +337,7 @@ void main() {
     );
   });
 
-  // ── sendPasswordResetEmail ────────────────────────────────────────────────
+  // -- sendPasswordResetEmail ------------------------------------------------
 
   group('sendPasswordResetEmail', () {
     blocTest<AuthCubit, AuthState>(

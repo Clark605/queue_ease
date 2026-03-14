@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:queue_ease/shared/auth/presentation/cubit/auth_cubit.dart';
+import 'package:queue_ease/features/authentication/presentation/cubit/auth_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:queue_ease/core/app.dart';

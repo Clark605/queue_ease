@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:queue_ease/shared/booking/domain/entities/appointment_entity.dart';
-import 'package:queue_ease/shared/booking/domain/entities/appointment_status.dart';
+import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
+import 'package:queue_ease/features/shared_domain/entities/appointment_status.dart';
 
 void main() {
   group('AppointmentEntity', () {
