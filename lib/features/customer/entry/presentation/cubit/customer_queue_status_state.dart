@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../domain/use_cases/watch_customer_queue_status_use_case.dart';
+
 /// States for [CustomerQueueStatusCubit].
 sealed class CustomerQueueStatusState extends Equatable {
   const CustomerQueueStatusState();
@@ -33,5 +35,12 @@ final class CustomerQueueStatusError extends CustomerQueueStatusState {
   List<Object?> get props => [message];
 }
 
-// TODO(T024): Add CustomerQueueStatusLoaded with CustomerQueueStatusView
-//             once the view model is defined (Phase 4).
+/// Emitted when queue status data is available.
+final class CustomerQueueStatusLoaded extends CustomerQueueStatusState {
+  const CustomerQueueStatusLoaded({required this.status});
+
+  final CustomerQueueStatusView status;
+
+  @override
+  List<Object?> get props => [status];
+}
