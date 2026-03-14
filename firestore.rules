@@ -366,5 +366,17 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
+
+    // -------------------------------------------------------------------------
+    // COLLECTION GROUP — cross-org appointment reads (Phase 8, T046)
+    //
+    // Required for collectionGroup('appointments') used by
+    // watchTodayActiveAppointments to power the customer dashboard.
+    // Customers may list only documents where customerId matches their UID.
+    // -------------------------------------------------------------------------
+    match /{path=**}/appointments/{appointmentId} {
+      allow list: if isAuthenticated()
+        && resource.data.customerId == request.auth.uid;
+    }
   }
 }
