@@ -11,6 +11,7 @@ import '../cubit/customer_dashboard_state.dart';
 import '../widgets/active_queue_status_card.dart';
 import '../widgets/customer_action_buttons.dart';
 import '../widgets/customer_dashboard_empty_state.dart';
+import '../widgets/customer_home_drawer.dart';
 import '../widgets/customer_home_header.dart';
 import '../widgets/customer_welcome_section.dart';
 import '../widgets/upcoming_appointment_card.dart';
@@ -25,16 +26,20 @@ class CustomerHomePage extends StatelessWidget {
     final displayName = authState is Authenticated
         ? (authState.user.displayName ?? 'there')
         : 'there';
+    final email = authState is Authenticated ? authState.user.email : null;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
+      drawer: CustomerHomeDrawer(displayName: displayName, email: email),
       body: BlocBuilder<CustomerDashboardCubit, CustomerDashboardState>(
         builder: (context, state) {
           return CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: CustomerHomeHeader(
-                  onSignOut: () => context.read<AuthCubit>().signOut(),
+                child: Builder(
+                  builder: (context) => CustomerHomeHeader(
+                    onMenuTap: () => Scaffold.of(context).openDrawer(),
+                  ),
                 ),
               ),
               SliverToBoxAdapter(
@@ -118,9 +123,9 @@ class CustomerHomePage extends StatelessWidget {
           showViewQueue: dashboard.hasActiveQueue,
           onViewQueue: dashboard.hasActiveQueue
               ? () => context.push(
-                    Routes.customerQueueStatus,
-                    extra: dashboard.activeAppointment!.orgId,
-                  )
+                  Routes.customerQueueStatus,
+                  extra: dashboard.activeAppointment!.orgId,
+                )
               : null,
         ),
       ),
@@ -140,10 +145,7 @@ class CustomerHomePage extends StatelessWidget {
 }
 
 class _UpcomingSection extends StatelessWidget {
-  const _UpcomingSection({
-    required this.onSeeAll,
-    required this.appointment,
-  });
+  const _UpcomingSection({required this.onSeeAll, required this.appointment});
 
   final VoidCallback onSeeAll;
   final AppointmentEntity appointment;

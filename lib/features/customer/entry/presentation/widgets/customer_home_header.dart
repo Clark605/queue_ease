@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 ///
 /// Shows the menu icon (placeholder for Phase 9 navigation drawer), the
 /// centered app name, and a notification bell with an unread indicator dot.
-/// [onSignOut] is threaded through for Phase 9 to wire into the menu.
 class CustomerHomeHeader extends StatelessWidget {
-  const CustomerHomeHeader({super.key, required this.onSignOut});
+  const CustomerHomeHeader({super.key, required this.onMenuTap});
 
-  // Carried for Phase 9 — will be connected to the navigation drawer menu.
-  // ignore: unused_field
-  final VoidCallback onSignOut;
+  final VoidCallback onMenuTap;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +16,7 @@ class CustomerHomeHeader extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(4, topPadding + 4, 4, 4),
       child: Row(
         children: [
-          const IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: null, // Phase 9 — navigation drawer
-          ),
+          IconButton(icon: const Icon(Icons.menu), onPressed: onMenuTap),
           const Expanded(
             child: Text(
               'QueueEase',
