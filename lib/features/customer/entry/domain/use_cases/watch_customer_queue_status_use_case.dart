@@ -27,7 +27,7 @@ class CustomerQueueStatusView {
   /// 1-based position of this customer in the ordered queue, or null.
   final int? position;
 
-  /// Estimated wait in minutes — null until Phase 6 (T035) implements it.
+  /// Estimated wait in minutes
   final int? estimatedWaitMinutes;
 
   /// True when it is this customer's turn (appointment.status == serving).
