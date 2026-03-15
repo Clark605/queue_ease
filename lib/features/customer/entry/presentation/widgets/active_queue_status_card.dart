@@ -24,6 +24,8 @@ class ActiveQueueStatusCard extends StatelessWidget {
   final AppointmentEntity appointment;
   final CustomerQueueStatusView? queueStatus;
 
+  String get _organizationLabel => appointment.orgName ?? appointment.orgId;
+
   @override
   Widget build(BuildContext context) {
     final isServing = appointment.status == AppointmentStatus.serving;
@@ -93,7 +95,7 @@ class ActiveQueueStatusCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                appointment.orgId,
+                _organizationLabel,
                 style: const TextStyle(fontSize: 12, color: Colors.white70),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

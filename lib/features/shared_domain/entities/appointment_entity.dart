@@ -18,6 +18,8 @@ class AppointmentEntity extends Equatable {
     required this.createdAt,
     this.customerPhone,
     this.queuePosition,
+    this.orgName,
+    this.serviceName,
   });
 
   /// Unique identifier for the appointment.
@@ -28,6 +30,12 @@ class AppointmentEntity extends Equatable {
 
   /// Service ID for this appointment.
   final String serviceId;
+
+  /// Organization display name when available.
+  final String? orgName;
+
+  /// Service display name when available.
+  final String? serviceName;
 
   /// Firebase Auth UID of the customer who booked.
   final String customerId;
@@ -62,5 +70,7 @@ class AppointmentEntity extends Equatable {
     status,
     queuePosition,
     createdAt,
+    orgName,
+    serviceName,
   ];
 }

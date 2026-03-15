@@ -16,6 +16,8 @@ class AppointmentModel {
     required this.createdAt,
     this.customerPhone,
     this.queuePosition,
+    this.orgName,
+    this.serviceName,
   });
 
   final String id;
@@ -28,6 +30,8 @@ class AppointmentModel {
   final DateTime createdAt;
   final String? customerPhone;
   final int? queuePosition;
+  final String? orgName;
+  final String? serviceName;
 
   /// Creates an [AppointmentModel] from a domain [AppointmentEntity].
   ///
@@ -42,7 +46,9 @@ class AppointmentModel {
       status = entity.status,
       createdAt = entity.createdAt,
       customerPhone = entity.customerPhone,
-      queuePosition = entity.queuePosition;
+      queuePosition = entity.queuePosition,
+      orgName = entity.orgName,
+      serviceName = entity.serviceName;
 
   /// Creates an [AppointmentModel] from a Firestore document.
   ///
@@ -71,6 +77,8 @@ class AppointmentModel {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       customerPhone: data['customerPhone'] as String?,
       queuePosition: data['queuePosition'] as int?,
+      orgName: data['orgName'] as String?,
+      serviceName: data['serviceName'] as String?,
     );
   }
 
@@ -86,6 +94,8 @@ class AppointmentModel {
       'status': status.name,
       'queuePosition': queuePosition,
       'createdAt': Timestamp.fromDate(createdAt),
+      if (orgName != null) 'orgName': orgName,
+      if (serviceName != null) 'serviceName': serviceName,
     };
   }
 
@@ -101,5 +111,7 @@ class AppointmentModel {
     createdAt: createdAt,
     customerPhone: customerPhone,
     queuePosition: queuePosition,
+    orgName: orgName,
+    serviceName: serviceName,
   );
 }

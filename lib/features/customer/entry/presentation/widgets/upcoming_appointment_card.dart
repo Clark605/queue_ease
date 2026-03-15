@@ -13,6 +13,11 @@ class UpcomingAppointmentCard extends StatelessWidget {
 
   final AppointmentEntity appointment;
 
+  String get _organizationLabel => appointment.orgName ?? appointment.orgId;
+
+  String get _serviceLabel =>
+      appointment.serviceName ?? 'Service #${appointment.serviceId}';
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,7 +64,7 @@ class UpcomingAppointmentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Service #${appointment.serviceId}',
+                _serviceLabel,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -70,7 +75,7 @@ class UpcomingAppointmentCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                appointment.orgId,
+                _organizationLabel,
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.onSurfaceVariant,
@@ -111,7 +116,7 @@ class UpcomingAppointmentCard extends StatelessWidget {
         const SizedBox(height: 8),
         _DetailRow(icon: Icons.schedule, label: time),
         const SizedBox(height: 8),
-        _DetailRow(icon: Icons.business, label: appointment.orgId),
+        _DetailRow(icon: Icons.business, label: _organizationLabel),
       ],
     );
   }
