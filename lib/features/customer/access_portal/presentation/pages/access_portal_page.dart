@@ -52,9 +52,37 @@ class _AccessPortalPageState extends State<AccessPortalPage> {
   }
 
   Future<void> _onGalleryTap() async {
-    final xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (xFile != null && mounted) {
-      await _controller.analyzeImage(xFile.path);
+    try {
+      final xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (xFile == null || !mounted) {
+        return;
+      }
+
+      final capture = await _controller.analyzeImage(xFile.path);
+      final rawValue = capture?.barcodes.firstOrNull?.rawValue;
+
+      if (!mounted) {
+        return;
+      }
+
+      if (rawValue == null || rawValue.isEmpty) {
+        AppSnackBar.showWarning(
+          context,
+          'No booking QR code was found in that image.',
+        );
+        return;
+      }
+
+      _onQrDetected(rawValue);
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      AppSnackBar.showError(
+        context,
+        'Could not scan that image. Try another screenshot or paste the link instead.',
+      );
     }
   }
 
