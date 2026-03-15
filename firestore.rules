@@ -105,17 +105,17 @@ service cloud.firestore {
      * Validate that an appointment status transition is permitted.
      * Allowed transitions:
      *   booked   -> inQueue   (queue generation)
-     *   inQueue  -> serving   (admin advances queue)
+     *   inQueue  -> serving   (admin starts service)
+     *   inQueue  -> noShow    (manual or auto no-show after deadline)
      *   serving  -> completed (admin marks next/done)
-     *   serving  -> noShow    (admin marks no-show)
      *   serving  -> inQueue   (admin skips; reinserts at end)
      *   noShow   -> inQueue   (admin rejoins no-show entry)
      */
     function isValidStatusTransition(from, to) {
       return (from == 'booked'  && to == 'inQueue')
           || (from == 'inQueue' && to == 'serving')
+          || (from == 'inQueue' && to == 'noShow')
           || (from == 'serving' && to == 'completed')
-          || (from == 'serving' && to == 'noShow')
           || (from == 'serving' && to == 'inQueue')
           || (from == 'noShow'  && to == 'inQueue');
     }

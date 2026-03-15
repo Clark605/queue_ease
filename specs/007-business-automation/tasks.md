@@ -19,14 +19,16 @@
 
 **⚠️ CRITICAL**: No user story work starts until this phase is complete.
 
-- [ ] T004 Create queue automation state value objects in lib/features/admin/queue_management/domain/models/queue_automation_state.dart
-- [ ] T005 Extend queue projection contract with automation fields in lib/features/admin/queue_management/domain/repositories/admin_appointment_repository.dart
-- [ ] T006 Implement effective time-margin resolver with 2-minute fallback in lib/features/admin/queue_management/domain/services/effective_time_margin_resolver.dart
-- [ ] T007 Implement booking-time deadline evaluator in lib/features/admin/queue_management/domain/services/queue_deadline_evaluator.dart
+- [x] T004 Create queue automation state value objects in lib/features/admin/queue_management/domain/models/queue_automation_state.dart
+- [x] T005 Extend queue projection contract with automation fields in lib/features/admin/queue_management/domain/repositories/admin_appointment_repository.dart
+- [x] T006 Implement effective time-margin resolver with 2-minute fallback in lib/features/admin/queue_management/domain/services/effective_time_margin_resolver.dart
+- [x] T007 Implement booking-time deadline evaluator in lib/features/admin/queue_management/domain/services/queue_deadline_evaluator.dart
 - [ ] T008 [P] Add domain unit tests for margin fallback and deadline calculations in test/admin/queue_management/domain/services/effective_time_margin_resolver_test.dart
 - [ ] T009 [P] Add domain unit tests for automation state derivation in test/admin/queue_management/domain/services/queue_deadline_evaluator_test.dart
-- [ ] T010 Align Firestore status-transition guard helpers with planned flow in firestore.rules
+- [x] T010 Align Firestore status-transition guard helpers with planned flow in firestore.rules
 - [ ] T011 Add Firestore rules tests for pre-booking action rejection baseline in test/firestore_rules/queue_prebooking_action_rules_test.dart
+
+> Note: T008, T009, and T011 were intentionally skipped per user request.
 
 **Checkpoint**: Foundation ready — user stories can now be implemented.
 

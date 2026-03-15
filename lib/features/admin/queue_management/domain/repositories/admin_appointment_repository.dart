@@ -2,6 +2,8 @@ import 'package:queue_ease/core/error/result.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_status.dart';
 
+import '../models/queue_automation_state.dart';
+
 // ---------------------------------------------------------------------------
 // View models
 // ---------------------------------------------------------------------------
@@ -29,16 +31,28 @@ class QueueEntryView {
     required this.appointmentId,
     required this.position,
     required this.customerName,
+    required this.scheduledAt,
     required this.serviceDurationMinutes,
+    required this.effectiveTimeMarginMinutes,
+    required this.noShowDeadline,
+    required this.automationState,
+    required this.allowedActions,
     required this.status,
+    this.remainingSeconds,
     this.estimatedWaitMinutes,
   });
 
   final String appointmentId;
   final int position;
   final String customerName;
+  final DateTime scheduledAt;
   final int serviceDurationMinutes;
+  final int effectiveTimeMarginMinutes;
+  final DateTime noShowDeadline;
+  final QueueAutomationState automationState;
+  final QueueAllowedActions allowedActions;
   final AppointmentStatus status;
+  final int? remainingSeconds;
   final int? estimatedWaitMinutes;
 }
 
