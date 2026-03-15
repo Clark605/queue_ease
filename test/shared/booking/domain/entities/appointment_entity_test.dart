@@ -116,7 +116,9 @@ void main() {
       final appointment = AppointmentEntity(
         id: 'appt1',
         orgId: 'org1',
+        orgName: 'org',
         serviceId: 'service1',
+        serviceName: 'service',
         customerId: 'customer1',
         customerName: 'John Doe',
         scheduledAt: testDate,
@@ -137,6 +139,8 @@ void main() {
         AppointmentStatus.booked,
         5,
         testDate,
+        'org',
+        'service',
       ]);
     });
   });

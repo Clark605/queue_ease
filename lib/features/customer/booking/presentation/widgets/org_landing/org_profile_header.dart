@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
-import '../../../../../core/widgets/initials_avatar.dart';
-import '../../../../shared_domain/entities/organization_entity.dart';
+import '../../../../../../core/theme/app_colors.dart';
+import '../../../../../../core/widgets/initials_avatar.dart';
+import '../../../../../shared_domain/entities/organization_entity.dart';
 import 'open_closed_badge.dart';
 
 class OrgProfileHeader extends StatelessWidget {

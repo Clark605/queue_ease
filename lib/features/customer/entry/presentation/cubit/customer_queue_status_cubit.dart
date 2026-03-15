@@ -1,0 +1,87 @@
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../../core/error/result.dart';
+import '../../../../../core/utils/app_logger.dart';
+import '../../domain/use_cases/watch_customer_queue_status_use_case.dart';
+import 'customer_queue_status_state.dart';
+
+/// Manages live queue status for the customer queue status screen.
+///
+/// Subscribes to [WatchCustomerQueueStatusUseCase] and emits states based
+/// on the combined appointment + queue document stream.
+@injectable
+class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
+  CustomerQueueStatusCubit(this._watchStatus, this._logger)
+    : super(const CustomerQueueStatusInitial());
+
+  final WatchCustomerQueueStatusUseCase _watchStatus;
+  final AppLogger _logger;
+
+  static const _loadQueueFallbackMessage =
+      'Unable to load queue data right now. Please try again.';
+
+  String _resolveLoadMessage(String message) {
+    final trimmed = message.trim();
+    return trimmed.isEmpty ? _loadQueueFallbackMessage : trimmed;
+  }
+
+  StreamSubscription<Result<CustomerQueueStatusView?>>? _sub;
+
+  /// Starts watching live queue status for [customerId] in [orgId] on [date].
+  ///
+  /// Cancels any prior subscription first. Emits [CustomerQueueStatusLoading]
+  /// immediately, then transitions to [CustomerQueueStatusLoaded],
+  /// [CustomerQueueStatusEmpty], or [CustomerQueueStatusError].
+  void watchStatus({
+    required String orgId,
+    required String customerId,
+    required DateTime date,
+  }) {
+    emit(const CustomerQueueStatusLoading());
+    _sub?.cancel();
+    _logger.info(
+      'CustomerQueueStatusCubit',
+      'watchStatus orgId=${orgId.substring(0, 4)}*** customerId=${customerId.substring(0, 4)}***',
+    );
+    _sub = _watchStatus(orgId: orgId, customerId: customerId, date: date)
+        .listen(
+          (result) {
+            switch (result) {
+              case Success(:final data):
+                if (data == null) {
+                  emit(const CustomerQueueStatusEmpty());
+                } else {
+                  emit(CustomerQueueStatusLoaded(status: data));
+                }
+              case Failure(:final exception):
+                _logger.error(
+                  'CustomerQueueStatusCubit: stream error',
+                  exception,
+                );
+                emit(
+                  CustomerQueueStatusError(
+                    message: _resolveLoadMessage(exception.message),
+                  ),
+                );
+            }
+          },
+          onError: (Object e, StackTrace st) {
+            _logger.error('CustomerQueueStatusCubit: unexpected error', e, st);
+            emit(
+              const CustomerQueueStatusError(
+                message: _loadQueueFallbackMessage,
+              ),
+            );
+          },
+        );
+  }
+
+  @override
+  Future<void> close() {
+    _sub?.cancel();
+    return super.close();
+  }
+}

@@ -8,6 +8,7 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../dashboard/presentation/pages/admin_dashboard_tab.dart';
 import '../../../organization_management/presentation/cubit/organization_cubit.dart';
 import '../../../queue_management/presentation/pages/queue_management_page.dart';
+import '../../../queue_management/presentation/cubit/queue_management_cubit.dart';
 import '../../../tutorial/presentation/cubit/tutorial_cubit.dart';
 import '../../../../authentication/presentation/cubit/auth_cubit.dart';
 import '../../../../authentication/presentation/cubit/auth_state.dart';
@@ -82,6 +83,22 @@ class _AdminMainPageState extends State<AdminMainPage> {
         ),
         // TutorialCubit — initialized by AdminDashboardTab once it mounts.
         BlocProvider(create: (_) => getIt<TutorialCubit>()),
+        // QueueManagementCubit — starts watching today's queue immediately so
+        // the Queue tab has live data as soon as the admin shell mounts.
+        BlocProvider(
+          create: (ctx) {
+            final cubit = getIt<QueueManagementCubit>();
+            final authState = ctx.read<AuthCubit>().state;
+            if (authState is Authenticated &&
+                authState.user.organizationId != null) {
+              cubit.watchQueue(
+                orgId: authState.user.organizationId!,
+                date: DateTime.now(),
+              );
+            }
+            return cubit;
+          },
+        ),
       ],
       child: Scaffold(
         body: IndexedStack(index: _currentIndex, children: _pages),

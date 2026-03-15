@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
-import '../../../../shared_domain/entities/service_entity.dart';
+import '../../../../../../core/theme/app_colors.dart';
+import '../../../../../shared_domain/entities/service_entity.dart';
 
 /// Displays a single service as a selectable radio-style card.
 ///

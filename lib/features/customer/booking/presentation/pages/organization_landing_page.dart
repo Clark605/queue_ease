@@ -10,9 +10,9 @@ import '../../../../shared_domain/entities/organization_entity.dart';
 import '../../../../shared_domain/entities/working_hours_entity.dart';
 import '../cubit/organization_landing_cubit.dart';
 import '../cubit/organization_landing_state.dart';
-import '../widgets/booking_action_bar.dart';
-import '../widgets/org_info_card.dart';
-import '../widgets/org_profile_header.dart';
+import '../widgets/org_landing/booking_action_bar.dart';
+import '../widgets/org_landing/org_info_card.dart';
+import '../widgets/org_landing/org_profile_header.dart';
 
 class OrganizationLandingPage extends StatelessWidget {
   const OrganizationLandingPage({super.key, required this.slug});

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QueueEase - Admin Queue Management</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config — mirrors project design system -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          primary:    "#135BEC",
+          "primary-dark": "#0d47d1",
+          "bg-page":  "#F5F5F5",
+          "surface":  "#FFFFFF",
+          "on-surface": "#212121",
+          "secondary-text": "#757575",
+          "outline":  "#BDBDBD",
+          "success":  "#4CAF50",
+          "success-bg": "#E8F5E9",
+          "warning":  "#FFA726",
+          "warning-bg": "#FFF3E0",
+          "error":    "#EF5350",
+          "error-bg": "#FFEBEE",
+        },
+        fontFamily: { display: ["Inter", "sans-serif"] },
+        borderRadius: {
+          card:   "12px",
+          btn:    "8px",
+          chip:   "100px",
+        },
+      }
+    }
+  };
+</script>
+<style>
+  /* ── base ─────────────────────────────────────────────── */
+  body {
+    -webkit-tap-highlight-color: transparent;
+    min-height: max(844px, 100dvh);
+  }
+  .font-display { font-family: "Inter", sans-serif; }
+
+  /* ── currently-serving card: green left accent ─────────── */
+  .serving-card {
+    border-left: 4px solid #4CAF50;
+  }
+
+  /* ── loading overlay on action button ─────────────────── */
+  .btn-loading {
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  /* ── snackbar (shown via JS) ───────────────────────────── */
+  #snackbar {
+    visibility: hidden;
+    min-width: 260px;
+    background-color: #212121;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px 20px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 90px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: opacity 0.3s;
+    opacity: 0;
+  }
+  #snackbar.show {
+    visibility: visible;
+    opacity: 1;
+  }
+</style>
+</head>
+
+<body class="bg-bg-page font-display antialiased">
+
+<!-- ═══════════════════════════════════════════════════════
+     PHONE SHELL — max 390 px, centered
+     ═══════════════════════════════════════════════════════ -->
+<div class="relative flex min-h-screen w-full flex-col max-w-[390px] mx-auto bg-bg-page shadow-2xl overflow-x-hidden">
+
+  <!-- ── AppBar ──────────────────────────────────────────── -->
+  <!--
+    DESIGN NOTE:
+    Sticky top bar.  Back-arrow left, filter icon right.
+    Title + date subtitle stacked in the centre.
+  -->
+  <header class="sticky top-0 z-50 bg-surface shadow-sm px-4 pt-4 pb-3 flex items-center justify-between gap-2">
+    <!-- back / menu button -->
+    <button
+      aria-label="Back"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full text-on-surface hover:bg-black/5 active:bg-black/10 transition-colors"
+    >
+      <span class="material-symbols-outlined" style="font-size:24px;">arrow_back</span>
+    </button>
+
+    <!-- titles -->
+    <div class="flex flex-col items-center flex-1">
+      <h1 class="text-on-surface text-[17px] font-bold leading-tight tracking-tight">
+        Queue Management
+      </h1>
+      <p class="text-secondary-text text-xs font-medium mt-0.5">Today, Mon 14 Mar</p>
+    </div>
+
+    <!-- filter button -->
+    <!--
+      INTERACTION: Tap to open filter bottom-sheet (not wired in static mockup).
+    -->
+    <button
+      aria-label="Filter queue"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full text-on-surface hover:bg-black/5 active:bg-black/10 transition-colors"
+    >
+      <span class="material-symbols-outlined" style="font-size:24px;">filter_list</span>
+    </button>
+  </header>
+
+  <!-- ── Scrollable body ──────────────────────────────────── -->
+  <main class="flex-1 flex flex-col gap-4 px-4 pt-4 pb-10 overflow-y-auto">
+
+    <!-- ════════════════════════════════════════════════════
+         SECTION 1 — Currently Serving Card
+         ════════════════════════════════════════════════════ -->
+    <!--
+      DESIGN: Prominent full-width white card with a green left accent border.
+      Contains:
+        - Position label + large position number
+        - Customer name (large, bold)
+        - Service name + duration
+        - "Serving" status chip (green)
+        - Three action buttons: Next, Skip, No-Show
+    -->
+    <div
+      id="serving-card"
+      class="serving-card bg-surface rounded-card shadow-sm px-5 py-5 flex flex-col gap-4"
+    >
+
+      <!-- header row: position badge + status chip -->
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <!-- large position number -->
+          <div class="flex flex-col items-center justify-center w-14 h-14 rounded-card bg-success/10 border border-success/20">
+            <span class="text-[10px] font-semibold text-success uppercase tracking-widest leading-none mb-0.5">Now</span>
+            <span class="text-2xl font-extrabold text-success leading-none">#1</span>
+          </div>
+
+          <!-- name + service -->
+          <div class="flex flex-col">
+            <span class="text-on-surface text-[17px] font-bold leading-tight">Jane Smith</span>
+            <span class="text-secondary-text text-[13px] font-medium mt-0.5">
+              General Checkup
+              <span class="inline-flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded bg-outline/30 text-secondary-text text-[11px] font-semibold align-middle">
+                <span class="material-symbols-outlined" style="font-size:12px;font-variation-settings:'FILL' 0;">schedule</span>
+                30 min
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <!-- status chip -->
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-chip bg-success text-white text-[12px] font-semibold shrink-0">
+          <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1;">check_circle</span>
+          Serving
+        </span>
+      </div>
+
+      <!-- divider -->
+      <div class="h-px bg-outline/40"></div>
+
+      <!-- action buttons row -->
+      <!--
+        INTERACTIONS:
+          • "Next ✓"    → showLoading(btn) for ~800 ms → emit advanceQueue() use case
+                          → on success: update card to next customer + show "Now serving #2" snackbar
+          • "Skip ↷"    → showLoading(btn) → emit skipQueueEntry() use case
+                          → customer moves to end of list with "(Skipped)" badge
+                          → next customer auto-promoted to Currently Serving
+          • "No-Show ✗" → showLoading(btn) → emit markNoShow() use case
+                          → customer removed from queue (status = no_show)
+                          → next customer auto-promoted to Currently Serving
+      -->
+      <div class="flex gap-2">
+
+        <!-- Next button — primary filled -->
+        <button
+          id="btn-next"
+          onclick="handleAction('next', this, 'Moved to next customer')"
+          class="flex-1 flex items-center justify-center gap-1.5 h-11 rounded-btn bg-primary hover:bg-primary-dark active:scale-[0.97] transition-all text-white text-[14px] font-semibold shadow-sm"
+        >
+          <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 0;">check</span>
+          Next
+        </button>
+
+        <!-- Skip button — warning outlined -->
+        <button
+          id="btn-skip"
+          onclick="handleAction('skip', this, 'Customer moved to end of queue')"
+          class="flex-1 flex items-center justify-center gap-1.5 h-11 rounded-btn border-2 border-warning text-warning hover:bg-warning-bg active:scale-[0.97] transition-all text-[14px] font-semibold"
+        >
+          <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 0;">redo</span>
+          Skip
+        </button>
+
+        <!-- No-Show button — error outlined -->
+        <button
+          id="btn-noshow"
+          onclick="handleAction('noshow', this, 'Marked as no-show')"
+          class="flex-1 flex items-center justify-center gap-1.5 h-11 rounded-btn border-2 border-error text-error hover:bg-error-bg active:scale-[0.97] transition-all text-[14px] font-semibold"
+        >
+          <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 0;">person_off</span>
+          No-Show
+        </button>
+
+      </div>
+    </div><!-- /serving-card -->
+
+
+    <!-- ════════════════════════════════════════════════════
+         SECTION 2 — Waiting Queue List
+         ════════════════════════════════════════════════════ -->
+
+    <!-- section header -->
+    <div class="flex items-center justify-between mt-2 mb-1 px-1">
+      <h2 class="text-on-surface text-[15px] font-bold tracking-tight">
+        Waiting
+        <span id="waiting-count" class="ml-1 inline-flex items-center justify-center px-2 py-0.5 rounded-chip bg-primary/10 text-primary text-[12px] font-bold">
+          3
+        </span>
+      </h2>
+      <!-- optional: refresh hint -->
+      <span class="text-secondary-text text-[12px] font-medium flex items-center gap-1">
+        <span class="inline-block w-2 h-2 rounded-full bg-success animate-pulse"></span>
+        Live
+      </span>
+    </div>
+
+    <!-- ── Waiting list ──────────────────────────────────── -->
+    <!--
+      DESIGN: Minimal card rows.  Each has:
+        - Position badge (square)
+        - Customer name + service name
+        - Duration chip (right)
+        - If skipped: "(Skipped)" warning badge + "Rejoin" button
+
+      INTERACTIONS (per item):
+        • Normal item   — no tap action on the row itself (admin-only view)
+        • Skipped item  → Tap "Rejoin" → emit rejoinSkipped() use case
+                          → customer appended to end of queue; badge removed
+
+      Note: "Waiting" and "Skipped" items share the same list since the daily
+      queue orders them by position; skipped items retain their slot but are
+      styled differently to indicate their state.
+    -->
+    <div id="waiting-list" class="flex flex-col gap-3">
+
+      <!-- ── Row #2 — Normal waiting ───────────────────── -->
+      <div class="bg-surface rounded-card shadow-sm px-4 py-3 flex items-center gap-3">
+        <!-- position badge -->
+        <div class="flex flex-col items-center justify-center w-10 h-10 rounded-[8px] bg-primary/10 border border-primary/20 shrink-0">
+          <span class="text-[9px] font-semibold text-primary uppercase tracking-widest leading-none">#</span>
+          <span class="text-[16px] font-extrabold text-primary leading-none">2</span>
+        </div>
+
+        <!-- info -->
+        <div class="flex flex-col flex-1 min-w-0">
+          <span class="text-on-surface text-[14px] font-semibold truncate">Carlos Reyes</span>
+          <span class="text-secondary-text text-[12px] font-medium truncate mt-0.5">Blood Pressure Check</span>
+        </div>
+
+        <!-- duration chip -->
+        <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-chip border border-outline/60 text-secondary-text text-[11px] font-semibold">
+          <span class="material-symbols-outlined" style="font-size:12px;font-variation-settings:'FILL' 0;">schedule</span>
+          15 min
+        </span>
+      </div>
+
+      <!-- ── Row #3 — SKIPPED ──────────────────────────── -->
+      <!--
+        INTERACTION: Tap "Rejoin" → emit rejoinSkipped(appointmentId)
+          → customer is re-appended to the end of the queue
+          → the row's "(Skipped)" badge disappears and position number updates
+      -->
+      <div class="bg-surface rounded-card shadow-sm px-4 py-3 flex items-center gap-3 border border-warning/30">
+        <!-- position badge (muted for skipped) -->
+        <div class="flex flex-col items-center justify-center w-10 h-10 rounded-[8px] bg-warning/10 border border-warning/30 shrink-0">
+          <span class="text-[9px] font-semibold text-warning uppercase tracking-widest leading-none">#</span>
+          <span class="text-[16px] font-extrabold text-warning leading-none">3</span>
+        </div>
+
+        <!-- info -->
+        <div class="flex flex-col flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-on-surface text-[14px] font-semibold truncate">Maria Lopez</span>
+            <!-- skipped badge -->
+            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-chip bg-warning/15 text-warning text-[10px] font-bold uppercase tracking-wide">
+              <span class="material-symbols-outlined" style="font-size:10px;font-variation-settings:'FILL' 1;">warning</span>
+              Skipped
+            </span>
+          </div>
+          <span class="text-secondary-text text-[12px] font-medium truncate mt-0.5">Vaccination</span>
+        </div>
+
+        <!-- Rejoin button -->
+        <button
+          onclick="handleRejoin(this, 'Maria Lopez')"
+          class="shrink-0 flex items-center gap-1 h-8 px-3 rounded-btn border-2 border-primary text-primary hover:bg-primary/10 active:scale-[0.96] transition-all text-[12px] font-bold"
+        >
+          <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 0;">replay</span>
+          Rejoin
+        </button>
+      </div>
+
+      <!-- ── Row #4 — Normal waiting ───────────────────── -->
+      <div class="bg-surface rounded-card shadow-sm px-4 py-3 flex items-center gap-3">
+        <!-- position badge -->
+        <div class="flex flex-col items-center justify-center w-10 h-10 rounded-[8px] bg-primary/10 border border-primary/20 shrink-0">
+          <span class="text-[9px] font-semibold text-primary uppercase tracking-widest leading-none">#</span>
+          <span class="text-[16px] font-extrabold text-primary leading-none">4</span>
+        </div>
+
+        <!-- info -->
+        <div class="flex flex-col flex-1 min-w-0">
+          <span class="text-on-surface text-[14px] font-semibold truncate">David Nguyen</span>
+          <span class="text-secondary-text text-[12px] font-medium truncate mt-0.5">Follow-up Consultation</span>
+        </div>
+
+        <!-- duration chip -->
+        <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-chip border border-outline/60 text-secondary-text text-[11px] font-semibold">
+          <span class="material-symbols-outlined" style="font-size:12px;font-variation-settings:'FILL' 0;">schedule</span>
+          20 min
+        </span>
+      </div>
+
+    </div><!-- /waiting-list -->
+
+    <!-- ── Empty state (hidden initially; shown via JS when list empties) ── -->
+    <!--
+      Shown when no more customers are in the waiting queue.
+      The serving card is also hidden at that point and replaced by a
+      "Queue is empty" full-width message.
+    -->
+    <div id="empty-state" class="hidden flex-col items-center justify-center py-16 gap-3 text-center">
+      <span class="material-symbols-outlined text-outline" style="font-size:64px;font-variation-settings:'FILL' 0;">people</span>
+      <p class="text-on-surface text-[16px] font-semibold">Queue is empty</p>
+      <p class="text-secondary-text text-[13px] font-medium max-w-[220px] leading-snug">
+        No more customers waiting today. Great work!
+      </p>
+    </div>
+
+    <!-- safe-area bottom padding -->
+    <div class="h-4"></div>
+
+  </main><!-- /main -->
+
+  <!-- Home bar indicator (iOS style) -->
+  <div class="flex justify-center pb-3 pt-1 bg-bg-page shrink-0">
+    <div class="h-1.5 w-32 rounded-full bg-outline/50"></div>
+  </div>
+
+</div><!-- /phone shell -->
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SNACKBAR — shared feedback for all actions
+     ═══════════════════════════════════════════════════════ -->
+<div id="snackbar"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     INTERACTION SCRIPTS
+     Simulates the loading / success states described in the
+     design brief.  In the real Flutter app these map directly
+     to Cubit events: advanceQueue(), skipQueueEntry(),
+     markNoShow(), rejoinSkipped().
+     ═══════════════════════════════════════════════════════ -->
+<script>
+  /* ── Snackbar helper ────────────────────────────────── */
+  function showSnackbar(message) {
+    const sb = document.getElementById('snackbar');
+    sb.textContent = message;
+    sb.classList.add('show');
+    setTimeout(() => sb.classList.remove('show'), 2800);
+  }
+
+  /* ── Loading helper ─────────────────────────────────── */
+  function setLoading(btn, loading) {
+    const allBtns = document.querySelectorAll('#btn-next, #btn-skip, #btn-noshow');
+    if (loading) {
+      allBtns.forEach(b => b.classList.add('btn-loading'));
+      btn.innerHTML = `
+        <svg class="animate-spin" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
+        </svg>
+      `;
+    } else {
+      allBtns.forEach(b => b.classList.remove('btn-loading'));
+    }
+  }
+
+  /* ── Action: Next ───────────────────────────────────── */
+  /* ── Action: Skip ───────────────────────────────────── */
+  /* ── Action: No-Show ───────────────────────────────── */
+  /*
+    handleAction(type, btn, successMessage)
+    ---
+    Simulates the async call to the use case:
+      - advance_queue_use_case.dart  (type === 'next')
+      - skip_queue_entry_use_case.dart (type === 'skip')
+      - mark_no_show_use_case.dart   (type === 'noshow')
+
+    On success the serving card updates to the next customer in the
+    waiting list (first item is promoted to "Currently Serving").
+  */
+  function handleAction(type, btn, successMessage) {
+    setLoading(btn, true);
+
+    setTimeout(() => {
+      setLoading(btn, false);
+
+      const waitingList = document.getElementById('waiting-list');
+      const waitingRows = waitingList.querySelectorAll(':scope > div');
+      const countBadge  = document.getElementById('waiting-count');
+
+      // restore button labels
+      document.getElementById('btn-next').innerHTML =
+        `<span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 0;">check</span> Next`;
+      document.getElementById('btn-skip').innerHTML =
+        `<span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 0;">redo</span> Skip`;
+      document.getElementById('btn-noshow').innerHTML =
+        `<span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 0;">person_off</span> No-Show`;
+
+      if (type === 'skip') {
+        // Move current to end of waiting list with skipped badge (simplified demo)
+        showSnackbar(successMessage);
+        return;
+      }
+
+      if (waitingRows.length > 0) {
+        // Promote first waiting row to Currently Serving
+        const firstRow = waitingRows[0];
+        const nameEl   = firstRow.querySelector('.font-semibold');
+        const svcEl    = firstRow.querySelector('.text-secondary-text');
+        const durEl    = firstRow.querySelector('.rounded-chip .material-symbols-outlined')?.parentElement;
+
+        if (nameEl) {
+          document.querySelector('#serving-card .text-\\[17px\\]').textContent = nameEl.textContent.trim();
+        }
+        if (svcEl) {
+          // Update service label (simplified)
+          const serviceSpan = document.querySelector('#serving-card .text-secondary-text.text-\\[13px\\]');
+          if (serviceSpan) serviceSpan.childNodes[0].textContent = svcEl.textContent.trim() + ' ';
+        }
+
+        // Remove first row from waiting list
+        firstRow.remove();
+
+        // Renumber remaining rows
+        const remaining = waitingList.querySelectorAll(':scope > div');
+        remaining.forEach((row, i) => {
+          const numEl = row.querySelector('.text-\\[16px\\]');
+          if (numEl) numEl.textContent = String(i + 2);
+        });
+
+        // Update count badge
+        countBadge.textContent = remaining.length;
+
+        if (remaining.length === 0) {
+          document.getElementById('empty-state').classList.remove('hidden');
+          document.getElementById('empty-state').classList.add('flex');
+        }
+      } else {
+        // No more waiting — show empty state
+        document.getElementById('empty-state').classList.remove('hidden');
+        document.getElementById('empty-state').classList.add('flex');
+        countBadge.textContent = '0';
+      }
+
+      showSnackbar(successMessage);
+    }, 850); // simulate network latency
+  }
+
+  /* ── Action: Rejoin ─────────────────────────────────── */
+  /*
+    handleRejoin(btn, customerName)
+    ---
+    Maps to: rejoin_skipped_use_case.dart
+    On success: customer is appended to the end of the waiting
+    list as a normal entry; the skipped badge is removed and the
+    row border returns to default.
+  */
+  function handleRejoin(btn, customerName) {
+    const row = btn.closest('div[class*="bg-surface"]');
+    btn.disabled = true;
+    btn.innerHTML = `
+      <svg class="animate-spin" style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
+      </svg>
+    `;
+
+    setTimeout(() => {
+      // Remove warning border + badge, restore normal appearance
+      row.classList.remove('border', 'border-warning/30');
+
+      // Remove skipped badge
+      const badge = row.querySelector('.bg-warning\\/15');
+      if (badge) badge.remove();
+
+      // Restore position badge colour
+      const posBadge = row.querySelector('.bg-warning\\/10');
+      if (posBadge) {
+        posBadge.classList.remove('bg-warning/10', 'border-warning/30');
+        posBadge.classList.add('bg-primary/10', 'border-primary/20');
+      }
+      const posNum = row.querySelector('.text-warning');
+      if (posNum) {
+        posNum.classList.remove('text-warning');
+        posNum.classList.add('text-primary');
+      }
+      const posLabel = row.querySelector('.text-warning.uppercase');
+      if (posLabel) {
+        posLabel.classList.remove('text-warning');
+        posLabel.classList.add('text-primary');
+      }
+
+      // Remove Rejoin button, add duration chip placeholder
+      btn.remove();
+
+      showSnackbar(`${customerName} rejoined the queue`);
+    }, 700);
+  }
+</script>
+
+</body>
+</html>

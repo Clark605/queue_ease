@@ -98,6 +98,21 @@ void main() {
       expect(model.status, QueueStatus.active);
     });
 
+    test('fromDoc falls back when generatedAt is null', () {
+      final mockDoc = MockDocumentSnapshot();
+      when(() => mockDoc.id).thenReturn('2026-02-21');
+      when(() => mockDoc.data()).thenReturn({
+        'orderedAppointmentIds': ['appt1'],
+        'currentServingIndex': 0,
+        'status': 'active',
+        'generatedAt': null,
+      });
+
+      final model = QueueModel.fromDoc(mockDoc, orgId: 'org1');
+
+      expect(model.generatedAt, DateTime(2026, 2, 21));
+    });
+
     test('toMap converts QueueModel to Firestore map', () {
       final model = QueueModel(
         id: 'org1_2026-02-21',

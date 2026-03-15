@@ -100,6 +100,25 @@ service cloud.firestore {
     function createdAtNotModified() {
       return !(request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt']));
     }
+
+    /**
+     * Validate that an appointment status transition is permitted.
+     * Allowed transitions:
+     *   booked   -> inQueue   (queue generation)
+     *   inQueue  -> serving   (admin advances queue)
+     *   serving  -> completed (admin marks next/done)
+     *   serving  -> noShow    (admin marks no-show)
+     *   serving  -> inQueue   (admin skips; reinserts at end)
+     *   noShow   -> inQueue   (admin rejoins no-show entry)
+     */
+    function isValidStatusTransition(from, to) {
+      return (from == 'booked'  && to == 'inQueue')
+          || (from == 'inQueue' && to == 'serving')
+          || (from == 'serving' && to == 'completed')
+          || (from == 'serving' && to == 'noShow')
+          || (from == 'serving' && to == 'inQueue')
+          || (from == 'noShow'  && to == 'inQueue');
+    }
     
     // =============================================================================
     // COLLECTION RULES
@@ -238,7 +257,8 @@ service cloud.firestore {
           && request.resource.data.customerId is string
           && request.resource.data.serviceId is string
           && request.resource.data.scheduledAt is timestamp
-          && request.resource.data.status in ['booked','inQueue','serving','completed','noShow']
+          // Customers may only create appointments with status 'booked'
+          && request.resource.data.status == 'booked'
           && request.resource.data.createdAt is timestamp
           // scheduledAt must be in the future
           && request.resource.data.scheduledAt > request.time
@@ -257,46 +277,49 @@ service cloud.firestore {
           && request.resource.data.customerId is string
           && request.resource.data.serviceId is string
           && request.resource.data.scheduledAt is timestamp
-          // Re-validate status enum on update
+          // Re-validate status enum and enforce permitted transitions
           && request.resource.data.status in ['booked','inQueue','serving','completed','noShow']
+          && isValidStatusTransition(resource.data.status, request.resource.data.status)
           && hasOnlyAllowedFields(['orgId','customerId','serviceId','customerName','customerPhone','queuePosition','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
 
         allow delete: if isAuthenticated() && ownsOrganization(orgId);
       }
       
       // -------------------------------------------------------------------------
-      // QUEUES SUBCOLLECTION (User Story 2 - Phase 4)
+      // QUEUES SUBCOLLECTION — daily queue document (Sprint 5)
+      // Document ID: yyyy-MM-dd  |  One document per org per day
       // -------------------------------------------------------------------------
-      match /queues/{queueId} {
-        // T052: Customer can get own queue entry OR organization owner can get any
-        // NOTE: Split get/list because resource.data is unavailable during list queries
-        allow get: if isAuthenticated()
-          && (request.auth.uid == resource.data.customerId
-              || ownsOrganization(orgId));
+      match /queues/{queueDate} {
+        // Any authenticated user may read a single queue document.
+        // The document contains only appointment IDs — no customer PII —
+        // so broad read access is safe and required for customer position lookups.
+        allow get: if isAuthenticated();
 
-        // T052-list: Only organization owner can list/query all queues
-        allow list: if isAuthenticated()
-          && ownsOrganization(orgId);
-        
-        // T053: Customer can create queue entry with matching customerId and validation
+        // Only org owner may list all queue documents (admin queue history).
+        allow list: if isAuthenticated() && ownsOrganization(orgId);
+
+        // Only org owner may generate (create) today's queue document.
         allow create: if isAuthenticated()
-          && request.resource.data.customerId == request.auth.uid
+          && ownsOrganization(orgId)
+          && hasRequiredFields(['orgId','date','orderedAppointmentIds','currentServingIndex','status','generatedAt'])
           && request.resource.data.orgId == orgId
-          && request.resource.data.keys().hasAll(['orgId','customerId','serviceId','queueNumber','status','joinedAt','createdAt'])
-          && request.resource.data.orgId == orgId
-          && request.resource.data.customerId is string
-          && request.resource.data.serviceId is string
-          && request.resource.data.queueNumber is int
+          && request.resource.data.date == queueDate
+          && request.resource.data.orderedAppointmentIds is list
+          && request.resource.data.currentServingIndex is int
+          && request.resource.data.currentServingIndex >= 0
           && request.resource.data.status in ['active','paused','closed']
-          && request.resource.data.joinedAt is timestamp
-          && request.resource.data.createdAt is timestamp
-          && hasOnlyAllowedFields(['orgId','customerId','serviceId','queueNumber','status','estimatedWaitMinutes','joinedAt','createdAt','updatedAt']);
+          && request.resource.data.generatedAt is timestamp
+          && hasOnlyAllowedFields(['orgId','date','orderedAppointmentIds','currentServingIndex','status','generatedAt','updatedAt']);
 
-        // T054: Only organization owner can update/delete queue entries; createdAt immutable
+        // Only org owner may apply queue actions (advance, skip, no-show, rejoin).
         allow update: if isAuthenticated()
           && ownsOrganization(orgId)
-          && createdAtNotModified()
-          && hasOnlyAllowedFields(['orgId','customerId','serviceId','queueNumber','status','estimatedWaitMinutes','joinedAt','createdAt','updatedAt']);
+          && request.resource.data.orgId == orgId
+          && request.resource.data.orderedAppointmentIds is list
+          && request.resource.data.currentServingIndex is int
+          && request.resource.data.currentServingIndex >= 0
+          && request.resource.data.status in ['active','paused','closed']
+          && hasOnlyAllowedFields(['orgId','date','orderedAppointmentIds','currentServingIndex','status','generatedAt','updatedAt']);
 
         allow delete: if isAuthenticated() && ownsOrganization(orgId);
       }
@@ -342,6 +365,18 @@ service cloud.firestore {
     // Default deny all access (fail-safe)
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // COLLECTION GROUP — cross-org appointment reads (Phase 8, T046)
+    //
+    // Required for collectionGroup('appointments') used by
+    // watchTodayActiveAppointments to power the customer dashboard.
+    // Customers may list only documents where customerId matches their UID.
+    // -------------------------------------------------------------------------
+    match /{path=**}/appointments/{appointmentId} {
+      allow list: if isAuthenticated()
+        && resource.data.customerId == request.auth.uid;
     }
   }
 }

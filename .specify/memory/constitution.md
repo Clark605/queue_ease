@@ -1,48 +1,48 @@
 <!--
-SYNC IMPACT REPORT - Constitution v1.0.0
-Generated: 2026-02-25
+SYNC IMPACT REPORT - Constitution v1.1.0
+Generated: 2026-03-14
 
-VERSION CHANGE: Initial → 1.0.0
-  Rationale: First complete constitution with all 6 core principles defined
+VERSION CHANGE: 1.0.0 → 1.1.0
+  Rationale: MINOR bump - Removed TDD requirement (material guidance change, non-breaking relaxation); Updated project structure documentation to reflect current feature organization
 
-PRINCIPLES ESTABLISHED:
-  ✅ I. Code Quality First (Clean Architecture, SOLID, Domain purity)
+PRINCIPLES MODIFIED:
+  ✅ I. Code Quality First - Added explicit feature structure documentation (admin/, customer/, authentication/, onboarding/, shared_domain/)
+  ✅ III. Testing Standards - Removed TDD mandate; tests can be written alongside or after implementation while maintaining coverage requirements
+
+PRINCIPLES UNCHANGED:
   ✅ II. Flexibility & Extensibility (Feature modules, DI, env configs)
-  ✅ III. Testing Standards (NON-NEGOTIABLE - TDD with 80%/70% coverage targets)
   ✅ IV. User Experience Consistency (Material 3, accessibility, offline-first)
   ✅ V. Fast Delivery (MVP mindset, P1/P2/P3 prioritization, 3-day cycles)
   ✅ VI. Performance Requirements (Real-time operations, 60fps, <3s startup)
 
-NEW SECTIONS:
-  ✅ Technical Standards (Flutter 3.9+, Firebase stack, Result<T> pattern)
-  ✅ Domain-Specific Rules (5 entities, time margin policy, no-show automation)
-  ✅ Security & Compliance (Firestore rules, RBAC, PII protection)
-  ✅ Development Workflow (Code review gates, branching strategy)
+PROJECT STRUCTURE UPDATES:
+  ✅ Documented feature-first organization: lib/features/{admin,customer,authentication,onboarding,shared_domain}
+  ✅ Admin features: organization_management, service_management, working_hours_management, queue_management, daily_summary, dashboard, share_access, tutorial
+  ✅ Customer features: booking, entry
+  ✅ Shared domain entities moved to dedicated shared_domain/ feature for cross-role access
+  ✅ Core utilities remain in lib/core/ (config, theme, widgets, utils, error, router, di, services)
 
-PROJECT CONTEXT INTEGRATED:
-  ✅ 5 core domain entities: Organization, Service, WorkingHours, Appointment, Queue
-  ✅ Result<T> monad with sealed AppException hierarchy - extensible via core file
-  ✅ Exception hierarchy: 5 current types (Auth, Database, Validation, Storage, Unknown), more addable
-  ✅ Cubit pattern for state management (bloc_test required)
-  ✅ MVP scope: 5-6 weeks remaining, no payments/multi-branch
-  ✅ Critical business logic: Time margin enforcement, auto no-show detection
-  ✅ Test patterns: Equatable equality, round-trip serialization, Given-When-Then
+TESTING APPROACH CHANGE:
+  ❌ REMOVED: "Test-first development is MANDATORY" (line 90)
+  ❌ REMOVED: "Tests MUST be written and reviewed BEFORE implementation begins (TDD Red-Green-Refactor)" (line 108)
+  ✅ RETAINED: All coverage targets (80% unit, 70% widget), test patterns, Given-When-Then structure
+  ✅ RETAINED: Mandatory testing for domain/data/presentation code before PR merge
+  ✅ NEW: Pragmatic testing approach - write tests alongside or after implementation, but always before merge
+
+RATIONALE FOR TDD REMOVAL:
+  - TDD can slow initial development velocity during MVP push
+  - Team can achieve same quality with tests written during/after implementation
+  - Coverage gates and PR reviews still enforce test quality
+  - Allows flexibility for exploratory coding and rapid prototyping
 
 TEMPLATE CONSISTENCY STATUS:
-  ✅ plan-template.md - Constitution Check section enforces principle compliance
-  ✅ spec-template.md - User story prioritization (P1/P2/P3) supports Fast Delivery
-  ✅ tasks-template.md - Phase structure enables incremental MVP delivery
-  ✅ Command files - No agent-specific references found
-
-DOCUMENTATION ALIGNMENT:
-  ✅ ARCHITECTURE.md - Technical implementation details complement governance principles
-  ✅ PRD.md - MVP scope constraints reflected in Fast Delivery principle
-  ✅ ENTITIES.md - Domain purity requirements aligned with Code Quality First
-  ✅ PROJECT_TIMELINE.md - 5-6 week delivery target drives Fast Delivery metrics
-  ✅ analysis_options.yaml - Lint rules enforcement matches Code Quality First
+  ✅ plan-template.md - Constitution Check section still enforces test coverage compliance
+  ✅ spec-template.md - User story prioritization unchanged
+  ✅ tasks-template.md - Phase structure unchanged
+  ✅ Command files - No changes required
 
 FOLLOW-UP ACTIONS:
-  None - All placeholders resolved with project-specific context
+  None - All updates applied to constitution only
 -->
 
 # Queue Ease Constitution
@@ -76,18 +76,24 @@ All code MUST adhere to Clean Architecture principles with strict layer separati
 ### II. Flexibility & Extensibility
 
 Every feature MUST be self-contained and independently deployable:
-- Feature modules organized with own data/domain/presentation layers
-- Shared functionality lives in `core/` or `shared/` with clear boundaries
+- **Feature Organization**: Feature-first structure under `lib/features/`
+  - **Admin features**: `organization_management/`, `service_management/`, `working_hours_management/`, `queue_management/`, `daily_summary/`, `dashboard/`, `share_access/`, `tutorial/`, `app_section/`
+  - **Customer features**: `booking/`, `entry/`
+  - **Authentication**: `authentication/` (shared across roles)
+  - **Onboarding**: `onboarding/` (initial user experience)
+  - **Shared Domain**: `shared_domain/` (entities and models used across multiple features/roles)
+- Each feature follows Clean Architecture with own data/domain/presentation layers (where applicable)
+- Shared functionality lives in `lib/core/` (config, theme, widgets, utils, error, router, di, services)
 - New features MUST NOT require modifications to existing feature code
 - Dependencies managed via abstract interfaces registered with GetIt/Injectable
 - Configuration externalized via environment-specific files (dev/prod)
 - Feature flags SHOULD be used for gradual rollouts and A/B testing
 
-**Rationale**: Modular design enables parallel development, easier testing, and graceful feature deprecation. Role-based routing (admin/customer) depends on clean feature isolation.
+**Rationale**: Feature-first organization with role-based grouping (admin/customer) enables parallel team development, clear ownership, and easier navigation. Modular design enables easier testing and graceful feature deprecation. The shared_domain feature provides clean access to domain entities across roles without coupling.
 
 ### III. Testing Standards (NON-NEGOTIABLE)
 
-Test-first development is MANDATORY for all production code:
+Comprehensive automated testing is MANDATORY for all production code:
 - **Unit Tests**: Required for ALL domain entities, repository interfaces, business logic (target: 80%+ coverage)
   - Entity tests MUST verify: `Equatable` value equality, differing fields not equal, `props` includes all fields
   - Model tests MUST verify: `fromDoc()` parsing, `toMap()` serialization, `toEntity()` conversion, round-trip preservation
@@ -105,11 +111,14 @@ Test-first development is MANDATORY for all production code:
 - **Result<T> Pattern**: All async operations returning `Result<T>` MUST test both `Success` and `Failure` branches
   - Use `Result.guard()` to wrap async calls and convert exceptions
   - Test `.when()`, `.map()`, `.getOrNull()`, `.getOrElse()` transformations
-- Tests MUST be written and reviewed BEFORE implementation begins (TDD Red-Green-Refactor)
+- **Testing Approach**: Write tests alongside or after implementation, but ALWAYS before PR merge
+  - Tests can be written during development (parallel to implementation) or immediately after
+  - All code MUST have tests completed before pull request approval
+  - Exploratory coding and rapid prototyping allowed without tests, but production code requires full test coverage
 - All tests MUST pass before PR approval (enforced by CI)
 - Use `mocktail` for mocking; Firebase mocks in `test/firebase_mocks.dart`
 
-**Rationale**: Flutter's hot reload encourages manual testing over automation. TDD enforces design quality and prevents regression. Real-time features (queue updates, appointment booking) require bulletproof reliability. The time margin policy for no-shows is business-critical and must be rigorously tested.
+**Rationale**: Comprehensive automated testing ensures code quality and prevents regressions without enforcing a specific development workflow. Real-time features (queue updates, appointment booking) require bulletproof reliability. The time margin policy for no-shows is business-critical and must be rigorously tested. Allowing pragmatic testing approaches maintains quality while supporting fast MVP delivery.
 
 ### IV. User Experience Consistency
 
@@ -473,4 +482,4 @@ This constitution supersedes all other development practices and standards. All 
 
 **Living Document**: This constitution evolves with Queue Ease. Pragmatism over dogma—principles serve the project, not vice versa.
 
-**Version**: 1.0.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-02-25
+**Version**: 1.1.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-14

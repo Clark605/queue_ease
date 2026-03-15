@@ -46,6 +46,14 @@ class QueueModel {
             ?.map((e) => e as String)
             .toList() ??
         [];
+    final generatedAtValue = data['generatedAt'];
+    final fallbackGeneratedAt =
+        DateTime.tryParse(doc.id) ?? DateTime.fromMillisecondsSinceEpoch(0);
+    final generatedAt = switch (generatedAtValue) {
+      Timestamp() => generatedAtValue.toDate(),
+      DateTime() => generatedAtValue,
+      _ => fallbackGeneratedAt,
+    };
 
     return QueueModel(
       id: '${orgId}_${doc.id}',
@@ -54,7 +62,7 @@ class QueueModel {
       orderedAppointmentIds: appointmentIds,
       currentServingIndex: data['currentServingIndex'] as int? ?? 0,
       status: status,
-      generatedAt: (data['generatedAt'] as Timestamp).toDate(),
+      generatedAt: generatedAt,
     );
   }
 
