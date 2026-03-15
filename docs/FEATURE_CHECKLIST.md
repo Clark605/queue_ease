@@ -1,6 +1,6 @@
 # Queue Ease - Feature Implementation Checklist
 
-**Last Updated:** March 14, 2026
+**Last Updated:** March 15, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 
 ---
@@ -168,16 +168,16 @@
 
 ### 4.5 Queue Management (Live Queue)
 - ✅ Queue entity/model definition (complete with Firestore serialization)
-- ⏳ Queue repository implementation
-- ⏳ Today's queue view page
-- ⏳ Current serving customer display
-- ⏳ Queue list with status indicators
-- ⏳ "Mark Next" action
-- ⏳ "Mark No-Show" action
-- ⏳ "Complete" action
-- ⏳ Queue reordering functionality
-- ⏳ Real-time queue updates
-- ⏳ Queue state management (Cubit)
+- ✅ Queue repository implementation
+- ✅ Today's queue view page
+- ✅ Current serving customer display
+- ✅ Queue list with status indicators
+- ✅ "Mark Next" action
+- ✅ "Mark No-Show" action
+- ✅ "Skip" and "Rejoin" queue actions
+- ✅ Real-time queue updates
+- ✅ Queue state management (QueueManagementCubit)
+- ✅ Queue generation trigger and status feedback in queue management flow
 
 ### 4.6 Share Access (QR & Link) - ✅ COMPLETE (Sprint 3)
 - ✅ QR code generation for organization (using qr_flutter 4.1.0)
@@ -209,11 +209,11 @@
 
 ### 5.1 Customer Entry Point
 - ✅ Customer home page structure (CustomerHomePage)
-- ✅ Basic UI with empty state
+- ✅ Dashboard UI with active queue card, upcoming appointment card, and explicit empty state
 - ✅ Sign out functionality
-- ⏳ QR code scanning functionality
-- ⏳ Link-based navigation implementation
-- ⏳ Deep linking setup
+- ✅ QR code scanning functionality (camera + gallery)
+- ✅ Link-based navigation implementation (manual URL entry + parse)
+- ✅ Access portal route `/c/access` integrated from dashboard CTA
 
 ### 5.2 Organization Landing Screen - ✅ COMPLETE (Sprint 4)
 - ✅ Organization landing page (OrganizationLandingPage)
@@ -267,37 +267,37 @@
 - ✅ Scheduled date/time display
 - ✅ Optional address display
 - ✅ "Back to Home" clears booking stack and navigates to customer home
-- ⏳ "Track Status" CTA (planned for Sprint 5 — Queue Status)
+- ✅ "Track Status" CTA (navigates to customer queue status)
 
 ### 5.7 Queue Status Tracking
-- ⏳ Queue status page
-- ⏳ Current queue number display
-- ⏳ Position in queue
-- ⏳ Estimated waiting time
-- ⏳ Current serving number
-- ⏳ Status badges (Waiting, Almost Turn, Serving, No-show)
-- ⏳ Auto-refresh/real-time updates
-- ⏳ Queue status repository
+- ✅ Queue status page
+- ✅ Current queue number display
+- ✅ Position in queue
+- ✅ Estimated waiting time
+- ✅ Current serving indicator
+- ✅ Status badges and privacy-safe status messaging
+- ✅ Auto-refresh/real-time updates
+- ✅ Queue status repository stream integration
 
 ---
 
 ## 6. Core Business Logic
 
 ### 6.1 Appointment System
-- ⏳ Appointment booking validation
-- ⏳ Double booking prevention
-- ⏳ Working hours enforcement
-- ⏳ Appointment conflict detection
-- ⏳ Appointment status management (booked, in_queue, serving, completed, no_show)
+- ✅ Appointment booking validation
+- ✅ Double booking prevention
+- ✅ Working hours enforcement
+- ✅ Appointment conflict detection
+- ✅ Appointment status management (booked, in_queue, serving, completed, no_show)
 
 ### 6.2 Queue System
-- ⏳ Daily queue auto-generation from appointments (client-side on admin app launch)
-- ⏳ Queue ordering algorithm
-- ⏳ Queue position calculation
-- ⏳ Estimated wait time calculation
+- ✅ Daily queue auto-generation from appointments (client-side on admin queue flow)
+- ✅ Queue ordering algorithm
+- ✅ Queue position calculation
+- ✅ Estimated wait time calculation
 - ⏳ Time margin enforcement (client-side with Firestore rules validation)
 - ⏳ Automatic no-show detection (client-side triggered by admin viewing queue)
-- ⏳ Queue advancement logic
+- ✅ Queue advancement logic
 
 ### 6.3 Time Management
 - ⏳ Service duration tracking
@@ -310,11 +310,11 @@
 ## 7. Real-Time Features
 
 ### 7.1 Real-Time Updates
-- ⏳ Firestore real-time listeners setup
-- ⏳ Queue updates propagation
-- ⏳ Customer view auto-refresh
-- ⏳ Admin view auto-refresh
-- ⏳ Connection state handling
+- ✅ Firestore real-time listeners setup
+- ✅ Queue updates propagation
+- ✅ Customer view auto-refresh
+- ✅ Admin view auto-refresh
+- ✅ Connection state handling (error mapping + retry UX in cubits)
 - ⏳ Offline support
 
 ---
@@ -452,7 +452,7 @@
 - ⏳ CI/CD pipeline setup
 
 ### 12.2 Monitoring & Analytics
-- ⏳ Firebase Crashlytics implementation
+- ✅ Firebase Crashlytics implementation
 - ⏳ Firebase Analytics events
 - ⏳ Performance monitoring
 - ⏳ User behavior tracking
@@ -500,16 +500,16 @@
 ## MVP Completion Criteria
 
 ### Definition of Done
-- [ ] Admin signup creates organization automatically
-- [ ] Admin can view and edit their organization profile
-- [ ] Admin can manage services and working hours
-- [ ] Admin can generate and share booking QR code/link
-- [ ] Customers can access booking via QR/link
-- [ ] Customers can book appointments with conflict prevention
-- [ ] Daily queue auto-generates from appointments (client-side when admin opens app)
-- [ ] Admin can manage queue in real-time (next, skip, no-show)
-- [ ] Customers can see their queue position and wait time
-- [ ] Real-time updates work across all users
+- [x] Admin signup creates organization automatically
+- [x] Admin can view and edit their organization profile
+- [x] Admin can manage services and working hours
+- [x] Admin can generate and share booking QR code/link
+- [x] Customers can access booking via QR/link
+- [x] Customers can book appointments with conflict prevention
+- [x] Daily queue auto-generates from appointments (client-side when admin opens app)
+- [x] Admin can manage queue in real-time (next, skip, no-show, rejoin)
+- [x] Customers can see their queue position and wait time
+- [x] Real-time updates work across all users
 - [ ] Time margin policy enforced (client-side with auto no-show detection)
 - [ ] FCM push notifications sent for turn approaching/missed (works even when app terminated)
 - [ ] Basic daily summary available
@@ -518,9 +518,9 @@
 - [ ] App deployed to Firebase Hosting / App Stores (internal testing)
 
 ### Current Progress Summary
-**Completed:** ~55-60% (Core infrastructure, authentication, onboarding, admin features, ALL domain entities & models, customer booking flow)
-**In Progress:** Sprint 4 Polish (T037–T040 — build_runner, Talker audit, auth redirect verification, smoke test)
-**Pending:** ~40%
+**Completed:** ~70-75% (Core infrastructure, booking flow, queue system, customer dashboard, access portal)
+**In Progress:** Sprint 6 planning and business-logic automation hardening
+**Pending:** ~25-30%
 
 **Key Achievements:**
 - ✅ Complete authentication system (email/password, Google Sign-In, password reset)
@@ -535,6 +535,9 @@
 - ✅ Organization setup and service management (Sprint 2)
 - ✅ Working hours configuration and QR/share access (Sprint 3)
 - ✅ **Customer booking flow — end-to-end (Sprint 4)**: org landing → service selection → slot picker → booking form → confirmation
+- ✅ **Queue system — end-to-end (Sprint 5)**: generation → admin queue actions → customer live status → wait estimates
+- ✅ **Customer dashboard (Sprint 5/US5)**: active queue card, upcoming appointment card, empty state CTA
+- ✅ **Customer access portal (Sprint 5/US6)**: camera QR, gallery QR, manual URL parsing to org landing
 
 **Critical Path Next Steps:**
 1. ~~Define all Firestore entity models~~ ✅ COMPLETE
@@ -543,8 +546,9 @@
 4. ~~Build Service Management CRUD (admin UI)~~ ✅ COMPLETE
 5. ~~Build Working Hours configuration (admin UI)~~ ✅ COMPLETE
 6. ~~Implement booking flow with conflict prevention~~ ✅ COMPLETE
-7. Build queue generation and management system (Sprint 5 — next)
-8. Build customer queue status view (Sprint 5)
+7. ~~Build queue generation and management system (Sprint 5 — next)~~ ✅ COMPLETE
+8. ~~Build customer queue status view (Sprint 5)~~ ✅ COMPLETE
+9. Implement time margin enforcement and automatic no-show workflows (Sprint 6)
 
 ---
 
@@ -579,12 +583,12 @@
 9. ✅ Appointment booking flow (slot picker + booking form)
 10. ✅ Conflict prevention logic
 
-### Phase 5: Queue System (Weeks 4-5)
-11. Client-side queue generation from appointments (triggered by admin app)
-12. Admin queue management interface
-13. Customer queue status view
-14. Real-time updates implementation
-15. Client-side no-show detection logic
+### Phase 5: Queue System (Weeks 4-5) - ✅ COMPLETE (Sprint 5)
+11. ✅ Client-side queue generation from appointments (triggered by admin flow)
+12. ✅ Admin queue management interface
+13. ✅ Customer queue status view
+14. ✅ Real-time updates implementation
+15. ⏳ Client-side no-show detection logic
 
 ### Phase 6: Business Logic (Week 5-6)
 15. Time margin enforcement (client-side)
@@ -606,11 +610,13 @@
 
 ## Notes
 
-- This checklist was last updated on **March 14, 2026** to reflect:
-  - **Sprint 4 (Customer Booking Flow) COMPLETE** — 38/42 tasks done (T001–T036); Phase 8 Polish (T037–T040) pending (build_runner, Talker audit, auth-redirect verification, smoke test)
-  - Organization landing page, service selection & details, slot picker, booking form, and booking confirmation all implemented
-  - AppointmentRepository, FirestoreAppointmentDatasource, and CalculateAvailableSlotsUseCase implemented
-  - GoRouter routes: `/c/org/:slug`, `/c/org/:slug/services`, `/c/org/:slug/service-details`, `/c/org/:slug/slots`, `/c/org/:slug/book`, `/c/org/:slug/confirmation`
+- This checklist was last updated on **March 15, 2026** to reflect:
+  - **Sprint 4 Polish completed** (build_runner regeneration, Talker audit, auth-redirect verification, smoke test)
+  - **Sprint 5 complete (T001–T064)** including queue system, customer dashboard (US5), and access portal (US6)
+  - Admin queue actions (`next`, `skip`, `no-show`, `rejoin`) and idempotent queue generation are live
+  - Customer live queue status and wait-time estimation are integrated
+  - Customer dashboard now serves as primary entry page with active queue/upcoming/empty states
+  - Access portal route `/c/access` supports camera QR, gallery QR, and manual URL parsing
 - This checklist was updated on **February 26, 2026** to reflect:
   - **Removed Cloud Functions** due to Firebase Spark plan limitations
   - **Client-side architecture** for queue generation, no-show detection, and notifications
@@ -621,7 +627,7 @@
   - Comprehensive architecture documentation
 - All auth UI components are implemented with proper error handling
 - Clean architecture patterns established with DI, state management, and error handling
-- Estimated remaining MVP timeline: 5-6 weeks from current state
+- Estimated remaining MVP timeline: ~6 weeks from current state
 - Domain layer is 100% complete - ready for repository implementation
 - Items marked with ✅ have confirmed implementation in the codebase
 - Items marked with 🚧 are currently being worked on
