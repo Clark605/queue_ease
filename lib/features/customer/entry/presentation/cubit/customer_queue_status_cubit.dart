@@ -44,7 +44,7 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
     _sub?.cancel();
     _logger.info(
       'CustomerQueueStatusCubit',
-      'watchStatus orgId=$orgId customerId=$customerId',
+      'watchStatus orgId=${orgId.substring(0, 4)}*** customerId=${customerId.substring(0, 4)}***',
     );
     _sub = _watchStatus(orgId: orgId, customerId: customerId, date: date)
         .listen(
