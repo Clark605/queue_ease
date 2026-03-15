@@ -7,7 +7,9 @@ import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
 import '../../../../shared_domain/entities/appointment_entity.dart';
 import '../../../../shared_domain/entities/appointment_status.dart';
+import '../../domain/models/queue_automation_state.dart';
 import '../../domain/repositories/admin_appointment_repository.dart';
+import '../../domain/services/queue_deadline_evaluator.dart';
 import '../../domain/use_cases/advance_queue_use_case.dart';
 import '../../domain/use_cases/generate_daily_queue_use_case.dart';
 import '../../domain/use_cases/mark_no_show_use_case.dart';
@@ -47,7 +49,9 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
 
   StreamSubscription<Result<AdminQueueSnapshot>>? _queueSub;
   StreamSubscription<List<AppointmentEntity>>? _appointmentsSub;
+  StreamSubscription<int>? _countdownTickerSub;
   bool _isAutoGenerateInFlight = false;
+  final _queueDeadlineEvaluator = const QueueDeadlineEvaluator();
 
   static const _loadQueueFallbackMessage =
       'Unable to load queue data right now. Please try again.';
@@ -77,9 +81,16 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
       (result) {
         switch (result) {
           case Success(:final data):
-            emit(QueueManagementLoaded(snapshot: data));
+            emit(
+              QueueManagementLoaded(
+                snapshot: data,
+                evaluatedAt: DateTime.now(),
+              ),
+            );
+            _syncCountdownTicker(data);
           case Failure(:final exception):
             _logger.error('QueueManagementCubit: watch error', exception);
+            _stopCountdownTicker();
             emit(
               QueueManagementError(
                 message: _resolveLoadMessage(exception.message),
@@ -89,6 +100,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
       },
       onError: (Object e, StackTrace st) {
         _logger.error('QueueManagementCubit: stream error', e, st);
+        _stopCountdownTicker();
         emit(const QueueManagementError(message: _loadQueueFallbackMessage));
       },
     );
@@ -221,7 +233,12 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     final snapshot = _currentSnapshot;
     if (snapshot == null) return;
 
-    emit(QueueManagementActionInFlight(snapshot: snapshot));
+    emit(
+      QueueManagementActionInFlight(
+        snapshot: snapshot,
+        evaluatedAt: DateTime.now(),
+      ),
+    );
     _logger.info('QueueManagementCubit', 'Running action: $actionName');
 
     final result = await action();
@@ -229,7 +246,13 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
       case Success():
         // Restore Loaded so the UI is unblocked while the live stream
         // delivers the authoritative post-action snapshot.
-        emit(QueueManagementLoaded(snapshot: snapshot));
+        emit(
+          QueueManagementLoaded(
+            snapshot: snapshot,
+            evaluatedAt: DateTime.now(),
+          ),
+        );
+        _syncCountdownTicker(snapshot);
       case Failure(:final exception):
         _logger.error('QueueManagementCubit: $actionName failed', exception);
         emit(
@@ -244,6 +267,74 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   Future<void> close() {
     _queueSub?.cancel();
     _appointmentsSub?.cancel();
+    _countdownTickerSub?.cancel();
     return super.close();
+  }
+
+  void _syncCountdownTicker(AdminQueueSnapshot snapshot) {
+    final currentEntry = snapshot.current;
+    if (currentEntry == null) {
+      _stopCountdownTicker();
+      return;
+    }
+
+    final canTick =
+        currentEntry.status != AppointmentStatus.completed &&
+        currentEntry.status != AppointmentStatus.noShow;
+    if (!canTick) {
+      _stopCountdownTicker();
+      return;
+    }
+
+    _countdownTickerSub ??= Stream<int>.periodic(
+      const Duration(seconds: 1),
+      (tick) => tick,
+    ).listen((_) => _emitTickIfNeeded());
+  }
+
+  void _stopCountdownTicker() {
+    _countdownTickerSub?.cancel();
+    _countdownTickerSub = null;
+  }
+
+  void _emitTickIfNeeded() {
+    final loadedState = switch (state) {
+      QueueManagementLoaded() => state as QueueManagementLoaded,
+      _ => null,
+    };
+    if (loadedState == null) return;
+
+    final current = loadedState.snapshot.current;
+    if (current == null) {
+      _stopCountdownTicker();
+      return;
+    }
+
+    final evaluation = _queueDeadlineEvaluator.evaluate(
+      now: DateTime.now(),
+      scheduledAt: current.scheduledAt,
+      effectiveTimeMarginMinutes: current.effectiveTimeMarginMinutes,
+      status: current.status,
+    );
+
+    final nextCurrent = current.copyWith(
+      automationState: evaluation.state,
+      allowedActions: evaluation.allowedActions,
+      noShowDeadline: evaluation.noShowDeadline,
+      remainingSeconds: evaluation.remainingSeconds,
+    );
+    final nextSnapshot = loadedState.snapshot.copyWith(current: nextCurrent);
+
+    emit(
+      QueueManagementLoaded(
+        snapshot: nextSnapshot,
+        evaluatedAt: DateTime.now(),
+      ),
+    );
+
+    if (evaluation.state == QueueAutomationState.serving ||
+        evaluation.state == QueueAutomationState.overdue) {
+      _stopCountdownTicker();
+    }
   }
 }

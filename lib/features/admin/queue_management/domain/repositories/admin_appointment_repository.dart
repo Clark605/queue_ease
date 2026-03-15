@@ -23,6 +23,18 @@ class AdminQueueSnapshot {
 
   /// Entries waiting after the current serving index, in queue order.
   final List<QueueEntryView> waiting;
+
+  AdminQueueSnapshot copyWith({
+    DateTime? queueDate,
+    QueueEntryView? current,
+    List<QueueEntryView>? waiting,
+  }) {
+    return AdminQueueSnapshot(
+      queueDate: queueDate ?? this.queueDate,
+      current: current ?? this.current,
+      waiting: waiting ?? this.waiting,
+    );
+  }
 }
 
 /// Display-safe projection of a single queued appointment (no raw PII keys).
@@ -54,6 +66,38 @@ class QueueEntryView {
   final AppointmentStatus status;
   final int? remainingSeconds;
   final int? estimatedWaitMinutes;
+
+  QueueEntryView copyWith({
+    String? appointmentId,
+    int? position,
+    String? customerName,
+    DateTime? scheduledAt,
+    int? serviceDurationMinutes,
+    int? effectiveTimeMarginMinutes,
+    DateTime? noShowDeadline,
+    QueueAutomationState? automationState,
+    QueueAllowedActions? allowedActions,
+    AppointmentStatus? status,
+    int? remainingSeconds,
+    int? estimatedWaitMinutes,
+  }) {
+    return QueueEntryView(
+      appointmentId: appointmentId ?? this.appointmentId,
+      position: position ?? this.position,
+      customerName: customerName ?? this.customerName,
+      scheduledAt: scheduledAt ?? this.scheduledAt,
+      serviceDurationMinutes:
+          serviceDurationMinutes ?? this.serviceDurationMinutes,
+      effectiveTimeMarginMinutes:
+          effectiveTimeMarginMinutes ?? this.effectiveTimeMarginMinutes,
+      noShowDeadline: noShowDeadline ?? this.noShowDeadline,
+      automationState: automationState ?? this.automationState,
+      allowedActions: allowedActions ?? this.allowedActions,
+      status: status ?? this.status,
+      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+      estimatedWaitMinutes: estimatedWaitMinutes ?? this.estimatedWaitMinutes,
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------

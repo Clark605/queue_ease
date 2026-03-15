@@ -46,15 +46,17 @@
 - [ ] T013 [P] [US1] Add widget tests for current card rendering (`Not due yet`, countdown, action disabled states) in test/admin/queue_management/presentation/widgets/current_queue_card_test.dart
 - [ ] T014 [P] [US1] Add repository projection tests for automation fields in queue entries in test/admin/queue_management/data/repositories/admin_queue_repository_impl_test.dart
 
+> Note: T012, T013, and T014 were intentionally skipped per user request.
+
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Add automation fields to queue entry view model in lib/features/admin/queue_management/domain/repositories/admin_appointment_repository.dart
-- [ ] T016 [US1] Build automation state derivation and fallback margin mapping in lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart
-- [ ] T017 [US1] Add countdown tick orchestration and derived-state emission in lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart
-- [ ] T018 [US1] Update current queue card to show `Not due yet` and booking-time countdown in lib/features/admin/queue_management/presentation/widgets/current_queue_card.dart
-- [ ] T019 [US1] Update queue content action wiring to respect `allowedActions` in lib/features/admin/queue_management/presentation/widgets/queue_content.dart
-- [ ] T020 [US1] Update current entry header to display scheduled time and deadline context in lib/features/admin/queue_management/presentation/widgets/current_entry_header.dart
-- [ ] T021 [US1] Add/adjust queue state fields for automation display and action gating in lib/features/admin/queue_management/presentation/cubit/queue_management_state.dart
+- [x] T015 [US1] Add automation fields to queue entry view model in lib/features/admin/queue_management/domain/repositories/admin_appointment_repository.dart
+- [x] T016 [US1] Build automation state derivation and fallback margin mapping in lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart
+- [x] T017 [US1] Add countdown tick orchestration and derived-state emission in lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart
+- [x] T018 [US1] Update current queue card to show `Not due yet` and booking-time countdown in lib/features/admin/queue_management/presentation/widgets/current_queue_card.dart
+- [x] T019 [US1] Update queue content action wiring to respect `allowedActions` in lib/features/admin/queue_management/presentation/widgets/queue_content.dart
+- [x] T020 [US1] Update current entry header to display scheduled time and deadline context in lib/features/admin/queue_management/presentation/widgets/current_entry_header.dart
+- [x] T021 [US1] Add/adjust queue state fields for automation display and action gating in lib/features/admin/queue_management/presentation/cubit/queue_management_state.dart
 
 **Checkpoint**: US1 is independently functional and testable (MVP slice).
 

@@ -15,9 +15,9 @@ class CurrentQueueCard extends StatelessWidget {
   const CurrentQueueCard({
     super.key,
     required this.entry,
-    required this.onNext,
-    required this.onSkip,
-    required this.onNoShow,
+    this.onNext,
+    this.onSkip,
+    this.onNoShow,
     required this.isActionInFlight,
   });
 
@@ -25,13 +25,13 @@ class CurrentQueueCard extends StatelessWidget {
   final QueueEntryView entry;
 
   /// Called when the admin taps "Next" to advance the queue.
-  final VoidCallback onNext;
+  final VoidCallback? onNext;
 
   /// Called when the admin taps "Skip" to move the customer to the end.
-  final VoidCallback onSkip;
+  final VoidCallback? onSkip;
 
   /// Called when the admin taps "No-Show" to mark the customer absent.
-  final VoidCallback onNoShow;
+  final VoidCallback? onNoShow;
 
   /// When true, all action buttons are disabled and show a loading indicator.
   final bool isActionInFlight;
@@ -91,7 +91,9 @@ class CurrentQueueCard extends StatelessWidget {
             label: 'Next',
             icon: Icons.check_circle_outline,
             semanticsLabel: 'Mark as done and serve next customer',
-            onPressed: isActionInFlight ? null : onNext,
+            onPressed: isActionInFlight || !entry.allowedActions.canComplete
+                ? null
+                : onNext,
             isLoading: isActionInFlight,
             variant: QueueActionButtonVariant.filled,
           ),
@@ -102,7 +104,9 @@ class CurrentQueueCard extends StatelessWidget {
             label: 'Skip',
             icon: Icons.skip_next,
             semanticsLabel: 'Skip current customer to end of queue',
-            onPressed: isActionInFlight ? null : onSkip,
+            onPressed: isActionInFlight || !entry.allowedActions.canSkip
+                ? null
+                : onSkip,
             isLoading: isActionInFlight,
             variant: QueueActionButtonVariant.outlinedWarning,
           ),
@@ -113,7 +117,9 @@ class CurrentQueueCard extends StatelessWidget {
             label: 'No-Show',
             icon: Icons.person_off_outlined,
             semanticsLabel: 'Mark current customer as no-show',
-            onPressed: isActionInFlight ? null : onNoShow,
+            onPressed: isActionInFlight || !entry.allowedActions.canMarkNoShow
+                ? null
+                : onNoShow,
             isLoading: isActionInFlight,
             variant: QueueActionButtonVariant.outlinedError,
           ),
