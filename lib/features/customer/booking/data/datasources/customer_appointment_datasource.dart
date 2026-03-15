@@ -17,6 +17,9 @@ class CustomerAppointmentDatasource {
   final FirebaseFirestore _firestore;
   final AppLogger _logger;
 
+  CollectionReference<Map<String, dynamic>> get _organizations =>
+      _firestore.collection('organizations');
+
   CollectionReference<Map<String, dynamic>> _appointments(String orgId) =>
       _firestore
           .collection('organizations')
@@ -359,26 +362,7 @@ class CustomerAppointmentDatasource {
         .where('scheduledAt', isLessThan: Timestamp.fromDate(horizon))
         .orderBy('scheduledAt')
         .snapshots()
-        .map((snapshot) {
-          return snapshot.docs
-              .where((doc) {
-                final statusStr = doc.data()['status'] as String?;
-                final status = AppointmentStatus.values.firstWhere(
-                  (s) => s.name == statusStr,
-                  orElse: () => AppointmentStatus.booked,
-                );
-                return status == AppointmentStatus.booked ||
-                    status == AppointmentStatus.inQueue ||
-                    status == AppointmentStatus.serving;
-              })
-              .map((doc) {
-                // Extract orgId from the document reference path:
-                // organizations/{orgId}/appointments/{docId}
-                final orgId = doc.reference.parent.parent!.id;
-                return AppointmentModel.fromDoc(doc, orgId: orgId).toEntity();
-              })
-              .toList(growable: false);
-        })
+        .asyncMap(_buildDashboardAppointments)
         .handleError((Object e, StackTrace st) {
           _logger.error(
             'CustomerAppointmentDatasource: watchTodayActiveAppointments error',
@@ -390,6 +374,127 @@ class CustomerAppointmentDatasource {
             stackTrace: st,
           );
         });
+  }
+
+  Future<List<AppointmentEntity>> _buildDashboardAppointments(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) async {
+    final appointmentDocs = snapshot.docs
+        .where(_isDashboardAppointment)
+        .toList(growable: false);
+
+    if (appointmentDocs.isEmpty) {
+      return const <AppointmentEntity>[];
+    }
+
+    final orgIds = appointmentDocs
+        .map((doc) => doc.reference.parent.parent!.id)
+        .toSet()
+        .toList(growable: false);
+    final orgNamesById = await _fetchOrganizationNames(orgIds);
+    final serviceNamesByOrgId = await _fetchServiceNames(appointmentDocs);
+
+    return appointmentDocs
+        .map((doc) {
+          final orgId = doc.reference.parent.parent!.id;
+          final appointment = AppointmentModel.fromDoc(
+            doc,
+            orgId: orgId,
+          ).toEntity();
+          return AppointmentEntity(
+            id: appointment.id,
+            orgId: appointment.orgId,
+            serviceId: appointment.serviceId,
+            customerId: appointment.customerId,
+            customerName: appointment.customerName,
+            scheduledAt: appointment.scheduledAt,
+            status: appointment.status,
+            createdAt: appointment.createdAt,
+            customerPhone: appointment.customerPhone,
+            queuePosition: appointment.queuePosition,
+            orgName: orgNamesById[orgId] ?? appointment.orgName,
+            serviceName:
+                serviceNamesByOrgId[orgId]?[appointment.serviceId] ??
+                appointment.serviceName,
+          );
+        })
+        .toList(growable: false);
+  }
+
+  bool _isDashboardAppointment(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final statusStr = doc.data()['status'] as String?;
+    final status = AppointmentStatus.values.firstWhere(
+      (value) => value.name == statusStr,
+      orElse: () => AppointmentStatus.booked,
+    );
+
+    return status == AppointmentStatus.booked ||
+        status == AppointmentStatus.inQueue ||
+        status == AppointmentStatus.serving;
+  }
+
+  Future<Map<String, String>> _fetchOrganizationNames(
+    List<String> orgIds,
+  ) async {
+    final namesById = <String, String>{};
+
+    for (final orgIdChunk in _chunks(orgIds, 30)) {
+      final snapshot = await _organizations
+          .where(FieldPath.documentId, whereIn: orgIdChunk)
+          .get();
+
+      for (final doc in snapshot.docs) {
+        final name = doc.data()['name'] as String?;
+        if (name != null && name.isNotEmpty) {
+          namesById[doc.id] = name;
+        }
+      }
+    }
+
+    return namesById;
+  }
+
+  Future<Map<String, Map<String, String>>> _fetchServiceNames(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> appointmentDocs,
+  ) async {
+    final serviceIdsByOrgId = <String, Set<String>>{};
+
+    for (final doc in appointmentDocs) {
+      final orgId = doc.reference.parent.parent!.id;
+      final serviceId = doc.data()['serviceId'] as String?;
+      if (serviceId == null || serviceId.isEmpty) {
+        continue;
+      }
+
+      serviceIdsByOrgId.putIfAbsent(orgId, () => <String>{}).add(serviceId);
+    }
+
+    final namesByOrgId = <String, Map<String, String>>{};
+
+    for (final entry in serviceIdsByOrgId.entries) {
+      final orgId = entry.key;
+      final serviceIds = entry.value.toList(growable: false);
+      final serviceNames = <String, String>{};
+
+      for (final serviceIdChunk in _chunks(serviceIds, 30)) {
+        final snapshot = await _services(
+          orgId,
+        ).where(FieldPath.documentId, whereIn: serviceIdChunk).get();
+
+        for (final doc in snapshot.docs) {
+          final name = doc.data()['name'] as String?;
+          if (name != null && name.isNotEmpty) {
+            serviceNames[doc.id] = name;
+          }
+        }
+      }
+
+      namesByOrgId[orgId] = serviceNames;
+    }
+
+    return namesByOrgId;
   }
 
   Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {

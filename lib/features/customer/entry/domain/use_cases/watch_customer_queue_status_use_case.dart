@@ -66,7 +66,7 @@ class WatchCustomerQueueStatusUseCase {
   }) {
     _logger.info(
       'WatchCustomerQueueStatusUseCase',
-      'Watching queue status customerId=$customerId orgId=$orgId',
+      'Watching queue status customerId=${customerId.substring(0, 4)}*** orgId=${orgId.substring(0, 4)}***',
     );
     return _combineLatest(
       _repository.watchCustomerQueueAppointment(

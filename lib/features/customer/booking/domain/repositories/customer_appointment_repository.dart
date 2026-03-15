@@ -44,8 +44,11 @@ abstract class CustomerAppointmentRepository {
   /// Watches the customer's active appointment for [orgId] on [date].
   ///
   /// Returns the single appointment whose `customerId == [customerId]`
-  /// and `status` is in `{inQueue, serving}`, or `null` when none exists.
-  /// Used by [WatchCustomerQueueStatusUseCase] to derive queue position.
+  /// and whose `status` is in `{booked, inQueue, serving, noShow}`, or `null` when none exists.
+  /// Used by [WatchCustomerQueueStatusUseCase] to derive queue position and status.
+  ///
+  /// Note: "Active" includes appointments with status `booked`, `inQueue`, `serving`, or `noShow`
+  /// for the given day. This matches the underlying data source behavior.
   Stream<Result<AppointmentEntity?>> watchCustomerQueueAppointment({
     required String orgId,
     required String customerId,
