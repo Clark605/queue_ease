@@ -13,6 +13,7 @@ class QueueModel {
     required this.currentServingIndex,
     required this.status,
     required this.generatedAt,
+    this.updatedAt,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class QueueModel {
   final int currentServingIndex;
   final QueueStatus status;
   final DateTime generatedAt;
+  final DateTime? updatedAt;
 
   /// Creates a [QueueModel] from a Firestore document.
   ///
@@ -54,6 +56,12 @@ class QueueModel {
       DateTime() => generatedAtValue,
       _ => fallbackGeneratedAt,
     };
+    final updatedAtValue = data['updatedAt'];
+    final updatedAt = switch (updatedAtValue) {
+      Timestamp() => updatedAtValue.toDate(),
+      DateTime() => updatedAtValue,
+      _ => null,
+    };
 
     return QueueModel(
       id: '${orgId}_${doc.id}',
@@ -63,6 +71,7 @@ class QueueModel {
       currentServingIndex: data['currentServingIndex'] as int? ?? 0,
       status: status,
       generatedAt: generatedAt,
+      updatedAt: updatedAt,
     );
   }
 
@@ -74,6 +83,7 @@ class QueueModel {
       'currentServingIndex': currentServingIndex,
       'status': status.name,
       'generatedAt': Timestamp.fromDate(generatedAt),
+      if (updatedAt != null) 'updatedAt': Timestamp.fromDate(updatedAt!),
     };
   }
 
@@ -86,5 +96,6 @@ class QueueModel {
     currentServingIndex: currentServingIndex,
     status: status,
     generatedAt: generatedAt,
+    updatedAt: updatedAt,
   );
 }

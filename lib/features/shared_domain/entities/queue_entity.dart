@@ -15,6 +15,7 @@ class QueueEntity extends Equatable {
     required this.currentServingIndex,
     required this.status,
     required this.generatedAt,
+    this.updatedAt,
   });
 
   /// Synthesized identifier in format "{orgId}_{date}".
@@ -38,6 +39,9 @@ class QueueEntity extends Equatable {
   /// Timestamp when the queue was generated.
   final DateTime generatedAt;
 
+  /// Timestamp when the queue was last updated.
+  final DateTime? updatedAt;
+
   @override
   List<Object?> get props => [
     id,
@@ -47,5 +51,6 @@ class QueueEntity extends Equatable {
     currentServingIndex,
     status,
     generatedAt,
+    updatedAt,
   ];
 }
