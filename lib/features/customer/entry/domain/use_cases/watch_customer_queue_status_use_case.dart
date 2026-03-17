@@ -19,6 +19,7 @@ class CustomerQueueStatusView {
   const CustomerQueueStatusView({
     required this.position,
     required this.estimatedWaitMinutes,
+    this.expectedServiceTime,
     required this.isCurrentTurn,
     required this.isNoShow,
     required this.currentServingIndicator,
@@ -27,8 +28,11 @@ class CustomerQueueStatusView {
   /// 1-based position of this customer in the ordered queue, or null.
   final int? position;
 
-  /// Estimated wait in minutes
+  /// Estimated wait in minutes (static starting value).
   final int? estimatedWaitMinutes;
+
+  /// The precise estimated time when the customer will be served.
+  final DateTime? expectedServiceTime;
 
   /// True when it is this customer's turn (appointment.status == serving).
   final bool isCurrentTurn;
@@ -125,6 +129,7 @@ class WatchCustomerQueueStatusUseCase {
       int? position;
       int? currentServingIndicator;
       int? estimatedWaitMinutes;
+      DateTime? expectedServiceTime;
 
       if (queueEntity != null) {
         final idx = queueEntity.orderedAppointmentIds.indexOf(appointment.id);
@@ -150,7 +155,18 @@ class WatchCustomerQueueStatusUseCase {
             }
             durationsAhead.add(waitEntry.serviceDurationMinutes);
           }
-          estimatedWaitMinutes = _calculateWaitTime(durationsAhead);
+          
+          expectedServiceTime = _calculateWaitTime.expectedServiceTime(
+            durationsAheadMinutes: durationsAhead,
+            queueUpdatedAt: queueEntity.updatedAt,
+          );
+          
+          if (expectedServiceTime != null) {
+            final remainingMinutes = expectedServiceTime.difference(DateTime.now()).inMinutes;
+            estimatedWaitMinutes = remainingMinutes > 0 ? remainingMinutes : 0;
+          } else {
+            estimatedWaitMinutes = durationsAhead.fold<int>(0, (a, b) => a + b);
+          }
         } else if (idx >= 0) {
           estimatedWaitMinutes = 0;
         }
@@ -161,6 +177,7 @@ class WatchCustomerQueueStatusUseCase {
           CustomerQueueStatusView(
             position: position,
             estimatedWaitMinutes: estimatedWaitMinutes,
+            expectedServiceTime: expectedServiceTime,
             isCurrentTurn: appointment.status == AppointmentStatus.serving,
             isNoShow: appointment.status == AppointmentStatus.noShow,
             currentServingIndicator: currentServingIndicator,
