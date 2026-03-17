@@ -110,6 +110,9 @@ service cloud.firestore {
      *   serving  -> completed (admin marks next/done)
      *   serving  -> inQueue   (admin skips; reinserts at end)
      *   noShow   -> inQueue   (admin rejoins no-show entry)
+      *
+      * Note: serving -> noShow is intentionally blocked in the clarified
+      * lifecycle. No-show applies only while entry is not yet serving.
      */
     function isValidStatusTransition(from, to) {
       return (from == 'booked'  && to == 'inQueue')
