@@ -150,6 +150,14 @@ abstract class AdminAppointmentRepository {
     required String appointmentId,
   });
 
+  /// Explicitly marks the front queue entry as serving.
+  /// Status transition: `inQueue → serving`.
+  Future<Result<void>> startServing({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  });
+
   /// Moves the current entry to the end of the waiting queue.
   /// Status transition: `serving → inQueue`.
   Future<Result<void>> skip({
@@ -161,6 +169,14 @@ abstract class AdminAppointmentRepository {
   /// Marks the current entry as no-show and promotes the next entry.
   /// Status transition: `serving → noShow`.
   Future<Result<void>> markNoShow({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  });
+
+  /// Marks a front non-serving overdue entry as no-show and advances queue.
+  /// Status transition: `inQueue → noShow`.
+  Future<Result<void>> markOverdueNoShow({
     required String orgId,
     required DateTime date,
     required String appointmentId,
