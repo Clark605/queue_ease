@@ -22,13 +22,18 @@ final class QueueManagementLoading extends QueueManagementState {
 
 /// Emitted when queue data is loaded and displayed.
 final class QueueManagementLoaded extends QueueManagementState {
-  QueueManagementLoaded({required this.snapshot, required this.evaluatedAt});
+  const QueueManagementLoaded({
+    required this.snapshot,
+    required this.evaluatedAt,
+    this.feedbackMessage,
+  });
 
   final AdminQueueSnapshot snapshot;
   final DateTime evaluatedAt;
+  final String? feedbackMessage;
 
   @override
-  List<Object?> get props => [snapshot, evaluatedAt];
+  List<Object?> get props => [snapshot, evaluatedAt, feedbackMessage];
 }
 
 /// Emitted while an action (next/skip/noShow/rejoin) is in flight.
@@ -36,7 +41,7 @@ final class QueueManagementLoaded extends QueueManagementState {
 /// Carries the current snapshot so the UI remains rendered during the
 /// async operation. The UI should disable action buttons in this state.
 final class QueueManagementActionInFlight extends QueueManagementState {
-  QueueManagementActionInFlight({
+  const QueueManagementActionInFlight({
     required this.snapshot,
     required this.evaluatedAt,
   });

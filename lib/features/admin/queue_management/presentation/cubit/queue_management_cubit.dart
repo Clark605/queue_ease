@@ -51,12 +51,18 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   StreamSubscription<List<AppointmentEntity>>? _appointmentsSub;
   StreamSubscription<int>? _countdownTickerSub;
   bool _isAutoGenerateInFlight = false;
+  bool _isAutoNoShowInFlight = false;
+  String? _autoNoShowPendingId;
+  String? _activeOrgId;
+  DateTime? _activeQueueDate;
   final _queueDeadlineEvaluator = const QueueDeadlineEvaluator();
 
   static const _loadQueueFallbackMessage =
       'Unable to load queue data right now. Please try again.';
   static const _updateQueueFallbackMessage =
       'Unable to update queue right now. Please try again.';
+  static const _autoNoShowSuccessMessage =
+      'Overdue customer was marked no-show automatically.';
 
   String _resolveLoadMessage(String message) {
     final trimmed = message.trim();
@@ -74,6 +80,8 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   /// [QueueManagementLoading] immediately, then [QueueManagementLoaded]
   /// or [QueueManagementError] as stream events arrive.
   void watchQueue({required String orgId, required DateTime date}) {
+    _activeOrgId = orgId;
+    _activeQueueDate = date;
     emit(const QueueManagementLoading());
     _queueSub?.cancel();
     _appointmentsSub?.cancel();
@@ -87,7 +95,9 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
                 evaluatedAt: DateTime.now(),
               ),
             );
+            _autoNoShowPendingId = null;
             _syncCountdownTicker(data);
+            _maybeProcessOverdueFront(data);
           case Failure(:final exception):
             _logger.error('QueueManagementCubit: watch error', exception);
             _stopCountdownTicker();
@@ -193,6 +203,20 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     actionName: 'next',
   );
 
+  /// Explicitly marks the current front entry as serving.
+  Future<void> startServing({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  }) => _runAction(
+    action: () => _repository.startServing(
+      orgId: orgId,
+      date: date,
+      appointmentId: appointmentId,
+    ),
+    actionName: 'startServing',
+  );
+
   /// Moves the current entry to the end of the queue.
   Future<void> skip({
     required String orgId,
@@ -250,6 +274,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
           QueueManagementLoaded(
             snapshot: snapshot,
             evaluatedAt: DateTime.now(),
+            feedbackMessage: _actionSuccessMessage(actionName),
           ),
         );
         _syncCountdownTicker(snapshot);
@@ -261,6 +286,17 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
           ),
         );
     }
+  }
+
+  String? _actionSuccessMessage(String actionName) {
+    return switch (actionName) {
+      'rejoin' => 'Customer rejoined and moved to the end of queue.',
+      'markNoShow' => 'Customer marked as no-show.',
+      'startServing' => 'Customer marked as serving.',
+      'skip' => 'Customer moved to the end of queue.',
+      'next' => 'Current service completed.',
+      _ => null,
+    };
   }
 
   @override
@@ -336,5 +372,55 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
         evaluation.state == QueueAutomationState.overdue) {
       _stopCountdownTicker();
     }
+
+    _maybeProcessOverdueFront(nextSnapshot);
+  }
+
+  Future<void> _maybeProcessOverdueFront(AdminQueueSnapshot snapshot) async {
+    final orgId = _activeOrgId;
+    final queueDate = _activeQueueDate;
+    final current = snapshot.current;
+    if (orgId == null || queueDate == null || current == null) {
+      return;
+    }
+
+    final isOverdueFront =
+        current.automationState == QueueAutomationState.overdue &&
+        current.status != AppointmentStatus.serving;
+    if (!isOverdueFront ||
+        _isAutoNoShowInFlight ||
+        _autoNoShowPendingId == current.appointmentId) {
+      return;
+    }
+
+    _isAutoNoShowInFlight = true;
+    _autoNoShowPendingId = current.appointmentId;
+    final result = await _repository.markOverdueNoShow(
+      orgId: orgId,
+      date: queueDate,
+      appointmentId: current.appointmentId,
+    );
+    switch (result) {
+      case Success():
+        _logger.info('QueueManagementCubit: auto no-show applied', {
+          'appointmentId': current.appointmentId,
+        });
+        emit(
+          QueueManagementLoaded(
+            snapshot: snapshot,
+            evaluatedAt: DateTime.now(),
+            feedbackMessage: _autoNoShowSuccessMessage,
+          ),
+        );
+      case Failure(:final exception):
+        _logger.error('QueueManagementCubit: auto no-show failed', exception);
+        _autoNoShowPendingId = null;
+        // Restart the ticker so the UI can recover from transient failures.
+        // Without this, the timer stays stopped on "Overdue" with no recovery
+        // path until the next Firestore stream event.
+        final snap = _currentSnapshot;
+        if (snap != null) _syncCountdownTicker(snap);
+    }
+    _isAutoNoShowInFlight = false;
   }
 }
