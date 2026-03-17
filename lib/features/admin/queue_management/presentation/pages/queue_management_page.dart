@@ -92,12 +92,18 @@ class QueueManagementPage extends StatelessWidget {
         // already visible — i.e., action failures.  Initial load failures
         // are covered by the full-screen error view in the builder.
         listenWhen: (previous, current) =>
-            current is QueueManagementError &&
-            (previous is QueueManagementLoaded ||
-                previous is QueueManagementActionInFlight),
+            (current is QueueManagementError &&
+                (previous is QueueManagementLoaded ||
+                    previous is QueueManagementActionInFlight)) ||
+            current is QueueManagementLoaded,
         listener: (ctx, state) {
           if (state is QueueManagementError) {
             AppSnackBar.showError(ctx, state.message);
+          }
+          if (state is QueueManagementLoaded &&
+              state.feedbackMessage != null &&
+              state.feedbackMessage!.trim().isNotEmpty) {
+            AppSnackBar.showSuccess(ctx, state.feedbackMessage!);
           }
         },
         builder: (ctx, state) {
