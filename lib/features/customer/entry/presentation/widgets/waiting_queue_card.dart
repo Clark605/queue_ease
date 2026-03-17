@@ -4,6 +4,7 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
 import '../../domain/use_cases/watch_customer_queue_status_use_case.dart';
 import 'live_indicator.dart';
+import 'wait_timer_countdown.dart';
 
 /// Card shown while the customer is waiting in the queue.
 ///
@@ -99,15 +100,19 @@ class WaitingQueueCard extends StatelessWidget {
   }
 
   Widget _buildStatsRow() {
-    final waitLabel = status.estimatedWaitMinutes != null
-        ? '${status.estimatedWaitMinutes} min'
-        : '—';
     return Row(
       children: [
         Expanded(
           child: _StatCard(
             label: 'SERVING',
-            value: '#${status.currentServingIndicator ?? "-"}',
+            valueWidget: Text(
+              '#${status.currentServingIndicator ?? "-"}',
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: AppColors.onSurface,
+              ),
+            ),
             icon: Icons.person_pin_outlined,
           ),
         ),
@@ -115,7 +120,10 @@ class WaitingQueueCard extends StatelessWidget {
         Expanded(
           child: _StatCard(
             label: 'EST. WAIT',
-            value: waitLabel,
+            valueWidget: WaitTimerCountdown(
+              expectedServiceTime: status.expectedServiceTime,
+              fallbackWaitMinutes: status.estimatedWaitMinutes,
+            ),
             icon: Icons.schedule_outlined,
           ),
         ),
@@ -136,12 +144,12 @@ class WaitingQueueCard extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   const _StatCard({
     required this.label,
-    required this.value,
+    required this.valueWidget,
     required this.icon,
   });
 
   final String label;
-  final String value;
+  final Widget valueWidget;
   final IconData icon;
 
   @override
@@ -167,14 +175,7 @@ class _StatCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.onSurface,
-            ),
-          ),
+          valueWidget,
         ],
       ),
     );

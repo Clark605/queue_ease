@@ -65,7 +65,8 @@ class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.expectedServiceTime == null && widget.fallbackWaitMinutes == null) {
+    if (widget.expectedServiceTime == null &&
+        widget.fallbackWaitMinutes == null) {
       return const Text(
         '—',
         style: TextStyle(
@@ -75,7 +76,7 @@ class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
         ),
       );
     }
-    
+
     return Text(
       '$_remainingMinutes min',
       style: const TextStyle(
