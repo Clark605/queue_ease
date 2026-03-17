@@ -54,7 +54,11 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
                 if (data == null) {
                   emit(const CustomerQueueStatusEmpty());
                 } else {
-                  emit(CustomerQueueStatusLoaded(status: data));
+                  emit(
+                    CustomerQueueStatusLoaded(
+                      status: _toPresentationStatus(data),
+                    ),
+                  );
                 }
               case Failure(:final exception):
                 _logger.error(
@@ -77,6 +81,20 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
             );
           },
         );
+  }
+
+  CustomerQueueStatusView _toPresentationStatus(CustomerQueueStatusView data) {
+    if (!data.isNoShow) {
+      return data;
+    }
+
+    return CustomerQueueStatusView(
+      position: null,
+      estimatedWaitMinutes: null,
+      isCurrentTurn: false,
+      isNoShow: true,
+      currentServingIndicator: data.currentServingIndicator,
+    );
   }
 
   @override

@@ -155,14 +155,16 @@ class WatchCustomerQueueStatusUseCase {
             }
             durationsAhead.add(waitEntry.serviceDurationMinutes);
           }
-          
+
           expectedServiceTime = _calculateWaitTime.expectedServiceTime(
             durationsAheadMinutes: durationsAhead,
             queueUpdatedAt: queueEntity.updatedAt,
           );
-          
+
           if (expectedServiceTime != null) {
-            final remainingMinutes = expectedServiceTime.difference(DateTime.now()).inMinutes;
+            final remainingMinutes = expectedServiceTime
+                .difference(DateTime.now())
+                .inMinutes;
             estimatedWaitMinutes = remainingMinutes > 0 ? remainingMinutes : 0;
           } else {
             estimatedWaitMinutes = durationsAhead.fold<int>(0, (a, b) => a + b);
