@@ -6,6 +6,7 @@ import '../../../../../core/theme/app_text_styles.dart';
 import '../../domain/use_cases/watch_customer_queue_status_use_case.dart';
 import '../cubit/customer_queue_status_cubit.dart';
 import '../cubit/customer_queue_status_state.dart';
+import '../widgets/no_show_queue_card.dart';
 import '../widgets/queue_position_card.dart';
 import '../widgets/wait_time_chip.dart';
 
@@ -132,6 +133,19 @@ class _LoadedView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (status.isNoShow) {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            NoShowQueueCard(status: status),
+            const SizedBox(height: 16),
+            const _NoShowInfoNote(),
+          ],
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -143,6 +157,25 @@ class _LoadedView extends StatelessWidget {
           const _InfoNote(),
         ],
       ),
+    );
+  }
+}
+
+class _NoShowInfoNote extends StatelessWidget {
+  const _NoShowInfoNote();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.support_agent, size: 14, color: AppColors.onSurfaceVariant),
+        SizedBox(width: 6),
+        Text(
+          'Please contact the business if you want to rejoin the queue.',
+          style: AppTextStyles.bodySmall,
+        ),
+      ],
     );
   }
 }
