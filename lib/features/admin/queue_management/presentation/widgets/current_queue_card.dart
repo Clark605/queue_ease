@@ -84,14 +84,23 @@ class CurrentQueueCard extends StatelessWidget {
   }
 
   Widget _buildActionButtons() {
+    final isPrimaryStart =
+        entry.allowedActions.canStartServing &&
+        !entry.allowedActions.canComplete;
+
     return Row(
       children: [
         Expanded(
           child: QueueActionButton(
-            label: 'Next',
+            label: isPrimaryStart ? 'Start' : 'Next',
             icon: Icons.check_circle_outline,
-            semanticsLabel: 'Mark as done and serve next customer',
-            onPressed: isActionInFlight || !entry.allowedActions.canComplete
+            semanticsLabel: isPrimaryStart
+                ? 'Mark current customer as serving'
+                : 'Mark as done and serve next customer',
+            onPressed:
+                isActionInFlight ||
+                    (!entry.allowedActions.canComplete &&
+                        !entry.allowedActions.canStartServing)
                 ? null
                 : onNext,
             isLoading: isActionInFlight,

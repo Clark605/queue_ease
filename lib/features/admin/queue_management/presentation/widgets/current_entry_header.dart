@@ -15,10 +15,17 @@ class CurrentEntryHeader extends StatelessWidget {
   final QueueEntryView entry;
   static final _timeFormat = DateFormat('h:mm a');
 
+  /// Formats [totalSeconds] as `m:ss` (e.g. 125 → "2:05").
+  static String _formatCountdown(int totalSeconds) {
+    final m = totalSeconds ~/ 60;
+    final s = totalSeconds % 60;
+    return '$m:${s.toString().padLeft(2, '0')}';
+  }
+
   String get _statusLabel => switch (entry.automationState) {
     QueueAutomationState.notDueYet => 'Not due yet',
     QueueAutomationState.awaitingArrival =>
-      'Countdown: ${entry.remainingSeconds ?? 0}s',
+      '${_formatCountdown(entry.remainingSeconds ?? 0)} remaining',
     QueueAutomationState.overdue => 'Overdue',
     QueueAutomationState.serving => 'Serving',
   };

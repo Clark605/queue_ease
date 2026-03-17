@@ -23,10 +23,23 @@ class WaitingEntryTrailing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isNoShow) {
-      return WaitingEntryRejoinButton(
-        onPressed: isActionInFlight
-            ? null
-            : () => onRejoin(entry.appointmentId),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          WaitingEntryRejoinButton(
+            onPressed: isActionInFlight
+                ? null
+                : () => onRejoin(entry.appointmentId),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Rejoin to end',
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+        ],
       );
     }
     return Row(

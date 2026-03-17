@@ -42,6 +42,12 @@ class QueueContent extends StatelessWidget {
                       date: DateTime.now(),
                       appointmentId: snapshot.current!.appointmentId,
                     )
+                  : snapshot.current!.allowedActions.canStartServing
+                  ? () => context.read<QueueManagementCubit>().startServing(
+                      orgId: orgId,
+                      date: DateTime.now(),
+                      appointmentId: snapshot.current!.appointmentId,
+                    )
                   : null,
               onSkip: snapshot.current!.allowedActions.canSkip
                   ? () => context.read<QueueManagementCubit>().skip(
