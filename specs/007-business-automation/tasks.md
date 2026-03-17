@@ -7,9 +7,9 @@
 
 **Purpose**: Prepare the codebase for Sprint 6 automation work.
 
-- [ ] T001 Update sprint references and branch naming consistency in specs docs at specs/007-business-automation/spec.md and specs/007-business-automation/plan.md
-- [ ] T002 Run code generation prerequisites by validating Injectable annotations in lib/core/di/injection.dart
-- [ ] T003 [P] Create admin queue-management test file structure in test/admin/queue_management/ and customer queue-status test structure in test/customer/
+- [x] T001 Update sprint references and branch naming consistency in specs docs at specs/007-business-automation/spec.md and specs/007-business-automation/plan.md
+- [x] T002 Run code generation prerequisites by validating Injectable annotations in lib/core/di/injection.dart
+- [x] T003 [P] Create admin queue-management test file structure in test/admin/queue_management/ and customer queue-status test structure in test/customer/
 
 ---
 
@@ -74,15 +74,17 @@
 - [ ] T023 [P] [US2] Add Cubit tests for one-by-one overdue processing and duplicate-trigger protection in test/admin/queue_management/presentation/cubit/queue_management_cubit_test.dart
 - [ ] T024 [P] [US2] Add Firestore rules tests for allowed/blocked transitions in test/firestore_rules/appointment_status_transition_rules_test.dart
 
+> Note: T022, T023, and T024 were intentionally skipped per user request.
+
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] Refactor daily queue generation to remove implicit first-entry auto-serving in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
-- [ ] T026 [US2] Implement explicit start-serving transaction method in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
-- [ ] T027 [US2] Implement overdue no-show transaction path for non-serving front entries in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
-- [ ] T028 [US2] Wire new transaction methods into repository operations in lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart
-- [ ] T029 [US2] Add start-serving use case in lib/features/admin/queue_management/domain/use_cases/start_serving_use_case.dart
-- [ ] T030 [US2] Integrate auto no-show loop and start-serving action into Cubit in lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart
-- [ ] T031 [US2] Update Firestore transition policy and validation guards for the clarified lifecycle in firestore.rules
+- [x] T025 [US2] Refactor daily queue generation to remove implicit first-entry auto-serving in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
+- [x] T026 [US2] Implement explicit start-serving transaction method in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
+- [x] T027 [US2] Implement overdue no-show transaction path for non-serving front entries in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
+- [x] T028 [US2] Wire new transaction methods into repository operations in lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart
+- [x] T029 [US2] Add start-serving use case in lib/features/admin/queue_management/domain/use_cases/start_serving_use_case.dart
+- [x] T030 [US2] Integrate auto no-show loop and start-serving action into Cubit in lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart
+- [x] T031 [US2] Update Firestore transition policy and validation guards for the clarified lifecycle in firestore.rules
 
 **Checkpoint**: US2 is independently functional and testable.
 
@@ -99,12 +101,14 @@
 - [ ] T032 [P] [US3] Add rejoin-after-auto-no-show repository tests in test/admin/queue_management/data/repositories/admin_queue_repository_impl_test.dart
 - [ ] T033 [P] [US3] Add Cubit tests for rejoin state recovery and re-evaluation in test/admin/queue_management/presentation/cubit/queue_management_cubit_test.dart
 
+> Note: T032 and T033 were intentionally skipped per user request.
+
 ### Implementation for User Story 3
 
-- [ ] T034 [US3] Ensure rejoin transaction preserves ordering and eligibility recomputation in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
-- [ ] T035 [US3] Update rejoin domain flow to refresh derived automation fields in lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart
-- [ ] T036 [US3] Update waiting-entry action UI for post-automation rejoin states in lib/features/admin/queue_management/presentation/widgets/waiting_entry_actions.dart
-- [ ] T037 [US3] Surface consistent admin feedback messages for automated and manual recovery actions in lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart
+- [x] T034 [US3] Ensure rejoin transaction preserves ordering and eligibility recomputation in lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart
+- [x] T035 [US3] Update rejoin domain flow to refresh derived automation fields in lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart
+- [x] T036 [US3] Update waiting-entry action UI for post-automation rejoin states in lib/features/admin/queue_management/presentation/widgets/waiting_entry_actions.dart
+- [x] T037 [US3] Surface consistent admin feedback messages for automated and manual recovery actions in lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart
 
 **Checkpoint**: US3 is independently functional and testable.
 
@@ -121,11 +125,13 @@
 - [ ] T038 [P] [US4] Add customer queue-status widget tests for no-show messaging in test/customer/queue_status_no_show_test.dart
 - [ ] T039 [P] [US4] Add customer stream-state tests for real-time no-show transition in test/customer/queue_status_stream_test.dart
 
+> Note: T038 and T039 were intentionally skipped per user request.
+
 ### Implementation for User Story 4
 
-- [ ] T040 [US4] Update customer queue-status presentation for explicit no-show state in lib/features/customer/entry/presentation/pages/customer_queue_status_page.dart
-- [ ] T041 [US4] Ensure customer status mapping treats `noShow` as terminal guidance state in lib/features/customer/entry/presentation/cubit/customer_queue_status_cubit.dart
-- [ ] T042 [US4] Align customer-facing text and guidance copy with spec acceptance criteria in lib/features/customer/entry/presentation/widgets/no_show_queue_card.dart
+- [x] T040 [US4] Update customer queue-status presentation for explicit no-show state in lib/features/customer/entry/presentation/pages/customer_queue_status_page.dart
+- [x] T041 [US4] Ensure customer status mapping treats `noShow` as terminal guidance state in lib/features/customer/entry/presentation/cubit/customer_queue_status_cubit.dart
+- [x] T042 [US4] Align customer-facing text and guidance copy with spec acceptance criteria in lib/features/customer/entry/presentation/widgets/no_show_queue_card.dart
 
 **Checkpoint**: US4 is independently functional and testable.
 
@@ -135,11 +141,11 @@
 
 **Purpose**: Final hardening and cross-story validation.
 
-- [ ] T043 [P] Regenerate dependency-injection output after annotation changes using lib/core/di/injection.config.dart
-- [ ] T044 [P] Run and fix lint/format issues for touched Dart files across lib/features/admin/queue_management/ and lib/features/customer/entry/
-- [ ] T045 Execute quickstart validation scenarios and document outcomes in specs/007-business-automation/quickstart.md
-- [ ] T046 [P] Add/update sprint documentation references in docs/FEATURE_CHECKLIST.md and docs/PROJECT_TIMELINE.md (if in scope for this feature branch)
-- [ ] T047 Run targeted regression tests for queue actions and booking-model serialization in test/admin/queue_management/ and test/shared/booking/
+- [x] T043 [P] Regenerate dependency-injection output after annotation changes using lib/core/di/injection.config.dart
+- [x] T044 [P] Run and fix lint/format issues for touched Dart files across lib/features/admin/queue_management/ and lib/features/customer/entry/
+- [x] T045 Execute quickstart validation scenarios and document outcomes in specs/007-business-automation/quickstart.md
+- [x] T046 [P] Add/update sprint documentation references in docs/FEATURE_CHECKLIST.md and docs/PROJECT_TIMELINE.md (if in scope for this feature branch)
+- [x] T047 Run targeted regression tests for queue actions and booking-model serialization in test/admin/queue_management/ and test/shared/booking/
 
 ---
 

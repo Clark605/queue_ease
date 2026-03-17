@@ -1,6 +1,6 @@
 # Feature Specification: Business Logic & Automation
 
-**Feature Branch**: `006-business-automation`
+**Feature Branch**: `007-business-automation`
 **Created**: March 15, 2026
 **Status**: Draft
 **Input**: User description: "Sprint 6: Business Logic & Automation - Time margin enforcement, auto no-show detection, queue advancement automation"
