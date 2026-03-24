@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../../core/error/app_exception.dart';
 import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
+import '../../../../../core/utils/time_utils.dart';
 import '../../../../shared_domain/entities/appointment_entity.dart';
 import '../../../../shared_domain/entities/appointment_status.dart';
 import '../../domain/repositories/admin_appointment_repository.dart';
@@ -272,7 +273,7 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
                 : serviceMarginById[serviceId],
           );
           final automationEvaluation = _deadlineEvaluator.evaluate(
-            now: DateTime.now(),
+            now: TimeUtils.nowUtc(),
             scheduledAt: scheduledAt,
             effectiveTimeMarginMinutes: effectiveMarginMinutes,
             status: status,
