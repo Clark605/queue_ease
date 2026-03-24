@@ -29,6 +29,9 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
   }
 
   StreamSubscription<Result<CustomerQueueStatusView?>>? _sub;
+  String? _currentOrgId;
+  String? _currentCustomerId;
+  DateTime? _currentDate;
 
   /// Starts watching live queue status for [customerId] in [orgId] on [date].
   ///
@@ -40,6 +43,11 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
     required String customerId,
     required DateTime date,
   }) {
+    // Store current parameters for refresh
+    _currentOrgId = orgId;
+    _currentCustomerId = customerId;
+    _currentDate = date;
+
     emit(const CustomerQueueStatusLoading());
     _sub?.cancel();
     _logger.info(
@@ -54,7 +62,11 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
                 if (data == null) {
                   emit(const CustomerQueueStatusEmpty());
                 } else {
-                  emit(CustomerQueueStatusLoaded(status: data));
+                  emit(
+                    CustomerQueueStatusLoaded(
+                      status: _toPresentationStatus(data),
+                    ),
+                  );
                 }
               case Failure(:final exception):
                 _logger.error(
@@ -77,6 +89,36 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
             );
           },
         );
+  }
+
+  /// Refreshes the current queue status by restarting the subscription.
+  ///
+  /// Uses the last parameters from [watchStatus]. If no previous call was made,
+  /// this method does nothing.
+  void refreshStatus() {
+    if (_currentOrgId != null &&
+        _currentCustomerId != null &&
+        _currentDate != null) {
+      watchStatus(
+        orgId: _currentOrgId!,
+        customerId: _currentCustomerId!,
+        date: _currentDate!,
+      );
+    }
+  }
+
+  CustomerQueueStatusView _toPresentationStatus(CustomerQueueStatusView data) {
+    if (!data.isNoShow) {
+      return data;
+    }
+
+    return CustomerQueueStatusView(
+      position: null,
+      estimatedWaitMinutes: null,
+      isCurrentTurn: false,
+      isNoShow: true,
+      currentServingIndicator: data.currentServingIndicator,
+    );
   }
 
   @override

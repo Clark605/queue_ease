@@ -49,9 +49,6 @@ class AdminQueueDatasource {
   /// **Fresh queue** (queue doc does not yet exist):
   /// - Creates queue doc with all sorted booked IDs.
   /// - Sets all appointments to `inQueue` (valid: `booked → inQueue`).
-  /// - After the batch commits, promotes the first entry to `serving`
-  ///   (valid: `inQueue → serving`) in a separate write.
-  ///   The two-step approach satisfies `isValidStatusTransition` in Firestore rules.
   ///
   /// **Existing queue** (queue doc already exists):
   /// - Finds new booked appointments whose IDs are NOT in the existing list.
@@ -110,11 +107,8 @@ class AdminQueueDatasource {
       // 5. Read the existing queue document.
       final queueRef = queueDoc(orgId, date);
       final queueSnap = await queueRef.get();
-      final isFreshQueue = !queueSnap.exists;
-
       // 6. Build a WriteBatch for all Firestore writes.
       final batch = _firestore.batch();
-      String? servingPromotionId;
 
       if (!queueSnap.exists) {
         // --- Fresh queue -------------------------------------------------------
@@ -129,8 +123,7 @@ class AdminQueueDatasource {
         });
 
         // All appointments → inQueue (booked → inQueue is the only valid
-        // transition from booked per Firestore rules). The first entry is
-        // promoted to serving after the batch commits (inQueue → serving).
+        // transition from booked per Firestore rules).
         for (final id in sortedIds) {
           batch.update(appointments(orgId).doc(id), {'status': 'inQueue'});
         }
@@ -140,7 +133,6 @@ class AdminQueueDatasource {
         final existingIds = List<String>.from(
           queueData['orderedAppointmentIds'] as List? ?? [],
         );
-        final currentIndex = queueData['currentServingIndex'] as int? ?? 0;
         final existingIdSet = existingIds.toSet();
 
         // Find appointments not yet tracked in the queue.
@@ -163,34 +155,10 @@ class AdminQueueDatasource {
         for (final id in newIds) {
           batch.update(appointments(orgId).doc(id), {'status': 'inQueue'});
         }
-
-        // If the queue was exhausted (no current serving pointer in-range),
-        // promote the pointer target after append so the first active entry
-        // is immediately serving.
-        if (currentIndex >= existingIds.length &&
-            currentIndex < updatedIds.length) {
-          servingPromotionId = updatedIds[currentIndex];
-        }
       }
 
       // 7. Commit all writes atomically.
       await batch.commit();
-
-      // 8. For a fresh queue, promote the first entry inQueue → serving so
-      //    the admin can immediately call next/skip/markNoShow on it.
-      //    This is a separate write because Firestore rules only permit
-      //    booked → inQueue directly; inQueue → serving requires its own op.
-      if (isFreshQueue && sortedIds.isNotEmpty) {
-        await appointments(
-          orgId,
-        ).doc(sortedIds[0]).update({'status': 'serving'});
-      }
-
-      if (!isFreshQueue && servingPromotionId != null) {
-        await appointments(
-          orgId,
-        ).doc(servingPromotionId).update({'status': 'serving'});
-      }
 
       _logger.info(
         'AdminQueueDatasource.generateDailyQueue',
@@ -255,8 +223,8 @@ class AdminQueueDatasource {
   // Queue action transactions — T013 (Phase 3 / US1)
   // ---------------------------------------------------------------------------
 
-  /// Marks the current serving appointment as [completed] and promotes the
-  /// next entry in `orderedAppointmentIds` to [serving].
+  /// Marks the current serving appointment as [completed] and advances the
+  /// queue pointer.
   ///
   /// Preconditions (validated inside the transaction):
   /// - Queue document exists for [date].
@@ -317,11 +285,6 @@ class AdminQueueDatasource {
         // Writes after all reads.
         txn.update(appointmentRef, {'status': 'completed'});
         txn.update(queueRef, {'currentServingIndex': nextIndex});
-
-        if (nextIndex < orderedIds.length) {
-          final nextRef = appointments(orgId).doc(orderedIds[nextIndex]);
-          txn.update(nextRef, {'status': 'serving'});
-        }
       });
       _logger.info(
         'AdminQueueDatasource.transactionNext',
@@ -343,12 +306,11 @@ class AdminQueueDatasource {
     }
   }
 
-  /// Moves the current serving appointment to the end of the queue and
-  /// promotes the entry that slides into the vacated position.
+  /// Moves the current front appointment to the end of the queue.
   ///
-  /// Status transition: serving → inQueue.
+  /// Status transition: serving → inQueue OR inQueue → inQueue.
   /// `currentServingIndex` is unchanged; the list re-order shifts the
-  /// next entry into the serving slot.
+  /// next entry into the front slot.
   ///
   /// Throws [ValidationException] when a precondition fails.
   /// Throws [DatabaseException] on Firestore errors.
@@ -379,9 +341,11 @@ class AdminQueueDatasource {
         }
 
         final currentStatus = appointmentData['status'] as String?;
-        if (currentStatus != 'serving') {
+        final isSkippable =
+            currentStatus == 'serving' || currentStatus == 'inQueue';
+        if (!isSkippable) {
           throw ValidationException(
-            'Appointment $appointmentId is not currently serving '
+            'Appointment $appointmentId cannot be skipped '
             '(status: $currentStatus)',
           );
         }
@@ -403,16 +367,10 @@ class AdminQueueDatasource {
         orderedIds.add(appointmentId);
 
         // Writes after all reads.
-        txn.update(appointmentRef, {'status': 'inQueue'});
-        txn.update(queueRef, {'orderedAppointmentIds': orderedIds});
-
-        // The entry now at currentIndex (post-removal) becomes the new current.
-        if (currentIndex < orderedIds.length) {
-          final newCurrentRef = appointments(
-            orgId,
-          ).doc(orderedIds[currentIndex]);
-          txn.update(newCurrentRef, {'status': 'serving'});
+        if (currentStatus == 'serving') {
+          txn.update(appointmentRef, {'status': 'inQueue'});
         }
+        txn.update(queueRef, {'orderedAppointmentIds': orderedIds});
       });
       _logger.info(
         'AdminQueueDatasource.transactionSkip',
@@ -434,10 +392,9 @@ class AdminQueueDatasource {
     }
   }
 
-  /// Marks the current serving appointment as no-show and promotes the next
-  /// entry in `orderedAppointmentIds` to [serving].
+  /// Marks the current front appointment as no-show and advances pointer.
   ///
-  /// Status transition: serving → noShow.
+  /// Status transition: inQueue → noShow.
   ///
   /// Throws [ValidationException] when a precondition fails.
   /// Throws [DatabaseException] on Firestore errors.
@@ -468,9 +425,9 @@ class AdminQueueDatasource {
         }
 
         final currentStatus = appointmentData['status'] as String?;
-        if (currentStatus != 'serving') {
+        if (currentStatus != 'inQueue') {
           throw ValidationException(
-            'Appointment $appointmentId is not currently serving '
+            'Appointment $appointmentId is not currently in queue '
             '(status: $currentStatus)',
           );
         }
@@ -491,11 +448,6 @@ class AdminQueueDatasource {
 
         txn.update(appointmentRef, {'status': 'noShow'});
         txn.update(queueRef, {'currentServingIndex': nextIndex});
-
-        if (nextIndex < orderedIds.length) {
-          final nextRef = appointments(orgId).doc(orderedIds[nextIndex]);
-          txn.update(nextRef, {'status': 'serving'});
-        }
       });
       _logger.info(
         'AdminQueueDatasource.transactionMarkNoShow',
@@ -517,8 +469,96 @@ class AdminQueueDatasource {
     }
   }
 
+  /// Marks a current front overdue non-serving entry as no-show.
+  Future<void> transactionMarkOverdueNoShow({
+    required String orgId,
+    required String date,
+    required String appointmentId,
+  }) {
+    return transactionMarkNoShow(
+      orgId: orgId,
+      date: date,
+      appointmentId: appointmentId,
+    );
+  }
+
+  /// Explicitly starts serving for the current front queue entry.
+  ///
+  /// Status transition: `inQueue → serving`.
+  Future<void> transactionStartServing({
+    required String orgId,
+    required String date,
+    required String appointmentId,
+  }) async {
+    try {
+      await _firestore.runTransaction((txn) async {
+        final queueRef = queueDoc(orgId, date);
+        final appointmentRef = appointments(orgId).doc(appointmentId);
+
+        final queueSnap = await txn.get(queueRef);
+        final appointmentSnap = await txn.get(appointmentRef);
+
+        if (!queueSnap.exists) {
+          throw ValidationException(
+            'Queue document does not exist for date $date',
+          );
+        }
+
+        final queueData = queueSnap.data()!;
+        final appointmentData = appointmentSnap.data();
+
+        if (appointmentData == null) {
+          throw ValidationException('Appointment $appointmentId not found');
+        }
+
+        final orderedIds = List<String>.from(
+          queueData['orderedAppointmentIds'] as List? ?? [],
+        );
+        final currentIndex = queueData['currentServingIndex'] as int? ?? 0;
+
+        if (currentIndex >= orderedIds.length ||
+            orderedIds[currentIndex] != appointmentId) {
+          throw ValidationException(
+            'Appointment $appointmentId is not the current queue entry',
+          );
+        }
+
+        final status = appointmentData['status'] as String?;
+        if (status != 'inQueue') {
+          throw ValidationException(
+            'Appointment $appointmentId cannot start serving (status: $status)',
+          );
+        }
+
+        txn.update(appointmentRef, {'status': 'serving'});
+        // Touch the queue document so the watchDailyQueue Firestore stream
+        // re-fires and the snapshot reflects the new 'serving' status.
+        txn.update(queueRef, {'updatedAt': FieldValue.serverTimestamp()});
+      });
+
+      _logger.info(
+        'AdminQueueDatasource.transactionStartServing',
+        'Started serving $appointmentId for $orgId on $date',
+      );
+    } on ValidationException {
+      rethrow;
+    } on FirebaseException catch (e, st) {
+      throw DatabaseException(
+        'Failed to start serving: ${e.message}',
+        stackTrace: st,
+      );
+    } catch (e, st) {
+      throw UnknownException(
+        'Unexpected error starting serving',
+        cause: e,
+        stackTrace: st,
+      );
+    }
+  }
+
   /// Rejoins a no-show appointment by appending it to the end of
-  /// `orderedAppointmentIds`. `currentServingIndex` is NOT changed.
+  /// `orderedAppointmentIds` and refreshing its booking-time eligibility.
+  /// `currentServingIndex` is NOT changed.
   ///
   /// Status transition: noShow → inQueue.
   ///
@@ -562,6 +602,7 @@ class AdminQueueDatasource {
           queueData['orderedAppointmentIds'] as List? ?? [],
         );
 
+        orderedIds.removeWhere((id) => id == appointmentId);
         orderedIds.add(appointmentId);
 
         txn.update(appointmentRef, {'status': 'inQueue'});

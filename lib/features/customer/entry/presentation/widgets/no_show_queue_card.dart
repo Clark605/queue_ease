@@ -34,7 +34,7 @@ class NoShowQueueCard extends StatelessWidget {
           const Icon(Icons.error_outline, size: 56, color: AppColors.error),
           const SizedBox(height: 12),
           Text(
-            'You missed your turn',
+            'No-Show Recorded',
             style: AppTextStyles.headlineSmall.copyWith(
               color: AppColors.onSurface,
             ),
@@ -42,9 +42,18 @@ class NoShowQueueCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Your appointment was marked as no-show by the admin.',
+            'Your appointment has been marked as no-show by the business.',
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'If you still need service, contact the business to request rejoin.',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           ),

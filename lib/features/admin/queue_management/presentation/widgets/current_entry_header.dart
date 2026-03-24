@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../domain/models/queue_automation_state.dart';
 import '../../domain/repositories/admin_appointment_repository.dart';
 import 'queue_action_button.dart';
 
@@ -11,6 +13,38 @@ class CurrentEntryHeader extends StatelessWidget {
   const CurrentEntryHeader({super.key, required this.entry});
 
   final QueueEntryView entry;
+  static final _timeFormat = DateFormat('h:mm a');
+
+  /// Formats [totalSeconds] as `m:ss` (e.g. 125 → "2:05").
+  static String _formatCountdown(int totalSeconds) {
+    final m = totalSeconds ~/ 60;
+    final s = totalSeconds % 60;
+    return '$m:${s.toString().padLeft(2, '0')}';
+  }
+
+  String get _statusLabel => switch (entry.automationState) {
+    QueueAutomationState.notDueYet => 'Not due yet',
+    QueueAutomationState.awaitingArrival =>
+      '${_formatCountdown(entry.remainingSeconds ?? 0)} remaining',
+    QueueAutomationState.overdue => 'Overdue',
+    QueueAutomationState.serving => 'Serving',
+  };
+
+  Color get _statusBackgroundColor => switch (entry.automationState) {
+    QueueAutomationState.notDueYet => AppColors.warning.withValues(alpha: 0.12),
+    QueueAutomationState.awaitingArrival => AppColors.primary.withValues(
+      alpha: 0.12,
+    ),
+    QueueAutomationState.overdue => AppColors.error.withValues(alpha: 0.12),
+    QueueAutomationState.serving => AppColors.success,
+  };
+
+  Color get _statusForegroundColor => switch (entry.automationState) {
+    QueueAutomationState.notDueYet => AppColors.warning,
+    QueueAutomationState.awaitingArrival => AppColors.primary,
+    QueueAutomationState.overdue => AppColors.error,
+    QueueAutomationState.serving => Colors.white,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -82,12 +116,40 @@ class CurrentEntryHeader extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 6),
+              Text(
+                'Scheduled ${_timeFormat.format(entry.scheduledAt)} • Deadline ${_timeFormat.format(entry.noShowDeadline)}',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),
         const SizedBox(width: 8),
-        const ServingChip(),
+        if (entry.automationState == QueueAutomationState.serving)
+          const ServingChip()
+        else
+          _buildAutomationChip(),
       ],
+    );
+  }
+
+  Widget _buildAutomationChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: _statusBackgroundColor,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        _statusLabel,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: _statusForegroundColor,
+        ),
+      ),
     );
   }
 }

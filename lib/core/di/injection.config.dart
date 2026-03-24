@@ -39,6 +39,8 @@ import '../../features/admin/queue_management/domain/use_cases/rejoin_skipped_us
     as _i241;
 import '../../features/admin/queue_management/domain/use_cases/skip_queue_entry_use_case.dart'
     as _i388;
+import '../../features/admin/queue_management/domain/use_cases/start_serving_use_case.dart'
+    as _i95;
 import '../../features/admin/queue_management/domain/use_cases/watch_daily_queue_use_case.dart'
     as _i774;
 import '../../features/admin/queue_management/presentation/cubit/queue_management_cubit.dart'
@@ -262,6 +264,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.factory<_i95.StartServingUseCase>(
+      () => _i95.StartServingUseCase(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.factory<_i774.WatchDailyQueueUseCase>(
       () => _i774.WatchDailyQueueUseCase(
         gh<_i761.AdminAppointmentRepository>(),
@@ -310,6 +318,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i952.GetOrganizationBySlugUseCase>(
       () => _i952.GetOrganizationBySlugUseCase(
         gh<_i636.CustomerOrganizationRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i463.QueueManagementCubit>(
+      () => _i463.QueueManagementCubit(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i175.GenerateDailyQueueUseCase>(),
+        gh<_i774.WatchDailyQueueUseCase>(),
+        gh<_i244.AdvanceQueueUseCase>(),
+        gh<_i388.SkipQueueEntryUseCase>(),
+        gh<_i174.MarkNoShowUseCase>(),
+        gh<_i241.RejoinSkippedUseCase>(),
+        gh<_i95.StartServingUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );
@@ -365,18 +386,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i651.BookingFormCubit>(
       () => _i651.BookingFormCubit(
         gh<_i1040.CreateBookingUseCase>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i463.QueueManagementCubit>(
-      () => _i463.QueueManagementCubit(
-        gh<_i761.AdminAppointmentRepository>(),
-        gh<_i175.GenerateDailyQueueUseCase>(),
-        gh<_i774.WatchDailyQueueUseCase>(),
-        gh<_i244.AdvanceQueueUseCase>(),
-        gh<_i388.SkipQueueEntryUseCase>(),
-        gh<_i174.MarkNoShowUseCase>(),
-        gh<_i241.RejoinSkippedUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );

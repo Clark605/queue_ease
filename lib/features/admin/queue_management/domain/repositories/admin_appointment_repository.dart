@@ -2,6 +2,8 @@ import 'package:queue_ease/core/error/result.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_status.dart';
 
+import '../models/queue_automation_state.dart';
+
 // ---------------------------------------------------------------------------
 // View models
 // ---------------------------------------------------------------------------
@@ -21,6 +23,18 @@ class AdminQueueSnapshot {
 
   /// Entries waiting after the current serving index, in queue order.
   final List<QueueEntryView> waiting;
+
+  AdminQueueSnapshot copyWith({
+    DateTime? queueDate,
+    QueueEntryView? current,
+    List<QueueEntryView>? waiting,
+  }) {
+    return AdminQueueSnapshot(
+      queueDate: queueDate ?? this.queueDate,
+      current: current ?? this.current,
+      waiting: waiting ?? this.waiting,
+    );
+  }
 }
 
 /// Display-safe projection of a single queued appointment (no raw PII keys).
@@ -29,17 +43,61 @@ class QueueEntryView {
     required this.appointmentId,
     required this.position,
     required this.customerName,
+    required this.scheduledAt,
     required this.serviceDurationMinutes,
+    required this.effectiveTimeMarginMinutes,
+    required this.noShowDeadline,
+    required this.automationState,
+    required this.allowedActions,
     required this.status,
+    this.remainingSeconds,
     this.estimatedWaitMinutes,
   });
 
   final String appointmentId;
   final int position;
   final String customerName;
+  final DateTime scheduledAt;
   final int serviceDurationMinutes;
+  final int effectiveTimeMarginMinutes;
+  final DateTime noShowDeadline;
+  final QueueAutomationState automationState;
+  final QueueAllowedActions allowedActions;
   final AppointmentStatus status;
+  final int? remainingSeconds;
   final int? estimatedWaitMinutes;
+
+  QueueEntryView copyWith({
+    String? appointmentId,
+    int? position,
+    String? customerName,
+    DateTime? scheduledAt,
+    int? serviceDurationMinutes,
+    int? effectiveTimeMarginMinutes,
+    DateTime? noShowDeadline,
+    QueueAutomationState? automationState,
+    QueueAllowedActions? allowedActions,
+    AppointmentStatus? status,
+    int? remainingSeconds,
+    int? estimatedWaitMinutes,
+  }) {
+    return QueueEntryView(
+      appointmentId: appointmentId ?? this.appointmentId,
+      position: position ?? this.position,
+      customerName: customerName ?? this.customerName,
+      scheduledAt: scheduledAt ?? this.scheduledAt,
+      serviceDurationMinutes:
+          serviceDurationMinutes ?? this.serviceDurationMinutes,
+      effectiveTimeMarginMinutes:
+          effectiveTimeMarginMinutes ?? this.effectiveTimeMarginMinutes,
+      noShowDeadline: noShowDeadline ?? this.noShowDeadline,
+      automationState: automationState ?? this.automationState,
+      allowedActions: allowedActions ?? this.allowedActions,
+      status: status ?? this.status,
+      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+      estimatedWaitMinutes: estimatedWaitMinutes ?? this.estimatedWaitMinutes,
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -92,6 +150,14 @@ abstract class AdminAppointmentRepository {
     required String appointmentId,
   });
 
+  /// Explicitly marks the front queue entry as serving.
+  /// Status transition: `inQueue → serving`.
+  Future<Result<void>> startServing({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  });
+
   /// Moves the current entry to the end of the waiting queue.
   /// Status transition: `serving → inQueue`.
   Future<Result<void>> skip({
@@ -103,6 +169,14 @@ abstract class AdminAppointmentRepository {
   /// Marks the current entry as no-show and promotes the next entry.
   /// Status transition: `serving → noShow`.
   Future<Result<void>> markNoShow({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  });
+
+  /// Marks a front non-serving overdue entry as no-show and advances queue.
+  /// Status transition: `inQueue → noShow`.
+  Future<Result<void>> markOverdueNoShow({
     required String orgId,
     required DateTime date,
     required String appointmentId,

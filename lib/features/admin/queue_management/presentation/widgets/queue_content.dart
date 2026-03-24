@@ -36,21 +36,33 @@ class QueueContent extends StatelessWidget {
             CurrentQueueCard(
               entry: snapshot.current!,
               isActionInFlight: isActionInFlight,
-              onNext: () => context.read<QueueManagementCubit>().next(
-                orgId: orgId,
-                date: DateTime.now(),
-                appointmentId: snapshot.current!.appointmentId,
-              ),
-              onSkip: () => context.read<QueueManagementCubit>().skip(
-                orgId: orgId,
-                date: DateTime.now(),
-                appointmentId: snapshot.current!.appointmentId,
-              ),
-              onNoShow: () => context.read<QueueManagementCubit>().markNoShow(
-                orgId: orgId,
-                date: DateTime.now(),
-                appointmentId: snapshot.current!.appointmentId,
-              ),
+              onNext: snapshot.current!.allowedActions.canComplete
+                  ? () => context.read<QueueManagementCubit>().next(
+                      orgId: orgId,
+                      date: DateTime.now(),
+                      appointmentId: snapshot.current!.appointmentId,
+                    )
+                  : snapshot.current!.allowedActions.canStartServing
+                  ? () => context.read<QueueManagementCubit>().startServing(
+                      orgId: orgId,
+                      date: DateTime.now(),
+                      appointmentId: snapshot.current!.appointmentId,
+                    )
+                  : null,
+              onSkip: snapshot.current!.allowedActions.canSkip
+                  ? () => context.read<QueueManagementCubit>().skip(
+                      orgId: orgId,
+                      date: DateTime.now(),
+                      appointmentId: snapshot.current!.appointmentId,
+                    )
+                  : null,
+              onNoShow: snapshot.current!.allowedActions.canMarkNoShow
+                  ? () => context.read<QueueManagementCubit>().markNoShow(
+                      orgId: orgId,
+                      date: DateTime.now(),
+                      appointmentId: snapshot.current!.appointmentId,
+                    )
+                  : null,
             ),
             const SizedBox(height: 16),
           ] else if (snapshot.waiting.isEmpty) ...[

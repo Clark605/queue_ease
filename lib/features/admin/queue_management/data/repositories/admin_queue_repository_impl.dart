@@ -5,9 +5,12 @@ import 'package:intl/intl.dart';
 import '../../../../../core/error/app_exception.dart';
 import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
+import '../../../../../core/utils/time_utils.dart';
 import '../../../../shared_domain/entities/appointment_entity.dart';
 import '../../../../shared_domain/entities/appointment_status.dart';
 import '../../domain/repositories/admin_appointment_repository.dart';
+import '../../domain/services/effective_time_margin_resolver.dart';
+import '../../domain/services/queue_deadline_evaluator.dart';
 import '../datasources/admin_queue_datasource.dart';
 
 /// Firestore-backed implementation of [AdminAppointmentRepository].
@@ -22,6 +25,8 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
 
   final AdminQueueDatasource _datasource;
   final AppLogger _logger;
+  final _timeMarginResolver = const EffectiveTimeMarginResolver();
+  final _deadlineEvaluator = const QueueDeadlineEvaluator();
 
   static final _dateFormatter = DateFormat('yyyy-MM-dd');
 
@@ -183,9 +188,16 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
           );
         }
 
-        final orderedIds = List<String>.from(
+        final orderedIdsRaw = List<String>.from(
           queueData['orderedAppointmentIds'] as List? ?? [],
         );
+        final orderedIds = <String>[];
+        final seenIds = <String>{};
+        for (final id in orderedIdsRaw) {
+          if (seenIds.add(id)) {
+            orderedIds.add(id);
+          }
+        }
         final currentIndex = queueData['currentServingIndex'] as int? ?? 0;
 
         if (orderedIds.isEmpty) {
@@ -214,6 +226,7 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
             .toSet()
             .toList();
         final serviceDurationById = <String, int>{};
+        final serviceMarginById = <String, int?>{};
 
         for (final serviceIdChunk in _chunks(serviceIds, 30)) {
           final serviceSnap = await _datasource
@@ -225,6 +238,8 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
             final duration = data['durationMinutes'] as int?;
             serviceDurationById[serviceDoc.id] =
                 duration == null || duration < 0 ? 0 : duration;
+            serviceMarginById[serviceDoc.id] =
+                data['timeMarginMinutes'] as int?;
           }
         }
 
@@ -248,7 +263,21 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
           final status = AppointmentStatus.values.byName(
             data['status'] as String? ?? AppointmentStatus.inQueue.name,
           );
+          final scheduledAt = (data['scheduledAt'] as Timestamp?)?.toDate();
+          if (scheduledAt == null) continue;
           final duration = durationByAppointmentId[id] ?? 0;
+          final serviceId = data['serviceId'] as String?;
+          final effectiveMarginMinutes = _timeMarginResolver.resolve(
+            timeMarginMinutes: serviceId == null
+                ? null
+                : serviceMarginById[serviceId],
+          );
+          final automationEvaluation = _deadlineEvaluator.evaluate(
+            now: TimeUtils.nowUtc(),
+            scheduledAt: scheduledAt,
+            effectiveTimeMarginMinutes: effectiveMarginMinutes,
+            status: status,
+          );
 
           final estimatedWaitMinutes = i > currentIndex
               ? (status == AppointmentStatus.noShow ? null : runningWaitMinutes)
@@ -258,8 +287,14 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
             appointmentId: id,
             position: i + 1,
             customerName: data['customerName'] as String? ?? 'Unknown',
+            scheduledAt: scheduledAt,
             serviceDurationMinutes: duration,
+            effectiveTimeMarginMinutes: effectiveMarginMinutes,
+            noShowDeadline: automationEvaluation.noShowDeadline,
+            automationState: automationEvaluation.state,
+            allowedActions: automationEvaluation.allowedActions,
             status: status,
+            remainingSeconds: automationEvaluation.remainingSeconds,
             estimatedWaitMinutes: estimatedWaitMinutes,
           );
 
@@ -323,6 +358,31 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
   }
 
   @override
+  Future<Result<void>> startServing({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  }) {
+    final dateStr = _dateFormatter.format(date);
+    _logger.info('Admin queue action requested', {
+      ..._queueLogContext(
+        operation: 'startServing',
+        orgId: orgId,
+        appointmentId: appointmentId,
+        date: dateStr,
+      ),
+      'action': 'startServing',
+    });
+    return Result.guard(
+      () => _datasource.transactionStartServing(
+        orgId: orgId,
+        date: dateStr,
+        appointmentId: appointmentId,
+      ),
+    );
+  }
+
+  @override
   Future<Result<void>> skip({
     required String orgId,
     required DateTime date,
@@ -373,6 +433,31 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
   }
 
   @override
+  Future<Result<void>> markOverdueNoShow({
+    required String orgId,
+    required DateTime date,
+    required String appointmentId,
+  }) {
+    final dateStr = _dateFormatter.format(date);
+    _logger.info('Admin queue action requested', {
+      ..._queueLogContext(
+        operation: 'markOverdueNoShow',
+        orgId: orgId,
+        appointmentId: appointmentId,
+        date: dateStr,
+      ),
+      'action': 'markOverdueNoShow',
+    });
+    return Result.guard(
+      () => _datasource.transactionMarkOverdueNoShow(
+        orgId: orgId,
+        date: dateStr,
+        appointmentId: appointmentId,
+      ),
+    );
+  }
+
+  @override
   Future<Result<void>> rejoinSkipped({
     required String orgId,
     required DateTime date,
@@ -396,7 +481,18 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
       ),
     ).then(
       (result) => switch (result) {
-        Success() => result,
+        Success() => () {
+          _logger.info('Admin queue action succeeded', {
+            ..._queueLogContext(
+              operation: 'rejoinSkipped',
+              orgId: orgId,
+              appointmentId: appointmentId,
+              date: dateStr,
+            ),
+            'note': 'Rejoin completed and automation timing refreshed',
+          });
+          return result;
+        }(),
         Failure(:final exception) => () {
           _logger.error('Admin queue action failed', {
             ..._queueLogContext(
