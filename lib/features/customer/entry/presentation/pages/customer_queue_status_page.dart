@@ -102,10 +102,7 @@ class _EmptyView extends StatelessWidget {
                   color: AppColors.onSurfaceVariant,
                 ),
                 SizedBox(height: 16),
-                Text(
-                  'Not in queue',
-                  style: AppTextStyles.headlineSmall,
-                ),
+                Text('Not in queue', style: AppTextStyles.headlineSmall),
                 SizedBox(height: 8),
                 Text(
                   "You don't have an active queue entry for today.",
@@ -140,7 +137,11 @@ class _ErrorView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                const Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: AppColors.error,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   message,

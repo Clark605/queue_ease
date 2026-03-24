@@ -132,16 +132,25 @@ void main() {
       blocTest<QueueManagementCubit, QueueManagementState>(
         'emits [Loading, Loaded] when watchDailyQueue succeeds',
         build: () {
-          when(() => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate))
-              .thenAnswer((_) => Stream.value(Success(AdminQueueSnapshot(
-                    queueDate: testDate,
-                    current: null,
-                    waiting: const [],
-                  ))));
-          when(() => mockRepository.watchAppointmentsByDate(
-                orgId: testOrgId,
-                date: testDate,
-              )).thenAnswer((_) => Stream.value([]));
+          when(
+            () => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate),
+          ).thenAnswer(
+            (_) => Stream.value(
+              Success(
+                AdminQueueSnapshot(
+                  queueDate: testDate,
+                  current: null,
+                  waiting: const [],
+                ),
+              ),
+            ),
+          );
+          when(
+            () => mockRepository.watchAppointmentsByDate(
+              orgId: testOrgId,
+              date: testDate,
+            ),
+          ).thenAnswer((_) => Stream.value([]));
 
           return cubit;
         },
@@ -154,21 +163,28 @@ void main() {
           isA<QueueManagementLoaded>(),
         ],
         verify: (cubit) {
-          verify(() => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate))
-              .called(1);
+          verify(
+            () => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate),
+          ).called(1);
         },
       );
 
       blocTest<QueueManagementCubit, QueueManagementState>(
         'emits [Loading, Error] when watchDailyQueue fails',
         build: () {
-          when(() => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate))
-              .thenAnswer((_) => Stream.value(const Failure(
-                    DatabaseException('Failed to load queue'))));
-          when(() => mockRepository.watchAppointmentsByDate(
-                orgId: testOrgId,
-                date: testDate,
-              )).thenAnswer((_) => Stream.value([]));
+          when(
+            () => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate),
+          ).thenAnswer(
+            (_) => Stream.value(
+              const Failure(DatabaseException('Failed to load queue')),
+            ),
+          );
+          when(
+            () => mockRepository.watchAppointmentsByDate(
+              orgId: testOrgId,
+              date: testDate,
+            ),
+          ).thenAnswer((_) => Stream.value([]));
 
           return cubit;
         },
@@ -187,29 +203,42 @@ void main() {
       blocTest<QueueManagementCubit, QueueManagementState>(
         'triggers auto no-show when current entry is overdue',
         build: () {
-          when(() => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate))
-              .thenAnswer((_) => Stream.value(Success(createTestSnapshot(
-                    current: createTestQueueEntry(
-                      appointmentId: testAppointmentId,
-                      status: AppointmentStatus.inQueue,
-                      automationState: QueueAutomationState.overdue,
-                    ),
-                  ))));
-          when(() => mockRepository.watchAppointmentsByDate(
-                orgId: testOrgId,
-                date: testDate,
-              )).thenAnswer((_) => Stream.value([]));
-          when(() => mockRepository.markOverdueNoShow(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate),
+          ).thenAnswer(
+            (_) => Stream.value(
+              Success(
+                createTestSnapshot(
+                  current: createTestQueueEntry(
+                    appointmentId: testAppointmentId,
+                    status: AppointmentStatus.inQueue,
+                    automationState: QueueAutomationState.overdue,
+                  ),
+                ),
+              ),
+            ),
+          );
+          when(
+            () => mockRepository.watchAppointmentsByDate(
+              orgId: testOrgId,
+              date: testDate,
+            ),
+          ).thenAnswer((_) => Stream.value([]));
+          when(
+            () => mockRepository.markOverdueNoShow(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).thenAnswer((_) async => const Success(null));
 
           return cubit;
         },
         act: (cubit) async {
           cubit.watchQueue(orgId: testOrgId, date: testDate);
-          await Future.delayed(const Duration(milliseconds: 100)); // Allow auto no-show to process
+          await Future.delayed(
+            const Duration(milliseconds: 100),
+          ); // Allow auto no-show to process
         },
         expect: () => [
           isA<QueueManagementLoading>(),
@@ -217,46 +246,61 @@ void main() {
           isA<QueueManagementLoaded>(),
         ],
         verify: (cubit) {
-          verify(() => mockRepository.markOverdueNoShow(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).called(1);
+          verify(
+            () => mockRepository.markOverdueNoShow(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).called(1);
         },
       );
 
       blocTest<QueueManagementCubit, QueueManagementState>(
         'does not trigger auto no-show when entry is serving',
         build: () {
-          when(() => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate))
-              .thenAnswer((_) => Stream.value(Success(createTestSnapshot(
-                    current: createTestQueueEntry(
-                      appointmentId: testAppointmentId,
-                      status: AppointmentStatus.serving,
-                      automationState: QueueAutomationState.serving,
-                    ),
-                  ))));
-          when(() => mockRepository.watchAppointmentsByDate(
-                orgId: testOrgId,
-                date: testDate,
-              )).thenAnswer((_) => Stream.value([]));
+          when(
+            () => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate),
+          ).thenAnswer(
+            (_) => Stream.value(
+              Success(
+                createTestSnapshot(
+                  current: createTestQueueEntry(
+                    appointmentId: testAppointmentId,
+                    status: AppointmentStatus.serving,
+                    automationState: QueueAutomationState.serving,
+                  ),
+                ),
+              ),
+            ),
+          );
+          when(
+            () => mockRepository.watchAppointmentsByDate(
+              orgId: testOrgId,
+              date: testDate,
+            ),
+          ).thenAnswer((_) => Stream.value([]));
 
           return cubit;
         },
         act: (cubit) async {
           cubit.watchQueue(orgId: testOrgId, date: testDate);
-          await Future.delayed(const Duration(milliseconds: 100)); // Allow processing
+          await Future.delayed(
+            const Duration(milliseconds: 100),
+          ); // Allow processing
         },
         expect: () => [
           isA<QueueManagementLoading>(),
           isA<QueueManagementLoaded>(),
         ],
         verify: (cubit) {
-          verifyNever(() => mockRepository.markOverdueNoShow(
-                orgId: any(named: 'orgId'),
-                date: any(named: 'date'),
-                appointmentId: any(named: 'appointmentId'),
-              ));
+          verifyNever(
+            () => mockRepository.markOverdueNoShow(
+              orgId: any(named: 'orgId'),
+              date: any(named: 'date'),
+              appointmentId: any(named: 'appointmentId'),
+            ),
+          );
         },
       );
 
@@ -269,20 +313,27 @@ void main() {
             automationState: QueueAutomationState.overdue,
           );
 
-          when(() => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate))
-              .thenAnswer((_) => Stream.periodic(
-                    const Duration(milliseconds: 50),
-                    (_) => Success(createTestSnapshot(current: overdueEntry)),
-                  ).take(3));
-          when(() => mockRepository.watchAppointmentsByDate(
-                orgId: testOrgId,
-                date: testDate,
-              )).thenAnswer((_) => Stream.value([]));
-          when(() => mockRepository.markOverdueNoShow(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).thenAnswer((_) async {
+          when(
+            () => mockWatchDailyQueue.call(orgId: testOrgId, date: testDate),
+          ).thenAnswer(
+            (_) => Stream.periodic(
+              const Duration(milliseconds: 50),
+              (_) => Success(createTestSnapshot(current: overdueEntry)),
+            ).take(3),
+          );
+          when(
+            () => mockRepository.watchAppointmentsByDate(
+              orgId: testOrgId,
+              date: testDate,
+            ),
+          ).thenAnswer((_) => Stream.value([]));
+          when(
+            () => mockRepository.markOverdueNoShow(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).thenAnswer((_) async {
             // Simulate slow network operation
             await Future.delayed(const Duration(milliseconds: 200));
             return const Success(null);
@@ -292,7 +343,9 @@ void main() {
         },
         act: (cubit) async {
           cubit.watchQueue(orgId: testOrgId, date: testDate);
-          await Future.delayed(const Duration(milliseconds: 300)); // Wait for all operations
+          await Future.delayed(
+            const Duration(milliseconds: 300),
+          ); // Wait for all operations
         },
         expect: () => [
           isA<QueueManagementLoading>(),
@@ -303,11 +356,13 @@ void main() {
         ],
         verify: (cubit) {
           // Should only be called once despite multiple emissions
-          verify(() => mockRepository.markOverdueNoShow(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).called(1);
+          verify(
+            () => mockRepository.markOverdueNoShow(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).called(1);
         },
       );
     });
@@ -316,11 +371,13 @@ void main() {
       blocTest<QueueManagementCubit, QueueManagementState>(
         'next (advance) queue successfully',
         build: () {
-          when(() => mockAdvanceQueue.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockAdvanceQueue.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).thenAnswer((_) async => const Success(null));
           return cubit;
         },
         seed: () => QueueManagementLoaded(
@@ -337,22 +394,26 @@ void main() {
           isA<QueueManagementLoaded>(),
         ],
         verify: (cubit) {
-          verify(() => mockAdvanceQueue.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).called(1);
+          verify(
+            () => mockAdvanceQueue.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).called(1);
         },
       );
 
       blocTest<QueueManagementCubit, QueueManagementState>(
         'skip queue entry successfully',
         build: () {
-          when(() => mockSkipQueueEntry.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockSkipQueueEntry.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).thenAnswer((_) async => const Success(null));
           return cubit;
         },
         seed: () => QueueManagementLoaded(
@@ -369,22 +430,26 @@ void main() {
           isA<QueueManagementLoaded>(),
         ],
         verify: (cubit) {
-          verify(() => mockSkipQueueEntry.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).called(1);
+          verify(
+            () => mockSkipQueueEntry.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).called(1);
         },
       );
 
       blocTest<QueueManagementCubit, QueueManagementState>(
         'mark no show successfully',
         build: () {
-          when(() => mockMarkNoShow.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockMarkNoShow.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).thenAnswer((_) async => const Success(null));
           return cubit;
         },
         seed: () => QueueManagementLoaded(
@@ -401,22 +466,26 @@ void main() {
           isA<QueueManagementLoaded>(),
         ],
         verify: (cubit) {
-          verify(() => mockMarkNoShow.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).called(1);
+          verify(
+            () => mockMarkNoShow.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).called(1);
         },
       );
 
       blocTest<QueueManagementCubit, QueueManagementState>(
         'rejoin skipped entry successfully',
         build: () {
-          when(() => mockRejoinSkipped.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockRejoinSkipped.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).thenAnswer((_) async => const Success(null));
           return cubit;
         },
         seed: () => QueueManagementLoaded(
@@ -433,23 +502,28 @@ void main() {
           isA<QueueManagementLoaded>(),
         ],
         verify: (cubit) {
-          verify(() => mockRejoinSkipped.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).called(1);
+          verify(
+            () => mockRejoinSkipped.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).called(1);
         },
       );
 
       blocTest<QueueManagementCubit, QueueManagementState>(
         'handles action failure and emits error state',
         build: () {
-          when(() => mockAdvanceQueue.call(
-                orgId: testOrgId,
-                date: testDate,
-                appointmentId: testAppointmentId,
-              )).thenAnswer((_) async => const Failure(
-                DatabaseException('Action failed')));
+          when(
+            () => mockAdvanceQueue.call(
+              orgId: testOrgId,
+              date: testDate,
+              appointmentId: testAppointmentId,
+            ),
+          ).thenAnswer(
+            (_) async => const Failure(DatabaseException('Action failed')),
+          );
           return cubit;
         },
         seed: () => QueueManagementLoaded(
@@ -472,32 +546,28 @@ void main() {
       blocTest<QueueManagementCubit, QueueManagementState>(
         'generate queue successfully',
         build: () {
-          when(() => mockGenerateQueue.call(
-                orgId: testOrgId,
-                date: testDate,
-              )).thenAnswer((_) async => const Success(null));
+          when(
+            () => mockGenerateQueue.call(orgId: testOrgId, date: testDate),
+          ).thenAnswer((_) async => const Success(null));
           return cubit;
         },
         act: (cubit) => cubit.generateQueue(orgId: testOrgId, date: testDate),
-        expect: () => [
-          isA<QueueManagementLoading>(),
-        ],
+        expect: () => [isA<QueueManagementLoading>()],
         verify: (cubit) {
-          verify(() => mockGenerateQueue.call(
-                orgId: testOrgId,
-                date: testDate,
-              )).called(1);
+          verify(
+            () => mockGenerateQueue.call(orgId: testOrgId, date: testDate),
+          ).called(1);
         },
       );
 
       blocTest<QueueManagementCubit, QueueManagementState>(
         'handle generate queue failure',
         build: () {
-          when(() => mockGenerateQueue.call(
-                orgId: testOrgId,
-                date: testDate,
-              )).thenAnswer((_) async => const Failure(
-                DatabaseException('Generation failed')));
+          when(
+            () => mockGenerateQueue.call(orgId: testOrgId, date: testDate),
+          ).thenAnswer(
+            (_) async => const Failure(DatabaseException('Generation failed')),
+          );
           return cubit;
         },
         act: (cubit) => cubit.generateQueue(orgId: testOrgId, date: testDate),

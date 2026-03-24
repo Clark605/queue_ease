@@ -176,12 +176,16 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     if (_isAutoGenerateInFlight) return;
 
     _isAutoGenerateInFlight = true;
-    _logger.debug('QueueManagementCubit: Auto-generating queue for $orgId on ${_dateFormatter.format(date)}');
+    _logger.debug(
+      'QueueManagementCubit: Auto-generating queue for $orgId on ${_dateFormatter.format(date)}',
+    );
 
     final result = await _generateQueue(orgId: orgId, date: date);
     switch (result) {
       case Success():
-        _logger.debug('QueueManagementCubit: Auto-generated queue successfully');
+        _logger.debug(
+          'QueueManagementCubit: Auto-generated queue successfully',
+        );
         break;
       case Failure(:final exception):
         _logger.error(
@@ -417,9 +421,12 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   bool _canRetryAutoNoShow() {
     if (_lastAutoNoShowFailure == null) return true;
 
-    final backoffMs = math.pow(2, _autoNoShowFailureCount.clamp(0, _maxAutoNoShowRetries))
-        * _baseBackoffDuration.inMilliseconds;
-    final elapsed = TimeUtils.nowUtc().difference(_lastAutoNoShowFailure!).inMilliseconds;
+    final backoffMs =
+        math.pow(2, _autoNoShowFailureCount.clamp(0, _maxAutoNoShowRetries)) *
+        _baseBackoffDuration.inMilliseconds;
+    final elapsed = TimeUtils.nowUtc()
+        .difference(_lastAutoNoShowFailure!)
+        .inMilliseconds;
 
     return elapsed >= backoffMs;
   }
