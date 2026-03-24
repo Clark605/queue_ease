@@ -605,9 +605,7 @@ class AdminQueueDatasource {
         orderedIds.removeWhere((id) => id == appointmentId);
         orderedIds.add(appointmentId);
 
-        txn.update(appointmentRef, {
-          'status': 'inQueue',
-        });
+        txn.update(appointmentRef, {'status': 'inQueue'});
         txn.update(queueRef, {'orderedAppointmentIds': orderedIds});
         // currentServingIndex is intentionally unchanged.
       });
