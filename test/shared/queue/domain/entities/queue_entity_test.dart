@@ -111,6 +111,7 @@ void main() {
         currentServingIndex: 1,
         status: QueueStatus.active,
         generatedAt: testDate,
+        updatedAt: DateTime(2026, 2, 22, 10, 0),
       );
 
       expect(queue.props, [
@@ -121,6 +122,7 @@ void main() {
         1,
         QueueStatus.active,
         testDate,
+        DateTime(2026, 2, 22, 10, 0),
       ]);
     });
   });

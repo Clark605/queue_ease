@@ -5,22 +5,50 @@ void main() {
   group('CalculateWaitTimeUseCase', () {
     const useCase = CalculateWaitTimeUseCase();
 
-    test('returns sum of all positive durations ahead', () {
-      final result = useCase([15, 20, 10]);
+    test(
+      'expectedServiceTime returns correct sum relative to queueUpdatedAt',
+      () {
+        final now = DateTime(2026, 2, 21, 10, 0);
+        final result = useCase.expectedServiceTime(
+          durationsAheadMinutes: [15, 20, 10],
+          queueUpdatedAt: now,
+        );
 
-      expect(result, 45);
+        expect(result, DateTime(2026, 2, 21, 10, 45));
+      },
+    );
+
+    test('expectedServiceTime drops negative durations', () {
+      final now = DateTime(2026, 2, 21, 10, 0);
+      final result = useCase.expectedServiceTime(
+        durationsAheadMinutes: [10, -5, 5],
+        queueUpdatedAt: now,
+      );
+
+      expect(result, DateTime(2026, 2, 21, 10, 15));
     });
 
-    test('clamps negative durations to zero contribution', () {
-      final result = useCase([10, -5, 5]);
+    test('expectedServiceTime returns relative to now if updatedAt is null', () {
+      final result = useCase.expectedServiceTime(
+        durationsAheadMinutes: const [5],
+        queueUpdatedAt: null,
+      );
 
-      expect(result, 15);
+      expect(result, isNotNull);
+      // Since it uses DateTime.now(), we can just check if it's strictly in the future.
+      expect(result!.isAfter(DateTime.now()), isTrue);
     });
 
-    test('returns zero for empty durations list', () {
-      final result = useCase(const []);
+    test(
+      'expectedServiceTime returns null for empty list and null updatedAt',
+      () {
+        final result = useCase.expectedServiceTime(
+          durationsAheadMinutes: const [],
+          queueUpdatedAt: null,
+        );
 
-      expect(result, 0);
-    });
+        expect(result, isNull);
+      },
+    );
   });
 }

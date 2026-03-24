@@ -1,6 +1,6 @@
 # Queue Ease - Feature Implementation Checklist
 
-**Last Updated:** March 15, 2026
+**Last Updated:** March 16, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 
 ---
@@ -195,7 +195,21 @@
 - ✅ Success/error snackbar feedback
 - ⏳ Link customization (future enhancement)
 
-### 4.7 Daily Summary
+### 4.7 Staff Member Management - 🚧 IN PROGRESS (Sprint 6A)
+- ⏳ Staff member entity and model definition
+- ⏳ Staff member CRUD operations (create, read, update, delete)
+- ⏳ Staff management UI (list, add, edit, delete)
+- ⏳ Service-to-staff assignment (one service = one staff member)
+- ⏳ Staff member active/inactive toggle
+- ⏳ Staff deletion prevention when services assigned
+- ⏳ Queue UI enhancements (staff column display)
+- ⏳ Staff filtering in queue management
+- ⏳ Customer booking with transparent staff assignment
+- ⏳ Data migration script for existing services/appointments
+- ⏳ Firestore security rules for staff subcollection
+- ⏳ Staff assignment validation in service form
+
+### 4.8 Daily Summary
 - ⏳ Daily summary page
 - ⏳ Total appointments served count
 - ⏳ Average waiting time calculation
@@ -295,15 +309,15 @@
 - ✅ Queue ordering algorithm
 - ✅ Queue position calculation
 - ✅ Estimated wait time calculation
-- ⏳ Time margin enforcement (client-side with Firestore rules validation)
-- ⏳ Automatic no-show detection (client-side triggered by admin viewing queue)
+- ✅ Time margin enforcement (client-side with Firestore rules validation)
+- ✅ Automatic no-show detection (client-side triggered by admin viewing queue)
 - ✅ Queue advancement logic
 
 ### 6.3 Time Management
 - ⏳ Service duration tracking
-- ⏳ Time margin/grace period logic
+- ✅ Time margin/grace period logic
 - ⏳ Countdown timer for customer turns
-- ⏳ Automatic status updates on timeout
+- ✅ Automatic status updates on timeout
 
 ---
 
@@ -315,7 +329,6 @@
 - ✅ Customer view auto-refresh
 - ✅ Admin view auto-refresh
 - ✅ Connection state handling (error mapping + retry UX in cubits)
-- ⏳ Offline support
 
 ---
 
@@ -346,21 +359,22 @@
 - ✅ UserEntity (uid, email, role, displayName, phone, orgId, createdAt)
 - ✅ UserRole enum (admin, customer)
 - ✅ OrganizationEntity (id, name, adminUid, bookingLinkSlug, isOpen, qrCodeUrl, address, logoUrl, description, createdAt)
-- ✅ ServiceEntity (id, orgId, name, durationMinutes, timeMarginMinutes, isActive, price, queueType, description, createdAt)
+- 🚧 ServiceEntity (id, orgId, name, durationMinutes, timeMarginMinutes, isActive, price, queueType, description, **staffId**, **staffName**, createdAt) [Sprint 6A: Breaking change - added staff fields]
 - ✅ WorkingHoursEntity (orgId, dayOfWeek, isOpen, openTime, closeTime, breakStart, breakEnd)
-- ✅ AppointmentEntity (id, orgId, serviceId, customerId, customerName, customerPhone, scheduledAt, status, queuePosition, createdAt)
+- 🚧 AppointmentEntity (id, orgId, serviceId, customerId, customerName, customerPhone, scheduledAt, status, queuePosition, **staffId**, **staffName**, createdAt) [Sprint 6A: Breaking change - added staff fields]
 - ✅ AppointmentStatus enum (booked, inQueue, serving, completed, noShow)
 - ✅ QueueEntity (id, orgId, date, orderedAppointmentIds, currentServingIndex, status, generatedAt)
 - ✅ QueueStatus enum (active, paused, closed)
-- ⏳ QueueEntry entity (deferred - Phase 5)
+- 🚧 StaffMemberEntity (id, orgId, name, role, phone, email, isActive, createdAt) [Sprint 6A: NEW entity]
 
 ### 9.2 Firestore Data Models
 - ✅ Users collection (basic schema implemented in FirestoreUserDatasource)
 - ✅ OrganizationModel with Firestore serialization (fromFirestore, toFirestore)
-- ✅ ServiceModel with Firestore serialization
+- 🚧 ServiceModel with Firestore serialization [Sprint 6A: Updated with staffId/staffName]
 - ✅ WorkingHoursModel with Firestore serialization
-- ✅ AppointmentModel with Firestore serialization
+- 🚧 AppointmentModel with Firestore serialization [Sprint 6A: Updated with staffId/staffName]
 - ✅ QueueModel with Firestore serialization
+- 🚧 StaffMemberModel with Firestore serialization [Sprint 6A: NEW model]
 - ⏳ Notifications collection schema
 
 ### 9.3 Entity & Model Tests
@@ -483,7 +497,11 @@
 - 📋 Advanced analytics dashboards
 - 📋 Queue history & reports
 - 📋 Customer feedback system
-- 📋 Staff management
+- 🚧 Staff management (MVP implementation in Sprint 6A - hybrid single-queue model)
+- 📋 Separate queues per staff member (post-MVP - v1.1)
+- 📋 Staff-specific working hours (post-MVP - v1.1)
+- 📋 Customer staff preferences (post-MVP - v1.1)
+- 📋 Staff performance analytics (post-MVP - v1.1)
 - 📋 Multiple admin users per organization
 - 📋 Custom branding per organization
 
@@ -518,9 +536,9 @@
 - [ ] App deployed to Firebase Hosting / App Stores (internal testing)
 
 ### Current Progress Summary
-**Completed:** ~70-75% (Core infrastructure, booking flow, queue system, customer dashboard, access portal)
-**In Progress:** Sprint 6 planning and business-logic automation hardening
-**Pending:** ~25-30%
+**Completed:** ~70% (Core infrastructure, booking flow, queue system, customer dashboard, access portal, business automation)
+**In Progress:** Sprint 6A - Staff Member Management (hybrid approach)
+**Pending:** ~25-30% (Notifications, testing, deployment)
 
 **Key Achievements:**
 - ✅ Complete authentication system (email/password, Google Sign-In, password reset)
@@ -546,9 +564,12 @@
 4. ~~Build Service Management CRUD (admin UI)~~ ✅ COMPLETE
 5. ~~Build Working Hours configuration (admin UI)~~ ✅ COMPLETE
 6. ~~Implement booking flow with conflict prevention~~ ✅ COMPLETE
-7. ~~Build queue generation and management system (Sprint 5 — next)~~ ✅ COMPLETE
+7. ~~Build queue generation and management system (Sprint 5)~~ ✅ COMPLETE
 8. ~~Build customer queue status view (Sprint 5)~~ ✅ COMPLETE
-9. Implement time margin enforcement and automatic no-show workflows (Sprint 6)
+9. ~~Implement time margin enforcement and automatic no-show workflows (Sprint 6/7)~~ ✅ COMPLETE
+10. 🚧 Implement staff member management with hybrid queue model (Sprint 6A — IN PROGRESS)
+11. Implement FCM push notifications (Sprint 7)
+12. Comprehensive testing and deployment (Sprint 8)
 
 ---
 
@@ -590,10 +611,17 @@
 14. ✅ Real-time updates implementation
 15. ⏳ Client-side no-show detection logic
 
-### Phase 6: Business Logic (Week 5-6)
-15. Time margin enforcement (client-side)
-16. Automatic no-show detection (client-side)
-17. Wait time estimation
+### Phase 5A: Staff Member Management (Weeks 5.5-6.5) - 🚧 IN PROGRESS (Sprint 6A)
+15a. Staff member entity and CRUD operations
+15b. Service-staff assignment (one-to-many)
+15c. Appointment staff inheritance
+15d. Queue UI staff filtering
+15e. Data migration for existing services/appointments
+
+### Phase 6: Business Logic (Week 7-8)
+16. Time margin enforcement (client-side)
+17. Automatic no-show detection (client-side)
+18. Wait time estimation
 
 ### Phase 7: Notifications & Polish (Week 6-7)
 18. FCM integration (firebase_messaging package)
@@ -610,7 +638,13 @@
 
 ## Notes
 
-- This checklist was last updated on **March 15, 2026** to reflect:
+- This checklist was last updated on **March 17, 2026** to reflect:
+  - **Sprint 6A (Staff Management) added** using hybrid approach (critical for MVP)
+  - Staff member entity and CRUD added to feature list
+  - ServiceEntity and AppointmentEntity marked with breaking changes (staffId fields)
+  - Updated timeline to account for 2-week staff management sprint
+  - Queue filtering (not separate queues per staff) included in Sprint 6A scope
+- This checklist was updated on **March 15, 2026** to reflect:
   - **Sprint 4 Polish completed** (build_runner regeneration, Talker audit, auth-redirect verification, smoke test)
   - **Sprint 5 complete (T001–T064)** including queue system, customer dashboard (US5), and access portal (US6)
   - Admin queue actions (`next`, `skip`, `no-show`, `rejoin`) and idempotent queue generation are live

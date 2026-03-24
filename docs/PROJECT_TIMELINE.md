@@ -1,9 +1,9 @@
 # Queue Ease - Project Timeline & Network Diagrams
 
-**Last Updated:** March 15, 2026
+**Last Updated:** March 16, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 **Timeline:** ~6 Weeks Remaining (MVP)
-**Current Status:** ✅ Phase 1 Complete + Sprint 2 (Admin Core) Complete + Sprint 3 (Working Hours & QR/Share) Complete + Sprint 4 (Customer Booking Flow) Complete + Sprint 5 (Queue System + Customer Dashboard + Access Portal) Complete
+**Current Status:** ✅ Phase 1 Complete + Sprint 2 (Admin Core) Complete + Sprint 3 (Working Hours & QR/Share) Complete + Sprint 4 (Customer Booking Flow) Complete + Sprint 5 (Queue System + Customer Dashboard + Access Portal) Complete + Sprint 6 (Business Logic & Automation) Complete
 **Development Approach:** Agile Incremental (Repo + Feature per Sprint)
 
 ---
@@ -69,10 +69,40 @@
 - ✅ Queue logging and user-facing error messaging alignment across queue cubits
 - ✅ DI and routing updates for dashboard, queue status, and access portal
 
+**✅ SPRINT 6/7 COMPLETE (March 16, 2026)**
+- ✅ Time margin countdown for current customer (booking-time based)
+- ✅ Pre-booking action lock ("Not due yet" state)
+- ✅ Auto no-show detection on queue mount and countdown expiry
+- ✅ Explicit start-serving action with queue generation refactor
+- ✅ Customer no-show status messaging (real-time updates)
+- ✅ Rejoin remains reversible after automation
+- ✅ Firestore rules updated for serving-first lifecycle
+
+**🚧 IN PROGRESS (Sprint 6A - March 17-29, 2026)**
+- Staff Member Management (Hybrid Approach — Critical for MVP)
+  - StaffMemberEntity and CRUD operations
+  - ServiceEntity breaking change (add staffId/staffName)
+  - AppointmentEntity breaking change (add staffId/staffName)
+  - Staff management UI (list, create, edit, delete)
+  - Service-to-staff assignment validation
+  - Queue UI staff filtering and display
+  - Customer booking with transparent staff inheritance
+  - Data migration script for existing services/appointments
+  - Firestore security rules for staff subcollection
+
 **⏳ PENDING (Agile Incremental Approach)**
-- Sprint 6 (Weeks 9-10): Business Logic & Automation
-- Sprint 7 (Weeks 11-12): Notifications & Polish
-- Sprint 8 (Weeks 13-14): Testing & Deployment
+- Sprint 7 (Weeks 12-13, April 2026): Notifications & Polish
+  - FCM push notifications setup
+  - Admin-triggered notifications (turn approaching, your turn, missed turn)
+  - In-app notification UI
+  - Notification preferences
+  - UI/UX polish across all features
+- Sprint 8 (Weeks 14-15, April 2026): Testing & Deployment
+  - Comprehensive unit, widget, and integration tests
+  - E2E smoke testing on production data
+  - Performance profiling and optimization
+  - Production deployment preparation
+  - User documentation and admin guides
 
 **Note:** Each sprint delivers a complete, demoable feature (repository + business logic + UI + tests).
 
@@ -82,7 +112,7 @@
 
 ```mermaid
 gantt
-    title Queue Ease MVP Development Timeline (Updated Mar 15, 2026)
+    title Queue Ease MVP Development Timeline (Updated Mar 17, 2026)
     dateFormat YYYY-MM-DD
     section ✅ Phase 1: Foundation (COMPLETE)
     Authentication System           :done, p1a, 2026-02-17, 5d
@@ -93,18 +123,46 @@ gantt
     Constitution v1.0.0            :done, p1f, 2026-02-25, 1d
     Firestore Security Rules       :done, p1c, 2026-02-26, 3d
 
-    section Phase 2: Repository Layer (NEXT)
-    Repository Foundations         :active, p2a, 2026-03-01, 3d
+    section ✅ Sprint 2: Admin Core (COMPLETE)
+    Repository Foundations         :done, p2a, 2026-03-01, 3d
+    Service Management CRUD        :done, p3a, 2026-03-04, 4d
+    Organization Profile           :done, p2b, 2026-03-06, 2d
 
-    section Phase 3: Admin Core
-    Service Management CRUD        :p3a, 2026-03-04, 4d
-    Working Hours Config           :p3b, 2026-03-08, 3d
-    QR Code Generation             :p3c, 2026-03-11, 2d
-    Share Access Feature           :p3d, 2026-03-13, 2d
+    section ✅ Sprint 3: Working Hours & Share (COMPLETE)
+    Working Hours Config           :done, p3b, 2026-03-08, 3d
+    QR Code Generation             :done, p3c, 2026-03-11, 2d
+    Share Access Feature           :done, p3d, 2026-03-13, 2d
 
-    section Phase 4: Customer Core
-    Organization Landing           :p4a, 2026-03-15, 3d
-    Service Selection              :p4b, 2026-03-18, 2d
+    section ✅ Sprint 4: Customer Booking (COMPLETE)
+    Organization Landing           :done, p4a, 2026-03-08, 2d
+    Service Selection              :done, p4b, 2026-03-10, 2d
+    Slot Picker & Booking          :done, p4c, 2026-03-12, 4d
+
+    section ✅ Sprint 5: Queue System (COMPLETE)
+    Queue Generation & Actions     :done, p5a, 2026-03-08, 5d
+    Customer Queue Status          :done, p5b, 2026-03-11, 3d
+    Customer Dashboard             :done, p5c, 2026-03-13, 2d
+    Access Portal (QR/URL)         :done, p5d, 2026-03-15, 1d
+
+    section ✅ Sprint 6/7: Business Automation (COMPLETE)
+    Countdown & Pre-booking Lock   :done, p6a, 2026-03-15, 2d
+    Auto No-Show Detection         :done, p6b, 2026-03-16, 1d
+
+    section 🚧 Sprint 6A: Staff Management (IN PROGRESS)
+    Staff Entity & Repository      :active, p6a1, 2026-03-17, 3d
+    Service/Appointment Updates    :p6a2, 2026-03-20, 2d
+    Staff Management UI            :p6a3, 2026-03-22, 2d
+    Queue Staff Filtering          :p6a4, 2026-03-24, 2d
+    Data Migration & Rules         :p6a5, 2026-03-26, 2d
+    Integration & Testing          :p6a6, 2026-03-28, 2d
+
+    section Sprint 7: Notifications (UPCOMING)
+    FCM Setup & Integration        :p7a, 2026-04-01, 4d
+    UI/UX Polish                   :p7b, 2026-04-05, 3d
+
+    section Sprint 8: Testing & Deployment (UPCOMING)
+    Comprehensive Testing          :p8a, 2026-04-08, 4d
+    Production Deployment          :p8b, 2026-04-12, 3d
     Booking Flow UI                :p4c, 2026-03-20, 4d
     Conflict Prevention            :p4d, 2026-03-24, 3d
 
@@ -449,13 +507,13 @@ pie title Development Time Distribution
 - [x] **Milestone 4 (Week 4):** ✅ Admin can configure working hours and share organization via QR
 - [x] **Milestone 5 (Weeks 5-6):** ✅ Customers can book appointments (end-to-end booking flow — org landing → service → slot → form → confirmation)
 - [x] **Milestone 6 (Weeks 7-8):** ✅ Queue system operational with real-time updates
-- [ ] **Milestone 7 (Weeks 9-10):** Time margin and automation working (client-side)
+- [x] **Milestone 7 (Weeks 9-10):** ✅ Time margin and automation working (client-side)
 - [ ] **Milestone 8 (Weeks 11-12):** Notifications functional, UI polished
 - [ ] **Milestone 9 (Weeks 13-14):** MVP fully tested and deployed
 
 ---
 
-## 📊 Overall Progress Summary (as of March 15, 2026)
+## 📊 Overall Progress Summary (as of March 16, 2026)
 
 ### Completed Work
 - ✅ **Authentication System** - Fully functional with email/password and Google Sign-In
@@ -478,23 +536,25 @@ pie title Development Time Distribution
 - ✅ **Queue System** - Queue generation, admin queue actions, customer queue status, wait-time estimates
 - ✅ **Customer Dashboard** - Active queue card, upcoming appointment card, explicit empty states
 - ✅ **Customer Access Portal** - Camera QR scan, gallery QR scan, manual URL parsing
+- ✅ **Business Logic & Automation** - Booking-time countdown, pre-booking action lock, auto no-show progression, rejoin refresh, customer no-show guidance
 
 ### Current Status
-- **Overall Progress:** ~70-75% complete
+- **Overall Progress:** ~80% complete
 - **Phase 1 (Foundation):** ✅ COMPLETE
 - **Sprint 2 (Admin Core):** ✅ COMPLETE
 - **Sprint 3 (Working Hours + QR/Share):** ✅ COMPLETE
 - **Sprint 4 (Customer Booking Flow):** ✅ COMPLETE
 - **Sprint 5 (Queue System + Dashboard + Access Portal):** ✅ COMPLETE
+- **Sprint 6 (Business Logic & Automation):** ✅ COMPLETE
 - **Current Branch:** `develop`
-- **Next Sprint:** Sprint 6 — Business Logic & Automation
-- **Estimated Completion:** ~6 weeks remaining
+- **Next Sprint:** Sprint 7 — Notifications & Polish
+- **Estimated Completion:** ~4 weeks remaining
 
-### Next Immediate Tasks (Sprint 6 Focus)
-1. Implement time margin countdown UI and enforcement flow
-2. Add automatic no-show detection execution path and validation scenarios
-3. Expand queue/domain unit tests for automation edge cases
-4. Prepare notification prerequisites for Sprint 7 (FCM token/storage groundwork)
+### Next Immediate Tasks (Sprint 7 Focus)
+1. Integrate Firebase Cloud Messaging token registration and storage
+2. Implement queue-event notification triggers and delivery handling
+3. Expand widget/integration test coverage for notifications and queue UX
+4. Finalize UI polish and accessibility pass across key screens
 
 ---
 
@@ -504,10 +564,11 @@ pie title Development Time Distribution
 3. ✅ Sprint 3: Working Hours + QR/Share — COMPLETE (March 10, 2026)
 4. ✅ Sprint 4: Customer Booking Flow — COMPLETE (March 15, 2026)
 5. ✅ Sprint 5: Queue System + Customer Dashboard + Access Portal — COMPLETE (March 15, 2026)
+6. ✅ Sprint 6: Business Logic & Automation — COMPLETE (March 16, 2026)
 
 **Current Sprint:**
-6. ⏳ Sprint 6: Business Logic & Automation — NEXT
+7. ⏳ Sprint 7: Notifications & Polish — NEXT
 
 **For Updates:**
-- [Feature Checklist](FEATURE_CHECKLIST.md) - ✅ Updated March 15, 2026
+- [Feature Checklist](FEATURE_CHECKLIST.md) - ✅ Updated March 16, 2026
 - [PRD](PRD.md) - Product Requirements Document
