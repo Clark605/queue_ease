@@ -102,6 +102,31 @@ service cloud.firestore {
     }
 
     /**
+     * Get the time margin for a service, with fallback to 2 minutes.
+     * @param orgId - Organization ID containing the service
+     * @param serviceId - Service ID to look up
+     * @returns Time margin in minutes (2 minute fallback for invalid/missing)
+     */
+    function getServiceTimeMargin(orgId, serviceId) {
+      let serviceDoc = get(/databases/$(database)/documents/organizations/$(orgId)/services/$(serviceId)).data;
+      let margin = serviceDoc.timeMarginMinutes;
+      // Return 2 minute fallback for null, invalid, or out-of-range margins
+      return (margin is int && margin >= 0 && margin <= 60) ? margin : 2;
+    }
+
+    /**
+     * Calculate appointment deadline in milliseconds since epoch.
+     * @param scheduledAt - Appointment scheduled timestamp
+     * @param orgId - Organization ID for service lookup
+     * @param serviceId - Service ID for margin lookup
+     * @returns Deadline timestamp in milliseconds
+     */
+    function getAppointmentDeadline(scheduledAt, orgId, serviceId) {
+      let marginMinutes = getServiceTimeMargin(orgId, serviceId);
+      return scheduledAt.toMillis() + (marginMinutes * 60 * 1000);
+    }
+
+    /**
      * Validate that an appointment status transition is permitted.
      * Allowed transitions:
      *   booked   -> inQueue   (queue generation)
@@ -113,14 +138,25 @@ service cloud.firestore {
       *
       * Note: serving -> noShow is intentionally blocked in the clarified
       * lifecycle. No-show applies only while entry is not yet serving.
+      *
+      * SECURITY: inQueue -> noShow requires server-side deadline validation
+      * to prevent malicious clients from bypassing auto no-show logic.
      */
-    function isValidStatusTransition(from, to) {
-      return (from == 'booked'  && to == 'inQueue')
+    function isValidStatusTransition(from, to, appointmentData, orgId) {
+      let basicTransition = (from == 'booked'  && to == 'inQueue')
           || (from == 'inQueue' && to == 'serving')
-          || (from == 'inQueue' && to == 'noShow')
           || (from == 'serving' && to == 'completed')
           || (from == 'serving' && to == 'inQueue')
           || (from == 'noShow'  && to == 'inQueue');
+
+      // Special validation for noShow transition - must be after deadline
+      return (from == 'inQueue' && to == 'noShow')
+        ? (request.time.toMillis() >= getAppointmentDeadline(
+            appointmentData.scheduledAt,
+            orgId,
+            appointmentData.serviceId
+          ))
+        : basicTransition;
     }
     
     // =============================================================================
@@ -282,7 +318,7 @@ service cloud.firestore {
           && request.resource.data.scheduledAt is timestamp
           // Re-validate status enum and enforce permitted transitions
           && request.resource.data.status in ['booked','inQueue','serving','completed','noShow']
-          && isValidStatusTransition(resource.data.status, request.resource.data.status)
+          && isValidStatusTransition(resource.data.status, request.resource.data.status, request.resource.data, orgId)
           && hasOnlyAllowedFields(['orgId','customerId','serviceId','customerName','customerPhone','queuePosition','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
 
         allow delete: if isAuthenticated() && ownsOrganization(orgId);
