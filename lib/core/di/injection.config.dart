@@ -321,6 +321,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.factory<_i463.QueueManagementCubit>(
+      () => _i463.QueueManagementCubit(
+        gh<_i761.AdminAppointmentRepository>(),
+        gh<_i175.GenerateDailyQueueUseCase>(),
+        gh<_i774.WatchDailyQueueUseCase>(),
+        gh<_i244.AdvanceQueueUseCase>(),
+        gh<_i388.SkipQueueEntryUseCase>(),
+        gh<_i174.MarkNoShowUseCase>(),
+        gh<_i241.RejoinSkippedUseCase>(),
+        gh<_i95.StartServingUseCase>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.lazySingleton<_i960.AdminOrganizationRepository>(
       () => _i397.AdminOrganizationRepositoryImpl(
         gh<_i826.AdminOrganizationDatasource>(),
@@ -373,18 +386,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i651.BookingFormCubit>(
       () => _i651.BookingFormCubit(
         gh<_i1040.CreateBookingUseCase>(),
-        gh<_i924.AppLogger>(),
-      ),
-    );
-    gh.factory<_i463.QueueManagementCubit>(
-      () => _i463.QueueManagementCubit(
-        gh<_i761.AdminAppointmentRepository>(),
-        gh<_i175.GenerateDailyQueueUseCase>(),
-        gh<_i774.WatchDailyQueueUseCase>(),
-        gh<_i244.AdvanceQueueUseCase>(),
-        gh<_i388.SkipQueueEntryUseCase>(),
-        gh<_i174.MarkNoShowUseCase>(),
-        gh<_i241.RejoinSkippedUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );

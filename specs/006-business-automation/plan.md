@@ -1,7 +1,7 @@
 # Implementation Plan: Business Logic & Automation
 
-**Branch**: `007-business-automation` | **Date**: 2026-03-15 | **Spec**: `/specs/007-business-automation/spec.md`
-**Input**: Feature specification from `/specs/007-business-automation/spec.md`
+**Branch**: `006-business-automation` | **Date**: 2026-03-15 | **Spec**: `/specs/006-business-automation/spec.md`
+**Input**: Feature specification from `/specs/006-business-automation/spec.md`
 
 **Note**: This plan is generated from the clarified Sprint 6 business-automation spec and grounded in the existing Flutter + Firebase queue-management implementation.
 
@@ -44,7 +44,7 @@ Implement booking-time-based queue automation for admin and customer flows by re
 ### Documentation (this feature)
 
 ```text
-specs/007-business-automation/
+specs/006-business-automation/
 ├── spec.md
 ├── plan.md
 ├── research.md
@@ -130,7 +130,7 @@ test/
 
 ## Phase 0: Research Output
 
-- Completed in `/specs/007-business-automation/research.md`
+- Completed in `/specs/006-business-automation/research.md`
 - Key resolved topics:
   - reuse existing Flutter/Firebase stack
   - fix implicit-serving root cause in queue flow
@@ -140,9 +140,9 @@ test/
 
 ## Phase 1: Design Output
 
-- Data model: `/specs/007-business-automation/data-model.md`
-- UI contract: `/specs/007-business-automation/contracts/admin_queue_automation_contract.md`
-- Validation guide: `/specs/007-business-automation/quickstart.md`
+- Data model: `/specs/006-business-automation/data-model.md`
+- UI contract: `/specs/006-business-automation/contracts/admin_queue_automation_contract.md`
+- Validation guide: `/specs/006-business-automation/quickstart.md`
 
 ## Implementation Outline
 

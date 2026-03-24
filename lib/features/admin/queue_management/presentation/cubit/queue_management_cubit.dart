@@ -18,6 +18,7 @@ import '../../domain/use_cases/generate_daily_queue_use_case.dart';
 import '../../domain/use_cases/mark_no_show_use_case.dart';
 import '../../domain/use_cases/rejoin_skipped_use_case.dart';
 import '../../domain/use_cases/skip_queue_entry_use_case.dart';
+import '../../domain/use_cases/start_serving_use_case.dart';
 import '../../domain/use_cases/watch_daily_queue_use_case.dart';
 import 'queue_management_state.dart';
 
@@ -38,6 +39,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     this._skipQueueEntry,
     this._markNoShow,
     this._rejoinSkipped,
+    this._startServingUseCase,
     this._logger,
   ) : super(const QueueManagementInitial());
 
@@ -48,6 +50,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   final SkipQueueEntryUseCase _skipQueueEntry;
   final MarkNoShowUseCase _markNoShow;
   final RejoinSkippedUseCase _rejoinSkipped;
+  final StartServingUseCase _startServingUseCase;
   final AppLogger _logger;
 
   StreamSubscription<Result<AdminQueueSnapshot>>? _queueSub;
@@ -249,7 +252,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     required DateTime date,
     required String appointmentId,
   }) => _runAction(
-    action: () => _repository.startServing(
+    action: () => _startServingUseCase(
       orgId: orgId,
       date: date,
       appointmentId: appointmentId,

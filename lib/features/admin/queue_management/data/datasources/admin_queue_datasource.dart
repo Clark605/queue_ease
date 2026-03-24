@@ -607,7 +607,6 @@ class AdminQueueDatasource {
 
         txn.update(appointmentRef, {
           'status': 'inQueue',
-          'scheduledAt': FieldValue.serverTimestamp(),
         });
         txn.update(queueRef, {'orderedAppointmentIds': orderedIds});
         // currentServingIndex is intentionally unchanged.

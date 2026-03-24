@@ -1,13 +1,13 @@
 # Tasks: Business Logic & Automation
 
-**Input**: Design documents from `/specs/007-business-automation/`
+**Input**: Design documents from `/specs/006-business-automation/`
 **Prerequisites**: `plan.md` (required), `spec.md` (required), `research.md`, `data-model.md`, `contracts/`
 
 ## Phase 1: Setup (Shared Infrastructure)
 
 **Purpose**: Prepare the codebase for Sprint 6 automation work.
 
-- [x] T001 Update sprint references and branch naming consistency in specs docs at specs/007-business-automation/spec.md and specs/007-business-automation/plan.md
+- [x] T001 Update sprint references and branch naming consistency in specs docs at specs/006-business-automation/spec.md and specs/006-business-automation/plan.md
 - [x] T002 Run code generation prerequisites by validating Injectable annotations in lib/core/di/injection.dart
 - [x] T003 [P] Create admin queue-management test file structure in test/admin/queue_management/ and customer queue-status test structure in test/customer/
 
@@ -143,7 +143,7 @@
 
 - [x] T043 [P] Regenerate dependency-injection output after annotation changes using lib/core/di/injection.config.dart
 - [x] T044 [P] Run and fix lint/format issues for touched Dart files across lib/features/admin/queue_management/ and lib/features/customer/entry/
-- [x] T045 Execute quickstart validation scenarios and document outcomes in specs/007-business-automation/quickstart.md
+- [x] T045 Execute quickstart validation scenarios and document outcomes in specs/006-business-automation/quickstart.md
 - [x] T046 [P] Add/update sprint documentation references in docs/FEATURE_CHECKLIST.md and docs/PROJECT_TIMELINE.md (if in scope for this feature branch)
 - [x] T047 Run targeted regression tests for queue actions and booking-model serialization in test/admin/queue_management/ and test/shared/booking/
 

@@ -13,6 +13,7 @@ import 'package:queue_ease/features/admin/queue_management/domain/use_cases/gene
 import 'package:queue_ease/features/admin/queue_management/domain/use_cases/mark_no_show_use_case.dart';
 import 'package:queue_ease/features/admin/queue_management/domain/use_cases/rejoin_skipped_use_case.dart';
 import 'package:queue_ease/features/admin/queue_management/domain/use_cases/skip_queue_entry_use_case.dart';
+import 'package:queue_ease/features/admin/queue_management/domain/use_cases/start_serving_use_case.dart';
 import 'package:queue_ease/features/admin/queue_management/domain/use_cases/watch_daily_queue_use_case.dart';
 import 'package:queue_ease/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart';
 import 'package:queue_ease/features/admin/queue_management/presentation/cubit/queue_management_state.dart';
@@ -35,6 +36,8 @@ class MockMarkNoShowUseCase extends Mock implements MarkNoShowUseCase {}
 
 class MockRejoinSkippedUseCase extends Mock implements RejoinSkippedUseCase {}
 
+class MockStartServingUseCase extends Mock implements StartServingUseCase {}
+
 class MockAppLogger extends Mock implements AppLogger {}
 
 void main() {
@@ -47,6 +50,7 @@ void main() {
     late MockSkipQueueEntryUseCase mockSkipQueueEntry;
     late MockMarkNoShowUseCase mockMarkNoShow;
     late MockRejoinSkippedUseCase mockRejoinSkipped;
+    late MockStartServingUseCase mockStartServing;
     late MockAppLogger mockLogger;
 
     // Test data
@@ -103,6 +107,7 @@ void main() {
       mockSkipQueueEntry = MockSkipQueueEntryUseCase();
       mockMarkNoShow = MockMarkNoShowUseCase();
       mockRejoinSkipped = MockRejoinSkippedUseCase();
+      mockStartServing = MockStartServingUseCase();
       mockLogger = MockAppLogger();
 
       cubit = QueueManagementCubit(
@@ -113,6 +118,7 @@ void main() {
         mockSkipQueueEntry,
         mockMarkNoShow,
         mockRejoinSkipped,
+        mockStartServing,
         mockLogger,
       );
 
