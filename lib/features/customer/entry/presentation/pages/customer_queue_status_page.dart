@@ -14,6 +14,7 @@ import '../widgets/wait_time_chip.dart';
 ///
 /// Connects to [CustomerQueueStatusCubit] and renders the appropriate
 /// view based on the current state. Uses [BlocBuilder] for live stream updates.
+/// Supports pull-to-refresh to handle missed real-time updates.
 class CustomerQueueStatusPage extends StatelessWidget {
   const CustomerQueueStatusPage({super.key});
 
@@ -38,17 +39,31 @@ class CustomerQueueStatusPage extends StatelessWidget {
           return switch (state) {
             CustomerQueueStatusInitial() ||
             CustomerQueueStatusLoading() => const _LoadingView(),
-            CustomerQueueStatusEmpty() => const _EmptyView(),
+            CustomerQueueStatusEmpty() => _EmptyView(
+              onRefresh: () => _onRefresh(context),
+            ),
             CustomerQueueStatusError(:final message) => _ErrorView(
               message: message,
+              onRefresh: () => _onRefresh(context),
             ),
             CustomerQueueStatusLoaded(:final status) => _LoadedView(
               status: status,
+              onRefresh: () => _onRefresh(context),
             ),
           };
         },
       ),
     );
+  }
+
+  Future<void> _onRefresh(BuildContext context) async {
+    final cubit = context.read<CustomerQueueStatusCubit>();
+    cubit.refreshStatus();
+
+    // Wait for the refresh to complete
+    await cubit.stream
+        .where((state) => state is! CustomerQueueStatusLoading)
+        .first;
   }
 }
 
@@ -64,79 +79,103 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _EmptyView extends StatelessWidget {
-  const _EmptyView();
+  const _EmptyView({required this.onRefresh});
+
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.hourglass_empty_outlined,
-              size: 48,
-              color: AppColors.onSurfaceVariant,
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+          const Padding(
+            padding: EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.hourglass_empty_outlined,
+                  size: 48,
+                  color: AppColors.onSurfaceVariant,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Not in queue',
+                  style: AppTextStyles.headlineSmall,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "You don't have an active queue entry for today.",
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMedium,
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Not in queue',
-              style: AppTextStyles.headlineSmall.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "You don't have an active queue entry for today.",
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMedium,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message});
+  const _ErrorView({required this.message, required this.onRefresh});
 
   final String message;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyLarge,
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+          Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                const SizedBox(height: 16),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyLarge,
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: onRefresh,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _LoadedView extends StatelessWidget {
-  const _LoadedView({required this.status});
+  const _LoadedView({required this.status, required this.onRefresh});
 
   final CustomerQueueStatusView status;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
     if (status.isNoShow) {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      return RefreshIndicator(
+        onRefresh: onRefresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
           children: [
             NoShowQueueCard(status: status),
             const SizedBox(height: 16),
@@ -146,9 +185,11 @@ class _LoadedView extends StatelessWidget {
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
         children: [
           QueuePositionCard(status: status),
           const SizedBox(height: 12),
