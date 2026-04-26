@@ -2,11 +2,11 @@
 
 Smart queue and appointment management for small clinics and service-based businesses.
 
-![Version](https://img.shields.io/badge/version-1.1.0%2B1-blue)
+![Version](https://img.shields.io/badge/version-1.3.0%2B1-blue)
 ![Flutter](https://img.shields.io/badge/Flutter-3.9.0%2B-02569B?logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-3.9.0%2B-0175C2?logo=dart&logoColor=white)
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![Coverage](https://img.shields.io/badge/progress-50--55%25-orange)
+![Status](https://img.shields.io/badge/status-sprint%206a%20in%20progress-orange)
+![Coverage](https://img.shields.io/badge/progress-70%25-orange)
 
 ---
 
@@ -29,45 +29,29 @@ For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
 
 ## 🎯 Current Project Status
 
-**Last Updated:** March 10, 2026  
-**Current Branch:** `002-working-hours-qr-share`
+**Last Updated:** April 22, 2026  
+**Current Branch:** `develop`
 
-### ✅ Completed (Phase 1 - Foundation + Sprint 2 - Admin Core + Sprint 3 - Working Hours & QR/Share)
-- ✅ Complete authentication system (email/password, Google Sign-In, password reset)
-- ✅ Full RBAC with role-based routing (admin vs. customer)
-- ✅ Comprehensive error handling framework (Result type, AppException hierarchy)
-- ✅ Complete onboarding flow with custom illustrations
-- ✅ Clean architecture with dependency injection
-- ✅ ALL 5 core domain entities (Organization, Service, WorkingHours, Appointment, Queue)
-- ✅ ALL 5 Firestore models with complete serialization
-- ✅ Firestore security rules with 78 passing tests (updated for break fields)
-- ✅ Organization creation during admin signup
-- ✅ OrganizationRepository with real-time streams
-- ✅ Organization profile view and edit screens
-- ✅ ServiceRepository with full CRUD operations
-- ✅ Service management UI (list, add, edit, delete, active/inactive toggle)
-- ✅ First-time setup tutorial for new admins
-- ✅ **WorkingHoursRepository with real-time streaming**
-- ✅ **Working hours configuration UI (7-day schedule)**
-- ✅ **Break time configuration (optional lunch breaks)**
-- ✅ **Schedule validation (open/close times, break windows)**
-- ✅ **QR code generation using qr_flutter**
-- ✅ **Share Access page with native sharing (share_plus)**
-- ✅ **QR code download to gallery (gal)**
-- ✅ **Platform permissions configured (Android & iOS)**
-- ✅ 15+ unit tests covering entities, models, auth, and error handling
+### ✅ Completed
+- Phase 1 foundation: authentication, RBAC, onboarding, error handling, logging, and clean architecture
+- Sprint 2: organization setup and service management
+- Sprint 3: working hours configuration and QR/share access
+- Sprint 4: customer booking flow
+- Sprint 5: queue system, customer dashboard, and access portal
+- Sprint 6: business logic and automation (time margin countdown, pre-booking lock, auto no-show progression)
 
-### 🚧 Next Up (Sprint 4 - Customer Booking Flow)
-- AppointmentRepository implementation
-- Organization landing page for customers
-- Service selection UI
-- Time slot availability calculation
-- Booking form with customer info
-- Appointment confirmation screen
-- Booking conflict prevention logic
+### 🚧 In Progress (Sprint 6A - Staff Member Management)
+- Staff member entity/model and Firestore schema updates
+- Service and appointment staff assignment fields
+- Staff CRUD, validation, queue filtering, and migration support
+- Firestore security rules for the staff subcollection
 
-**Overall Progress:** ~50-55% complete  
-**Estimated MVP Timeline:** 4-5 weeks remaining
+### ⏳ Next Up
+- Sprint 7 — Notifications & Polish
+- Sprint 8 — Testing & Deployment
+
+**Overall Progress:** ~70% complete  
+**Estimated MVP Timeline:** ~4-6 weeks remaining
 
 ---
 

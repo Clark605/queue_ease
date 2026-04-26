@@ -1,6 +1,6 @@
 # Queue Ease - Feature Implementation Checklist
 
-**Last Updated:** March 16, 2026
+**Last Updated:** April 22, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 
 ---
@@ -528,7 +528,7 @@
 - [x] Admin can manage queue in real-time (next, skip, no-show, rejoin)
 - [x] Customers can see their queue position and wait time
 - [x] Real-time updates work across all users
-- [ ] Time margin policy enforced (client-side with auto no-show detection)
+- [x] Time margin policy enforced (client-side with auto no-show detection)
 - [ ] FCM push notifications sent for turn approaching/missed (works even when app terminated)
 - [ ] Basic daily summary available
 - [ ] App is stable with no critical bugs
