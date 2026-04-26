@@ -22,6 +22,7 @@ class CustomerQueueStatusView {
     required this.estimatedWaitMinutes,
     this.expectedServiceTime,
     required this.isCurrentTurn,
+    required this.isCompleted,
     required this.isNoShow,
     required this.currentServingIndicator,
   });
@@ -37,6 +38,9 @@ class CustomerQueueStatusView {
 
   /// True when it is this customer's turn (appointment.status == serving).
   final bool isCurrentTurn;
+
+  /// True when the customer's service has been completed.
+  final bool isCompleted;
 
   /// True when the customer has been marked as no-show.
   final bool isNoShow;
@@ -193,6 +197,7 @@ class WatchCustomerQueueStatusUseCase {
             estimatedWaitMinutes: estimatedWaitMinutes,
             expectedServiceTime: expectedServiceTime,
             isCurrentTurn: appointment.status == AppointmentStatus.serving,
+            isCompleted: appointment.status == AppointmentStatus.completed,
             isNoShow: appointment.status == AppointmentStatus.noShow,
             currentServingIndicator: currentServingIndicator,
           ),

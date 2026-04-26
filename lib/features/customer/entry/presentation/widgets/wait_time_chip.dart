@@ -15,7 +15,7 @@ class WaitTimeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (status.isNoShow) {
+    if (status.isNoShow || status.isCompleted) {
       return const SizedBox.shrink();
     }
 
