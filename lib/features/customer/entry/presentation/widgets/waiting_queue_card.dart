@@ -13,6 +13,9 @@ import 'wait_timer_countdown.dart';
 class WaitingQueueCard extends StatelessWidget {
   const WaitingQueueCard({super.key, required this.status});
 
+  static const _shortWaitThresholdMinutes = 10;
+  static const _mediumWaitThresholdMinutes = 30;
+
   final CustomerQueueStatusView status;
 
   @override
@@ -125,10 +128,24 @@ class WaitingQueueCard extends StatelessWidget {
               fallbackWaitMinutes: status.estimatedWaitMinutes,
             ),
             icon: Icons.schedule_outlined,
+            accentColor: _waitAccentColor(status.estimatedWaitMinutes),
           ),
         ),
       ],
     );
+  }
+
+  Color _waitAccentColor(int? waitMinutes) {
+    if (waitMinutes == null) {
+      return AppColors.outline;
+    }
+    if (waitMinutes <= _shortWaitThresholdMinutes) {
+      return AppColors.waitShort;
+    }
+    if (waitMinutes <= _mediumWaitThresholdMinutes) {
+      return AppColors.waitMedium;
+    }
+    return AppColors.waitLong;
   }
 
   /// Returns `currentServingIndicator / position` clamped to [0, 1].
@@ -146,11 +163,13 @@ class _StatCard extends StatelessWidget {
     required this.label,
     required this.valueWidget,
     required this.icon,
+    this.accentColor = AppColors.primary,
   });
 
   final String label;
   final Widget valueWidget;
   final IconData icon;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -159,11 +178,18 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outline),
+        border: Border.all(color: accentColor.withValues(alpha: 0.36)),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withValues(alpha: 0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(icon, size: 20, color: AppColors.primary),
+          Icon(icon, size: 20, color: accentColor),
           const SizedBox(height: 6),
           Text(
             label,

@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import '../../../../../core/error/app_exception.dart';
 import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
+import '../../../../../core/utils/time_utils.dart';
 import '../../../../customer/booking/domain/repositories/customer_appointment_repository.dart';
 import '../../../../shared_domain/entities/appointment_entity.dart';
 import '../../../../shared_domain/entities/appointment_status.dart';
@@ -140,6 +141,8 @@ class WatchCustomerQueueStatusUseCase {
 
         final currentIndex = queueEntity.currentServingIndex;
         if (idx > currentIndex) {
+          final now = TimeUtils.nowUtc();
+          final scheduledAtUtc = appointment.scheduledAt.toUtc();
           final waitEntryById = {
             for (final item in queueWaitEntries) item.appointmentId: item,
           };
@@ -161,16 +164,25 @@ class WatchCustomerQueueStatusUseCase {
             queueUpdatedAt: queueEntity.updatedAt,
           );
 
-          if (expectedServiceTime != null) {
-            final remainingMinutes = expectedServiceTime
-                .difference(DateTime.now())
-                .inMinutes;
-            estimatedWaitMinutes = remainingMinutes > 0 ? remainingMinutes : 0;
-          } else {
-            estimatedWaitMinutes = durationsAhead.fold<int>(0, (a, b) => a + b);
+          if (expectedServiceTime == null ||
+              expectedServiceTime.isBefore(scheduledAtUtc)) {
+            expectedServiceTime = scheduledAtUtc;
           }
+
+          final remainingMinutes = expectedServiceTime
+              .difference(now)
+              .inMinutes;
+          estimatedWaitMinutes = remainingMinutes > 0 ? remainingMinutes : 0;
         } else if (idx >= 0) {
-          estimatedWaitMinutes = 0;
+          final now = TimeUtils.nowUtc();
+          final scheduledAtUtc = appointment.scheduledAt.toUtc();
+          if (appointment.status != AppointmentStatus.serving &&
+              scheduledAtUtc.isAfter(now)) {
+            expectedServiceTime = scheduledAtUtc;
+            estimatedWaitMinutes = scheduledAtUtc.difference(now).inMinutes;
+          } else {
+            estimatedWaitMinutes = 0;
+          }
         }
       }
 

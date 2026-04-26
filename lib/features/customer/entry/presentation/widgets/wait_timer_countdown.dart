@@ -22,6 +22,9 @@ class WaitTimerCountdown extends StatefulWidget {
 }
 
 class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
+  static const _shortWaitThresholdMinutes = 10;
+  static const _mediumWaitThresholdMinutes = 30;
+
   Timer? _timer;
   int _remainingMinutes = 0;
 
@@ -29,7 +32,7 @@ class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
   void initState() {
     super.initState();
     _updateTime();
-    _timer = Timer.periodic(const Duration(milliseconds: 30000), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 20), (_) {
       _updateTime();
     });
   }
@@ -63,6 +66,16 @@ class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
     }
   }
 
+  Color _urgencyColor() {
+    if (_remainingMinutes <= _shortWaitThresholdMinutes) {
+      return AppColors.waitShort;
+    }
+    if (_remainingMinutes <= _mediumWaitThresholdMinutes) {
+      return AppColors.waitMedium;
+    }
+    return AppColors.waitLong;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.expectedServiceTime == null &&
@@ -77,12 +90,20 @@ class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
       );
     }
 
-    return Text(
-      '$_remainingMinutes min',
-      style: const TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.w700,
-        color: AppColors.onSurface,
+    final urgencyColor = _urgencyColor();
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 260),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child: Text(
+        key: ValueKey<int>(_remainingMinutes),
+        '$_remainingMinutes min',
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w800,
+          color: urgencyColor,
+        ),
       ),
     );
   }
