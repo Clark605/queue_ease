@@ -33,6 +33,12 @@ class QueueManagementPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAuthenticated = context.watch<AuthCubit>().state is Authenticated;
+
+    if (!isAuthenticated) {
+      return const SizedBox.shrink();
+    }
+
     final now = DateTime.now();
     final orgId = _getOrgId(context);
     return Scaffold(
