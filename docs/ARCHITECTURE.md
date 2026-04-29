@@ -873,9 +873,11 @@ class ServiceCubit extends Cubit<ServiceState> {
 
 ### Priority Order
 
-1. **Unit tests** — all use cases and domain logic (mandatory)
+1. **Unit tests** — all use cases and domain logic (recommended for high-risk changes)
 2. **Integration tests** — critical user flows (auth, booking)
 3. **Widget tests** — complex stateful widget behavior
+
+Tests are optional, but when they are added they should focus on the riskiest behavior first.
 
 ### Test Structure
 
