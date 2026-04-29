@@ -14,4 +14,7 @@ enum AppointmentStatus {
 
   /// Customer did not show up within the grace period.
   noShow,
+
+  /// Appointment was cancelled by the customer.
+  cancelled,
 }

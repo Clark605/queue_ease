@@ -17,8 +17,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 [P] Audit all PulsingDot usages in codebase - search for `PulsingDot`, `pulsing_dot`, animated dot implementations in `lib/features/`
-- [ ] T002 [P] Create `lib/core/widgets/pulsing_dot.dart` - unified PulsingDot widget with standard API (size, color, animation speed)
+- [X] T001 [P] Audit all PulsingDot usages in codebase - search for `PulsingDot`, `pulsing_dot`, animated dot implementations in `lib/features/`
+- [X] T002 [P] Create `lib/core/widgets/pulsing_dot.dart` - unified PulsingDot widget with standard API (size, color, animation speed)
 
 ---
 
@@ -28,8 +28,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Verify AppointmentEntity supports 'cancelled' status in `lib/features/shared_domain/entities/appointment_entity.dart`
-- [ ] T004 [P] Verify AppointmentModel round-trip handles 'cancelled' status in `lib/features/shared_domain/models/appointment_model.dart`
+- [X] T003 [P] Verify AppointmentEntity supports 'cancelled' status in `lib/features/shared_domain/entities/appointment_entity.dart`
+- [X] T004 [P] Verify AppointmentModel round-trip handles 'cancelled' status in `lib/features/shared_domain/models/appointment_model.dart`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
