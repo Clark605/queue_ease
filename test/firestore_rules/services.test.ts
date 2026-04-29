@@ -324,6 +324,27 @@ describe('Services Subcollection Tests (US1)', () => {
     await assertFails(svcDoc.set(serviceDataNoMargin));
   });
 
+  it('should deny creating service without orgId', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+
+    const adminContext = getAuthenticatedContext('admin1');
+
+    const serviceDataNoOrgId = {
+      name: 'No OrgId Service',
+      durationMinutes: 30,
+      timeMarginMinutes: 5,
+      isActive: true,
+      createdAt: new Date(),
+    };
+
+    const svcDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('services').doc('svc_no_orgid');
+
+    await assertFails(svcDoc.set(serviceDataNoOrgId));
+  });
+
   it('should deny creating service with timeMarginMinutes out of range', async () => {
     await createTestUser('admin1', 'admin', 'org1');
     await createTestOrganization('org1', 'admin1', 'Test Org');

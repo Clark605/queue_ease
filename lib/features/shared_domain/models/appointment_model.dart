@@ -65,6 +65,18 @@ class AppointmentModel {
       (s) => s.name == statusValue,
       orElse: () => AppointmentStatus.booked,
     );
+    final scheduledAtValue = data['scheduledAt'];
+    final scheduledAt = switch (scheduledAtValue) {
+      Timestamp() => scheduledAtValue.toDate(),
+      DateTime() => scheduledAtValue,
+      _ => DateTime.fromMillisecondsSinceEpoch(0),
+    };
+    final createdAtValue = data['createdAt'];
+    final createdAt = switch (createdAtValue) {
+      Timestamp() => createdAtValue.toDate(),
+      DateTime() => createdAtValue,
+      _ => DateTime.fromMillisecondsSinceEpoch(0),
+    };
 
     return AppointmentModel(
       id: doc.id,
@@ -72,9 +84,9 @@ class AppointmentModel {
       serviceId: data['serviceId'] as String,
       customerId: data['customerId'] as String,
       customerName: data['customerName'] as String,
-      scheduledAt: (data['scheduledAt'] as Timestamp).toDate(),
+      scheduledAt: scheduledAt,
       status: status,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt: createdAt,
       customerPhone: data['customerPhone'] as String?,
       queuePosition: data['queuePosition'] as int?,
       orgName: data['orgName'] as String?,

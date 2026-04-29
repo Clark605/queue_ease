@@ -78,6 +78,42 @@ void main() {
       expect(model.queuePosition, isNull);
     });
 
+    test('fromDoc falls back when scheduledAt is null', () {
+      final mockDoc = MockDocumentSnapshot();
+      when(() => mockDoc.id).thenReturn('appt1');
+      when(() => mockDoc.data()).thenReturn({
+        'serviceId': 'service1',
+        'customerId': 'customer1',
+        'customerName': 'John Doe',
+        'scheduledAt': null,
+        'status': 'booked',
+        'createdAt': testTimestamp,
+      });
+
+      final model = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
+
+      expect(model.scheduledAt, DateTime.fromMillisecondsSinceEpoch(0));
+      expect(model.createdAt, testDate);
+    });
+
+    test('fromDoc falls back when createdAt is null', () {
+      final mockDoc = MockDocumentSnapshot();
+      when(() => mockDoc.id).thenReturn('appt1');
+      when(() => mockDoc.data()).thenReturn({
+        'serviceId': 'service1',
+        'customerId': 'customer1',
+        'customerName': 'John Doe',
+        'scheduledAt': testTimestamp,
+        'status': 'booked',
+        'createdAt': null,
+      });
+
+      final model = AppointmentModel.fromDoc(mockDoc, orgId: 'org1');
+
+      expect(model.scheduledAt, testDate);
+      expect(model.createdAt, DateTime.fromMillisecondsSinceEpoch(0));
+    });
+
     test('fromDoc defaults to booked status for unknown status', () {
       final mockDoc = MockDocumentSnapshot();
       when(() => mockDoc.id).thenReturn('appt1');

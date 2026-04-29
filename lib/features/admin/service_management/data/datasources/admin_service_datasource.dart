@@ -86,6 +86,7 @@ class AdminServiceDatasource {
       );
       await ref.set({
         ...model.toMap(),
+        'orgId': service.orgId,
         'createdAt': FieldValue.serverTimestamp(),
       });
       return model.toEntity();
