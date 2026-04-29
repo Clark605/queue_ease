@@ -1,3 +1,29 @@
+# RTK — Token-Optimized CLI
+
+**rtk** is a CLI proxy that filters and compresses command outputs, saving 60-90% tokens.
+
+## Rule
+
+Always prefix shell commands with `rtk`:
+
+```bash
+# Instead of:              Use:
+git status                 rtk git status
+git log -10                rtk git log -10
+cargo test                 rtk cargo test
+docker ps                  rtk docker ps
+kubectl get pods           rtk kubectl pods
+```
+
+## Meta commands (use directly)
+
+```bash
+rtk gain              # Token savings dashboard
+rtk gain --history    # Per-command savings history
+rtk discover          # Find missed rtk opportunities
+rtk proxy <cmd>       # Run raw (no filtering) but track usage
+```
+
 # Engineering Rules
 > These are the engineering principles I expect you to follow on this project.
 > Read and internalize them before making any suggestion or change.
@@ -209,3 +235,8 @@
 
 ---
 
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
