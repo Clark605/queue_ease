@@ -105,7 +105,7 @@ void main() {
         appointmentController.add(Success(appointment));
         queueController.add(Success(queue));
         queueAppointmentsController.add(
-          Success(const [
+          const Success([
             QueueAppointmentWaitEntry(
               appointmentId: 'appt-1',
               status: AppointmentStatus.booked,
@@ -181,7 +181,7 @@ void main() {
         appointmentController.add(Success(appointment));
         queueController.add(Success(queue));
         queueAppointmentsController.add(
-          Success(const [
+          const Success([
             QueueAppointmentWaitEntry(
               appointmentId: 'appt-2',
               status: AppointmentStatus.booked,
@@ -257,7 +257,7 @@ void main() {
         appointmentController.add(Success(appointment));
         queueController.add(Success(queue));
         queueAppointmentsController.add(
-          Success(const [
+          const Success([
             QueueAppointmentWaitEntry(
               appointmentId: 'appt-current',
               status: AppointmentStatus.booked,
@@ -338,7 +338,7 @@ void main() {
         appointmentController.add(Success(appointment));
         queueController.add(Success(queue));
         queueAppointmentsController.add(
-          Success(const [
+          const Success([
             QueueAppointmentWaitEntry(
               appointmentId: 'appt-current',
               status: AppointmentStatus.booked,
