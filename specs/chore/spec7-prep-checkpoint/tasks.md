@@ -17,7 +17,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create `lib/core/widgets/pulsing_dot.dart` - unified PulsingDot widget
+- [ ] T001 [P] Audit all PulsingDot usages in codebase - search for `PulsingDot`, `pulsing_dot`, animated dot implementations in `lib/features/`
+- [ ] T002 [P] Create `lib/core/widgets/pulsing_dot.dart` - unified PulsingDot widget with standard API (size, color, animation speed)
 
 ---
 
@@ -27,8 +28,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 Verify AppointmentEntity supports 'cancelled' status in `lib/features/shared_domain/entities/appointment_entity.dart`
-- [ ] T003 Verify AppointmentModel round-trip handles 'cancelled' status in `lib/features/shared_domain/models/appointment_model.dart`
+- [ ] T003 [P] Verify AppointmentEntity supports 'cancelled' status in `lib/features/shared_domain/entities/appointment_entity.dart`
+- [ ] T004 [P] Verify AppointmentModel round-trip handles 'cancelled' status in `lib/features/shared_domain/models/appointment_model.dart`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -42,13 +43,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T004 [P] [US1] Create `lib/features/customer/booking/domain/use_cases/cancel_appointment_use_case.dart`
-- [ ] T005 [P] [US1] Add `cancelAppointment` method to `AppointmentRepository` interface in `lib/features/shared_domain/repositories/appointment_repository.dart`
-- [ ] T006 [US1] Implement `cancelAppointment` in `AppointmentRepositoryImpl` at `lib/features/customer/booking/data/repositories/appointment_repository_impl.dart` - update Firestore document status to 'cancelled'
-- [ ] T007 [US1] Add cancel button to customer appointment card in `lib/features/customer/entry/customer_home_page.dart` (or similar) - only show for 'inQueue'/'waiting' statuses
-- [ ] T008 [US1] Add cancellation confirmation dialog in customer home page
-- [ ] T009 [US1] Integrate cancelAppointment use case into customer home page logic - handle success/error states with snackbar messages
-- [ ] T010 [US1] Show "This booking can no longer be cancelled" message for non-cancellable statuses
+- [ ] T005 [P] [US1] Create `lib/features/customer/booking/domain/use_cases/cancel_appointment_use_case.dart`
+- [ ] T006 [P] [US1] Add `cancelAppointment` method to `AppointmentRepository` interface in `lib/features/shared_domain/repositories/appointment_repository.dart`
+- [ ] T007 [US1] Implement `cancelAppointment` in `AppointmentRepositoryImpl` at `lib/features/customer/booking/data/repositories/appointment_repository_impl.dart` - update Firestore document status to 'cancelled'
+- [ ] T008 [US1] Add cancel button to customer appointment card in `lib/features/customer/entry/customer_home_page.dart` (or similar) - only show for 'inQueue'/'waiting' statuses
+- [ ] T009 [US1] Add cancellation confirmation dialog in customer home page with messages:
+  - completed: "This appointment is already completed."
+  - serving: "This appointment is currently being served."
+  - noShow: "This appointment was marked as no-show."
+  - cancelled: "This booking has already been cancelled."
+- [ ] T010 [US1] Integrate cancelAppointment use case into customer home page logic - handle success/error states with snackbar messages
+- [ ] T011 [US1] Unit test for CancelAppointmentUseCase - test valid/invalid status transitions
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -62,12 +67,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T011 [P] [US2] Add `selectedDate` state field to `QueueManagementCubit` in `lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart`
-- [ ] T012 [P] [US2] Add date picker trigger (icon button or tappable text) to QueueManagementPage AppBar in `lib/features/admin/queue_management/presentation/pages/queue_management_page.dart`
-- [ ] T013 [US2] Implement date picker dialog that calls `watchQueue(orgId, selectedDate)` with the chosen date
-- [ ] T014 [US2] Pass `selectedDate` to `watchQueue` use call in cubit
-- [ ] T015 [US2] Handle empty state when no queue data exists for selected date - show "No queue data for this date" message
-- [ ] T016 [US2] Format selected date display in AppBar (e.g., "Apr 29, 2026")
+- [ ] T012 [P] [US2] Add `selectedDate` state field to `QueueManagementCubit` in `lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart`
+- [ ] T013 [P] [US2] Add date picker trigger (icon button or tappable text) to QueueManagementPage AppBar in `lib/features/admin/queue_management/presentation/pages/queue_management_page.dart`
+- [ ] T014 [US2] Implement date picker dialog that calls `watchQueue(orgId, selectedDate)` with the chosen date
+- [ ] T015 [US2] Pass `selectedDate` to `watchQueue` use call in cubit
+- [ ] T016 [US2] Handle empty state when no queue data exists for selected date - show "No queue data for this date" message
+- [ ] T017 [US2] Format selected date display in AppBar (e.g., "Apr 29, 2026")
 
 **Checkpoint**: At this point, User Story 2 should be fully functional and testable independently
 
@@ -81,10 +86,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T017 [P] [US3] Identify correct appointments list route in `lib/core/router/app_router.dart` (look for existing customer appointments route)
-- [ ] T018 [P] [US3] If route doesn't exist, create `CustomerAppointmentsPage` and add route definition in app_router.dart
-- [ ] T019 [US3] Update "See all" button onPressed/onTap in customer home page (`lib/features/customer/entry/customer_home_page.dart` or similar) to navigate to appointments list route instead of `Routes.customerAccess`
-- [ ] T020 [US3] Verify navigation works correctly - tapping "See all" shows list of appointments, not QR scanner
+- [ ] T018 [P] [US3] Check `lib/core/router/app_router.dart` for existing customer appointments route (e.g., `Routes.customerAppointments` or `/c/appointments`)
+- [ ] T019 [P] [US3] If route doesn't exist, create `CustomerAppointmentsPage` in `lib/features/customer/booking/presentation/pages/customer_appointments_page.dart` with Cubit
+- [ ] T020 [P] [US3] Add customer appointments route to `app_router.dart` with RBAC guard
+- [ ] T021 [US3] Update "See all" button onPressed/onTap in customer home page (`lib/features/customer/entry/customer_home_page.dart` or similar) to navigate to appointments list route instead of `Routes.customerAccess`
+- [ ] T022 [US3] Verify navigation works correctly - tapping "See all" shows list of appointments, not QR scanner
 
 **Checkpoint**: At this point, User Story 3 should be fully functional and testable independently
 
@@ -98,12 +104,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T021 [P] [US4] Add Switch widget to admin dashboard header area in `lib/features/admin/dashboard/presentation/pages/admin_dashboard_page.dart`
-- [ ] T022 [P] [US4] Connect Switch to `OrganizationEntity.isOpen` stream from Firestore (watch organization in dashboard cubit)
-- [ ] T023 [US4] Implement toggle action that calls `updateOrganization` use case with updated `isOpen` value
-- [ ] T024 [US4] Handle optimistic UI - toggle switches immediately, reverts on failure
-- [ ] T025 [US4] Show error snackbar "Failed to update status. Please try again." on network error
-- [ ] T026 [US4] Ensure toggle is reachable in under 2 taps from dashboard
+- [ ] T023 [P] [US4] Add Switch widget to admin dashboard header area in `lib/features/admin/dashboard/presentation/pages/admin_dashboard_page.dart`
+- [ ] T024 [P] [US4] Connect Switch to `OrganizationEntity.isOpen` stream from Firestore (watch organization in dashboard cubit)
+- [ ] T025 [US4] Implement toggle action that calls `updateOrganization` use case with updated `isOpen` value
+- [ ] T026 [US4] Handle optimistic UI - toggle switches immediately, reverts on failure
+- [ ] T027 [US4] Show error snackbar "Failed to update status. Please try again." on network error
+- [ ] T028 [US4] Ensure toggle is reachable in under 2 taps from dashboard
 
 **Checkpoint**: At this point, User Story 4 should be fully functional and testable independently
 
@@ -117,11 +123,11 @@
 
 ### Implementation for User Story 5
 
-- [ ] T027 [P] [US5] Fix `transactionMarkNoShow` validation in `lib/features/admin/queue_management/data/datasources/queue_datasource.dart` (or similar) - handle status check gracefully with Result<T>
-- [ ] T028 [P] [US5] Ensure `transactionMarkOverdueNoShow` properly handles failure cases from `transactionMarkNoShow`
-- [ ] T029 [P] [US5] Fix `AdminWorkingHoursDatasource.saveAll` in `lib/features/admin/working_hours_management/data/datasources/working_hours_datasource.dart` - replace `batch.update(doc.ref, data)` with `batch.set(doc.ref, data, SetOptions(merge: true))`
-- [ ] T030 [US5] Test with new organization (no existing working hours documents) - should create documents properly
-- [ ] T031 [US5] Verify no-show marking handles various statuses without throwing errors
+- [ ] T029 [P] [US5] Fix `transactionMarkNoShow` validation in `lib/features/admin/queue_management/data/datasources/queue_datasource.dart` (or similar) - handle status check gracefully with Result<T>, return Failure(ValidationException) for invalid statuses
+- [ ] T030 [P] [US5] Ensure `transactionMarkOverdueNoShow` properly handles failure cases from `transactionMarkNoShow`
+- [ ] T031 [P] [US5] Fix `AdminWorkingHoursDatasource.saveAll` in `lib/features/admin/working_hours_management/data/datasources/working_hours_datasource.dart` - replace `batch.update(doc.ref, data)` with `batch.set(doc.ref, data, SetOptions(merge: true))`
+- [ ] T032 [US5] Test with new organization (no existing working hours documents) - should create documents properly
+- [ ] T033 [US5] Verify no-show marking handles various statuses without throwing errors
 
 **Checkpoint**: At this point, User Story 5 should be fully functional and testable independently
 
@@ -135,11 +141,11 @@
 
 ### Implementation for User Story 6
 
-- [ ] T032 [P] [US6] Locate `WaitTimerCountdown` widget (likely in `lib/features/customer/` or `lib/core/widgets/`)
-- [ ] T033 [P] [US6] Remove `Timer.periodic(Duration(seconds: 30), callback)` logic
-- [ ] T034 [US6] Recalculate elapsed/wait time when `WatchCustomerQueueStatusUseCase` stream emits new state
-- [ ] T035 [US6] Ensure any remaining timers are properly disposed in `dispose()` method
-- [ ] T036 [US6] Verify timer updates appropriately without unnecessary polling
+- [ ] T034 [P] [US6] Locate `WaitTimerCountdown` widget (likely in `lib/features/customer/` or `lib/core/widgets/`)
+- [ ] T035 [P] [US6] Remove `Timer.periodic(Duration(seconds: 30), callback)` logic entirely
+- [ ] T036 [US6] Recalculate elapsed/wait time when `WatchCustomerQueueStatusUseCase` stream emits new state (no polling)
+- [ ] T037 [US6] Ensure any remaining timers are properly disposed in `dispose()` method
+- [ ] T038 [US6] Verify timer updates within 1 second of stream emission without unnecessary polling
 
 **Checkpoint**: At this point, User Story 6 should be fully functional and testable independently
 
@@ -153,15 +159,15 @@
 
 ### Implementation for User Story 7
 
-- [ ] T037 [P] [US7] Replace all PulsingDot usages with unified widget from `lib/core/widgets/pulsing_dot.dart` (search for all usages in queue list, date header, etc.)
-- [ ] T037 [P] [US7] Delete old PulsingDot implementations after migration
-- [ ] T038 [P] [US7] Pass `orgName` to confirmation page (likely in `lib/features/customer/booking/presentation/pages/`)
-- [ ] T039 [US7] Display organization name on confirmation page UI
-- [ ] T040 [P] [US7] Locate notification dot in customer home drawer (`lib/features/customer/entry/customer_home_page.dart` or similar)
-- [ ] T041 [US7] Either remove notification dot entirely OR connect to real notification data source
-- [ ] T042 [P] [US7] Locate Admin ID display in `lib/features/admin/app_section/presentation/pages/organization_profile_page.dart` (or similar)
-- [ ] T043 [US7] Apply masking to Admin ID - show first 8 characters + "..." (e.g., "ABC12345...")
-- [ ] T044 [US7] Optionally add long-press to show full ID for support scenarios
+- [ ] T039 [P] [US7] Replace all PulsingDot usages with unified widget from `lib/core/widgets/pulsing_dot.dart` (search for all usages in queue list, date header, etc.)
+- [ ] T040 [P] [US7] Delete old PulsingDot implementations after migration
+- [ ] T041 [P] [US7] Update booking confirmation route in `lib/core/router/app_router.dart` to accept `orgName` parameter
+- [ ] T042 [US7] Pass `orgName` to confirmation page (likely in `lib/features/customer/booking/presentation/pages/`)
+- [ ] T043 [US7] Display organization name on confirmation page UI
+- [ ] T044 [P] [US7] Locate notification dot in customer home drawer (`lib/features/customer/entry/customer_home_page.dart` or similar)
+- [ ] T045 [US7] Either remove notification dot entirely OR connect to real notification data source
+- [ ] T046 [P] [US7] Locate Admin ID display in `lib/features/admin/app_section/presentation/pages/organization_profile_page.dart` (or similar)
+- [ ] T047 [US7] Apply masking to Admin ID - show first 6 characters + "..." (e.g., "ABC123..."), add long-press to show full ID
 
 **Checkpoint**: At this point, User Story 7 should be fully functional and testable independently
 
@@ -173,12 +179,12 @@
 
 ### Implementation
 
-- [ ] T045 [P] Fix Service list search button in `lib/features/admin/service_management/` - either implement client-side filtering OR hide the button
-- [ ] T046 [P] Fix Queue management filter button in `lib/features/admin/queue_management/` - either implement status filter OR hide the button
-- [ ] T047 [P] Fix NowServingCard (hardcoded) in admin dashboard - connect to real queue data OR remove if unused
-- [ ] T048 [P] Fix _StatsStrip (hardcoded numbers) in admin dashboard - connect to real Firestore data OR remove
-- [ ] T049 [P] Fix Daily Summary card snackbar in `lib/features/admin/daily_summary/` - navigate to daily summary page OR remove card
-- [ ] T050 [P] Remove "Coming soon" items (5 items) from Settings page in `lib/features/admin/app_section/` - not in scope for new features
+- [ ] T048 [P] Fix Service list search button in `lib/features/admin/service_management/` - **decision**: hide button (no client-side filtering implemented)
+- [ ] T049 [P] Fix Queue management filter button in `lib/features/admin/queue_management/` - **decision**: hide button (no status filter implemented)
+- [ ] T050 [P] Fix NowServingCard (hardcoded) in admin dashboard - connect to real queue data from `watchQueue` stream OR remove if unused
+- [ ] T051 [P] Fix _StatsStrip (hardcoded numbers) in admin dashboard - connect to real Firestore statistics OR remove
+- [ ] T052 [P] Fix Daily Summary card in `lib/features/admin/daily_summary/` - navigate to daily summary page (create if needed), **do not just show snackbar**
+- [ ] T053 [P] Remove "Coming soon" items (5 items) from Settings page in `lib/features/admin/app_section/` - not in scope for new features
 
 ---
 
@@ -186,14 +192,13 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T051 [P] Run `flutter analyze` to check for errors and warnings
-- [ ] T052 [P] Run `flutter test` to ensure no regressions
-- [ ] T053 [P] Verify Clean Architecture compliance - no Flutter/Firebase imports in domain layer
-- [ ] T054 [P] Verify Result<T> pattern used consistently for async operations
-- [ ] T055 [P] Test all 7 user stories manually end-to-end
+- [ ] T054 [P] Update documentation in `docs/` if needed
+- [ ] T055 [P] Code cleanup and refactoring
 - [ ] T056 [P] Verify performance: 60fps UI, <1s data refresh on date navigation
-- [ ] T057 [P] Update documentation if needed
-- [ ] T058 [P] Code cleanup and refactoring
+- [ ] T057 [P] Run `flutter analyze` to check for errors and warnings
+- [ ] T058 [P] Test all 7 user stories manually end-to-end
+- [ ] T059 [P] Optional: Add unit tests for new use cases (if requested per risk assessment)
+- [ ] T060 [P] Optional: Add widget tests for complex UI changes (if requested per risk assessment)
 
 ---
 
