@@ -68,12 +68,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Add `selectedDate` state field to `QueueManagementCubit` in `lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart`
-- [ ] T013 [P] [US2] Add date picker trigger (icon button or tappable text) to QueueManagementPage AppBar in `lib/features/admin/queue_management/presentation/pages/queue_management_page.dart`
-- [ ] T014 [US2] Implement date picker dialog that calls `watchQueue(orgId, selectedDate)` with the chosen date
-- [ ] T015 [US2] Pass `selectedDate` to `watchQueue` use call in cubit
-- [ ] T016 [US2] Handle empty state when no queue data exists for selected date - show "No queue data for this date" message
-- [ ] T017 [US2] Format selected date display in AppBar (e.g., "Apr 29, 2026")
+- [X] T012 [P] [US2] Add `selectedDate` state field to `QueueManagementCubit` in `lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart`
+- [X] T013 [P] [US2] Add date picker trigger (icon button or tappable text) to QueueManagementPage AppBar in `lib/features/admin/queue_management/presentation/pages/queue_management_page.dart`
+- [X] T014 [US2] Implement date picker dialog that calls `watchQueue(orgId, selectedDate)` with the chosen date
+- [X] T015 [US2] Pass `selectedDate` to `watchQueue` use call in cubit
+- [X] T016 [US2] Handle empty state when no queue data exists for selected date - show "No queue data for this date" message
+- [X] T017 [US2] Format selected date display in AppBar (e.g., "Apr 29, 2026")
 
 **Checkpoint**: At this point, User Story 2 should be fully functional and testable independently
 
