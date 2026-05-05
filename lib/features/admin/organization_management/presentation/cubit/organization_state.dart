@@ -34,10 +34,11 @@ final class OrganizationLoaded extends OrganizationState {
 
 /// Emitted when an organization operation fails.
 final class OrganizationError extends OrganizationState {
-  const OrganizationError(this.message);
+  const OrganizationError(this.message, {this.organization});
 
   final String message;
+  final OrganizationEntity? organization;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, organization];
 }

@@ -311,6 +311,21 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
           }
         }
 
+        if (current == null && waiting.isNotEmpty) {
+          final nextIndex = waiting.indexWhere(
+            (entry) =>
+                entry.status != AppointmentStatus.noShow &&
+                entry.status != AppointmentStatus.completed,
+          );
+
+          if (nextIndex != -1) {
+            current = waiting[nextIndex].copyWith(
+              estimatedWaitMinutes: null,
+            );
+            waiting.removeAt(nextIndex);
+          }
+        }
+
         return AdminQueueSnapshot(
           queueDate: date,
           current: current,

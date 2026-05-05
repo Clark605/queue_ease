@@ -135,7 +135,7 @@ class CustomerHomePage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: _UpcomingSection(
-              onSeeAll: () => context.push(Routes.customerAccess),
+              onSeeAll: () => context.push(Routes.customerAppointments),
               appointment: dashboard.upcomingAppointment!,
               onCancel: () =>
                   _handleCancel(context, dashboard.upcomingAppointment!),

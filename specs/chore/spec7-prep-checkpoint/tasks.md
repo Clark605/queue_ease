@@ -87,10 +87,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Check `lib/core/router/app_router.dart` for existing customer appointments route (e.g., `Routes.customerAppointments` or `/c/appointments`)
-- [ ] T019 [P] [US3] If route doesn't exist, create `CustomerAppointmentsPage` in `lib/features/customer/booking/presentation/pages/customer_appointments_page.dart` with Cubit
-- [ ] T020 [P] [US3] Add customer appointments route to `app_router.dart` with RBAC guard
-- [ ] T021 [US3] Update "See all" button onPressed/onTap in customer home page (`lib/features/customer/entry/customer_home_page.dart` or similar) to navigate to appointments list route instead of `Routes.customerAccess`
+- [x] T018 [P] [US3] Check `lib/core/router/app_router.dart` for existing customer appointments route (e.g., `Routes.customerAppointments` or `/c/appointments`)
+- [x] T019 [P] [US3] If route doesn't exist, create `CustomerAppointmentsPage` in `lib/features/customer/booking/presentation/pages/customer_appointments_page.dart` with Cubit
+- [x] T020 [P] [US3] Add customer appointments route to `app_router.dart` with RBAC guard
+- [x] T021 [US3] Update "See all" button onPressed/onTap in customer home page (`lib/features/customer/entry/customer_home_page.dart` or similar) to navigate to appointments list route instead of `Routes.customerAccess`
 - [ ] T022 [US3] Verify navigation works correctly - tapping "See all" shows list of appointments, not QR scanner
 
 **Checkpoint**: At this point, User Story 3 should be fully functional and testable independently
