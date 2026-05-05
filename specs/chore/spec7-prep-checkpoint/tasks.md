@@ -105,12 +105,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T023 [P] [US4] Add Switch widget to admin dashboard header area in `lib/features/admin/dashboard/presentation/pages/admin_dashboard_page.dart`
-- [ ] T024 [P] [US4] Connect Switch to `OrganizationEntity.isOpen` stream from Firestore (watch organization in dashboard cubit)
-- [ ] T025 [US4] Implement toggle action that calls `updateOrganization` use case with updated `isOpen` value
-- [ ] T026 [US4] Handle optimistic UI - toggle switches immediately, reverts on failure
-- [ ] T027 [US4] Show error snackbar "Failed to update status. Please try again." on network error
-- [ ] T028 [US4] Ensure toggle is reachable in under 2 taps from dashboard
+- [X] T023 [P] [US4] Add Switch widget to admin dashboard header area in `lib/features/admin/dashboard/presentation/pages/admin_dashboard_page.dart`
+- [X] T024 [P] [US4] Connect Switch to `OrganizationEntity.isOpen` stream from Firestore (watch organization in dashboard cubit)
+- [X] T025 [US4] Implement toggle action that calls `updateOrganization` use case with updated `isOpen` value
+- [X] T026 [US4] Handle optimistic UI - toggle switches immediately, reverts on failure
+- [X] T027 [US4] Show error snackbar "Failed to update status. Please try again." on network error
+- [X] T028 [US4] Ensure toggle is reachable in under 2 taps from dashboard
 
 **Checkpoint**: At this point, User Story 4 should be fully functional and testable independently
 

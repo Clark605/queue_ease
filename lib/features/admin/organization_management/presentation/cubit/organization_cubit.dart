@@ -100,6 +100,56 @@ class OrganizationCubit extends Cubit<OrganizationState> {
     }
   }
 
+  /// Optimistically toggles the open/closed status for the organization.
+  ///
+  /// Emits the updated organization immediately, then rolls back on failure.
+  Future<void> toggleOrganizationOpen(bool isOpen) async {
+    final currentState = state;
+    if (currentState is! OrganizationLoaded) {
+      emit(const OrganizationError('Organization data not loaded'));
+      return;
+    }
+
+    final previousOrganization = currentState.organization;
+    final updatedOrganization = previousOrganization.copyWith(isOpen: isOpen);
+
+    emit(OrganizationLoaded(updatedOrganization));
+
+    try {
+      final result = await _repository.updateOrganization(updatedOrganization);
+
+      result.when(
+        success: (_) {
+          _logger.info('OrganizationCubit: toggleOrganizationOpen succeeded');
+        },
+        failure: (exception) {
+          _logger.warning(
+            'OrganizationCubit: toggleOrganizationOpen failed',
+            exception,
+          );
+          emit(
+            OrganizationError(
+              'Failed to update status. Please try again.',
+              organization: previousOrganization,
+            ),
+          );
+        },
+      );
+    } catch (e, st) {
+      _logger.error(
+        'OrganizationCubit: toggleOrganizationOpen unexpected error',
+        e,
+        st,
+      );
+      emit(
+        OrganizationError(
+          'Failed to update status. Please try again.',
+          organization: previousOrganization,
+        ),
+      );
+    }
+  }
+
   @override
   Future<void> close() {
     _organizationSubscription?.cancel();
