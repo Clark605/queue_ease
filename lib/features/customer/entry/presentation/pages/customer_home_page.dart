@@ -6,6 +6,7 @@ import '../../../../../core/router/app_router.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../authentication/presentation/cubit/auth_cubit.dart';
 import '../../../../authentication/presentation/cubit/auth_state.dart';
+import '../../../../shared_domain/entities/appointment_status.dart';
 import '../cubit/customer_dashboard_cubit.dart';
 import '../cubit/customer_dashboard_state.dart';
 import '../widgets/active_queue_status_card.dart';
@@ -136,19 +137,78 @@ class CustomerHomePage extends StatelessWidget {
             child: _UpcomingSection(
               onSeeAll: () => context.push(Routes.customerAccess),
               appointment: dashboard.upcomingAppointment!,
+              onCancel: () =>
+                  _handleCancel(context, dashboard.upcomingAppointment!),
             ),
           ),
         ),
       const SliverToBoxAdapter(child: SizedBox(height: 40)),
     ];
   }
+
+  Future<void> _handleCancel(
+    BuildContext context,
+    AppointmentEntity appointment,
+  ) async {
+    final cubit = context.read<CustomerDashboardCubit>();
+
+    // Show confirmation dialog for cancellable appointments
+    if (appointment.status == AppointmentStatus.booked) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Cancel Booking'),
+          content: const Text('Are you sure you want to cancel this booking?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('No'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+              child: const Text('Yes, Cancel'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+      cubit.cancelAppointment(
+        orgId: appointment.orgId,
+        appointmentId: appointment.id,
+        currentStatus: appointment.status,
+      );
+    } else {
+      // Show message for non-cancellable statuses
+      final message = switch (appointment.status) {
+        AppointmentStatus.completed => 'This appointment is already completed.',
+        AppointmentStatus.serving =>
+          'This appointment is currently being served.',
+        AppointmentStatus.cancelled =>
+          'This booking has already been cancelled.',
+        AppointmentStatus.noShow => 'This booking was marked as no-show.',
+        _ => 'This booking can no longer be cancelled.',
+      };
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: AppColors.error),
+        );
+      }
+    }
+  }
 }
 
 class _UpcomingSection extends StatelessWidget {
-  const _UpcomingSection({required this.onSeeAll, required this.appointment});
+  const _UpcomingSection({
+    required this.onSeeAll,
+    required this.appointment,
+    this.onCancel,
+  });
 
   final VoidCallback onSeeAll;
   final AppointmentEntity appointment;
+  final VoidCallback? onCancel;
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +240,7 @@ class _UpcomingSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        UpcomingAppointmentCard(appointment: appointment),
+        UpcomingAppointmentCard(appointment: appointment, onCancel: onCancel),
       ],
     );
   }

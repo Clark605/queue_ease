@@ -7,6 +7,7 @@ import 'package:queue_ease/core/utils/app_logger.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
 import 'package:queue_ease/features/shared_domain/entities/queue_entity.dart';
 
+import '../../../../shared_domain/entities/appointment_status.dart';
 import '../../domain/repositories/customer_appointment_repository.dart';
 import '../datasources/customer_appointment_datasource.dart';
 
@@ -302,5 +303,28 @@ class CustomerAppointmentRepositoryImpl
             },
           ),
         );
+  }
+
+  @override
+  Future<Result<void>> updateAppointmentStatus({
+    required String orgId,
+    required String appointmentId,
+    required AppointmentStatus status,
+  }) {
+    _logger.info(
+      'Customer appointment status update requested',
+      _queueLogContext(
+        operation: 'updateAppointmentStatus',
+        orgId: orgId,
+        customerId: appointmentId,
+      ),
+    );
+    return Result.guard(
+      () => _datasource.updateAppointmentStatus(
+        orgId: orgId,
+        appointmentId: appointmentId,
+        status: status.name,
+      ),
+    );
   }
 }

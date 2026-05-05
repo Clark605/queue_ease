@@ -39,6 +39,15 @@ abstract class CustomerAppointmentRepository {
     required DateTime date,
   });
 
+  /// Updates the status of a single appointment.
+  ///
+  /// Used by [CancelAppointmentUseCase] to set status to [AppointmentStatus.cancelled].
+  Future<Result<void>> updateAppointmentStatus({
+    required String orgId,
+    required String appointmentId,
+    required AppointmentStatus status,
+  });
+
   // -- Queue status streams (Phase 4, T021/T022) ----------------------------
 
   /// Watches the customer's active appointment for [orgId] on [date].

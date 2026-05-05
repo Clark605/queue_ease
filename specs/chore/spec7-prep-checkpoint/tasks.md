@@ -43,17 +43,18 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [P] [US1] Create `lib/features/customer/booking/domain/use_cases/cancel_appointment_use_case.dart`
-- [ ] T006 [P] [US1] Add `cancelAppointment` method to `AppointmentRepository` interface in `lib/features/shared_domain/repositories/appointment_repository.dart`
-- [ ] T007 [US1] Implement `cancelAppointment` in `AppointmentRepositoryImpl` at `lib/features/customer/booking/data/repositories/appointment_repository_impl.dart` - update Firestore document status to 'cancelled'
-- [ ] T008 [US1] Add cancel button to customer appointment card in `lib/features/customer/entry/customer_home_page.dart` (or similar) - only show for 'inQueue'/'waiting' statuses
-- [ ] T009 [US1] Add cancellation confirmation dialog in customer home page with messages:
-  - completed: "This appointment is already completed."
-  - serving: "This appointment is currently being served."
-  - noShow: "This appointment was marked as no-show."
-  - cancelled: "This booking has already been cancelled."
-- [ ] T010 [US1] Integrate cancelAppointment use case into customer home page logic - handle success/error states with snackbar messages
-- [ ] T011 [US1] Unit test for CancelAppointmentUseCase - test valid/invalid status transitions
+- [x] T005 [P] [US1] Create `lib/features/customer/booking/domain/use_cases/cancel_appointment_use_case.dart`
+- [x] T006 [P] [US1] Add `cancelAppointment` method to `CustomerAppointmentRepository` interface in `lib/features/customer/booking/domain/repositories/customer_appointment_repository.dart`
+- [x] T007 [US1] Implement `updateAppointmentStatus` in `CustomerAppointmentRepositoryImpl` at `lib/features/customer/booking/data/repositories/customer_appointment_repository_impl.dart` - update Firestore document status to 'cancelled'
+- [x] T008 [US1] Add cancel button to `UpcomingAppointmentCard` in `lib/features/customer/entry/presentation/widgets/upcoming_appointment_card.dart` - only show for 'inQueue'/'waiting' statuses
+- [x] T009 [US1] Add cancellation UI feedback to customer home page:
+  - For 'inQueue'/'waiting' statuses: Show confirmation dialog ("Are you sure you want to cancel this booking?")
+  - For 'completed' status: Show message "This appointment is already completed."
+  - For 'serving' status: Show message "This appointment is currently being served."
+  - For 'cancelled' status: Show message "This booking has already been cancelled."
+  - For 'noShow' status: Show message "This booking was marked as no-show."
+- [x] T010 [US1] Integrate cancelAppointment use case into customer home page logic - handle success/error states with snackbar messages
+- [x] T011 [US1] Unit test for CancelAppointmentUseCase - test valid/invalid status transitions (skipped per user request)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 

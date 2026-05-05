@@ -5,6 +5,8 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
+import '../../../../shared_domain/entities/appointment_status.dart';
+import '../../../booking/domain/use_cases/cancel_appointment_use_case.dart';
 import '../../domain/use_cases/watch_customer_dashboard_use_case.dart';
 import 'customer_dashboard_state.dart';
 
@@ -15,9 +17,12 @@ import 'customer_dashboard_state.dart';
 /// fully empty.
 @injectable
 class CustomerDashboardCubit extends Cubit<CustomerDashboardState> {
-  CustomerDashboardCubit(this._watchDashboard, this._logger)
-    : super(const CustomerDashboardInitial());
-
+  CustomerDashboardCubit(
+    this._watchDashboard,
+    this._cancelUseCase,
+    this._logger,
+  ) : super(const CustomerDashboardInitial());
+  final CancelAppointmentUseCase _cancelUseCase;
   final WatchCustomerDashboardUseCase _watchDashboard;
   final AppLogger _logger;
 
@@ -32,6 +37,8 @@ class CustomerDashboardCubit extends Cubit<CustomerDashboardState> {
   /// immediately, then transitions to [CustomerDashboardLoaded] or
   /// [CustomerDashboardError].
   void watchDashboard({required String customerId, required DateTime date}) {
+    _lastCustomerId = customerId;
+    _lastDate = date;
     emit(const CustomerDashboardLoading());
     _sub?.cancel();
     _logger.info(
@@ -57,6 +64,35 @@ class CustomerDashboardCubit extends Cubit<CustomerDashboardState> {
       },
     );
   }
+
+  /// Cancels the given appointment and emits updated dashboard on success.
+  Future<void> cancelAppointment({
+    required String orgId,
+    required String appointmentId,
+    required AppointmentStatus currentStatus,
+  }) async {
+    emit(const CustomerDashboardLoading());
+    final result = await _cancelUseCase(
+      orgId: orgId,
+      appointmentId: appointmentId,
+      currentStatus: currentStatus,
+    );
+    switch (result) {
+      case Success():
+        _logger.info('CustomerDashboardCubit: appointment cancelled');
+      case Failure(:final exception):
+        _logger.error('CustomerDashboardCubit: cancel failed', exception);
+        emit(CustomerDashboardError(message: exception.message));
+        return;
+    }
+    // Refresh dashboard after successful cancellation
+    if (_lastCustomerId != null && _lastDate != null) {
+      watchDashboard(customerId: _lastCustomerId!, date: _lastDate!);
+    }
+  }
+
+  String? _lastCustomerId;
+  DateTime? _lastDate;
 
   @override
   Future<void> close() {

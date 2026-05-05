@@ -504,4 +504,32 @@ class CustomerAppointmentDatasource {
       yield values.sublist(index, end);
     }
   }
+
+  /// Updates the status of a single appointment document.
+  Future<void> updateAppointmentStatus({
+    required String orgId,
+    required String appointmentId,
+    required String status,
+  }) async {
+    _logger.debug(
+      'CustomerAppointmentDatasource: updateStatus '
+      'orgId=$orgId appointmentId=$appointmentId status=$status',
+    );
+    try {
+      await _appointments(orgId).doc(appointmentId).update({
+        'status': status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      _logger.info(
+        'CustomerAppointmentDatasource: status updated successfully',
+      );
+    } on FirebaseException catch (e, st) {
+      _logger.error(
+        'CustomerAppointmentDatasource: updateStatus failed',
+        e,
+        st,
+      );
+      throw const DatabaseException('Failed to update appointment status.');
+    }
+  }
 }
