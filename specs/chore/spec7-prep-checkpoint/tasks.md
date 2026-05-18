@@ -160,15 +160,15 @@
 
 ### Implementation for User Story 7
 
-- [ ] T039 [P] [US7] Replace all PulsingDot usages with unified widget from `lib/core/widgets/pulsing_dot.dart` (search for all usages in queue list, date header, etc.)
-- [ ] T040 [P] [US7] Delete old PulsingDot implementations after migration
-- [ ] T041 [P] [US7] Update booking confirmation route in `lib/core/router/app_router.dart` to accept `orgName` parameter
-- [ ] T042 [US7] Pass `orgName` to confirmation page (likely in `lib/features/customer/booking/presentation/pages/`)
-- [ ] T043 [US7] Display organization name on confirmation page UI
-- [ ] T044 [P] [US7] Locate notification dot in customer home drawer (`lib/features/customer/entry/customer_home_page.dart` or similar)
-- [ ] T045 [US7] Either remove notification dot entirely OR connect to real notification data source
-- [ ] T046 [P] [US7] Locate Admin ID display in `lib/features/admin/app_section/presentation/pages/organization_profile_page.dart` (or similar)
-- [ ] T047 [US7] Apply masking to Admin ID - show first 6 characters + "..." (e.g., "ABC123..."), add long-press to show full ID
+- [X] T039 [P] [US7] Replace all PulsingDot usages with unified widget from `lib/core/widgets/pulsing_dot.dart` (search for all usages in queue list, date header, etc.)
+- [X] T040 [P] [US7] Delete old PulsingDot implementations after migration
+- [X] T041 [P] [US7] Update booking confirmation route in `lib/core/router/app_router.dart` to accept `orgName` parameter
+- [X] T042 [US7] Pass `orgName` to confirmation page (likely in `lib/features/customer/booking/presentation/pages/`)
+- [X] T043 [US7] Display organization name on confirmation page UI
+- [X] T044 [P] [US7] Locate notification dot in customer home drawer (`lib/features/customer/entry/customer_home_page.dart` or similar)
+- [X] T045 [US7] Either remove notification dot entirely OR connect to real notification data source
+- [X] T046 [P] [US7] Locate Admin ID display in `lib/features/admin/app_section/presentation/pages/organization_profile_page.dart` (or similar)
+- [X] T047 [US7] Apply masking to Admin ID - show first 6 characters + "..." (e.g., "ABC123..."), add long-press to show full ID
 
 **Checkpoint**: At this point, User Story 7 should be fully functional and testable independently
 

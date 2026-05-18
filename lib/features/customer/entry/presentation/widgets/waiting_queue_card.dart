@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/pulsing_dot.dart';
 import '../../domain/use_cases/watch_customer_queue_status_use_case.dart';
-import 'live_indicator.dart';
 import 'wait_timer_countdown.dart';
 
 /// Card shown while the customer is waiting in the queue.
@@ -35,7 +35,7 @@ class WaitingQueueCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const LiveIndicator(),
+          const _LiveIndicator(),
           const SizedBox(height: 20),
           Text(
             '#${status.position ?? "-"}',
@@ -154,6 +154,30 @@ class WaitingQueueCard extends StatelessWidget {
     final pos = status.position;
     if (serving == null || pos == null || pos <= 1) return 0.0;
     return (serving / pos).clamp(0.0, 1.0);
+  }
+}
+
+class _LiveIndicator extends StatelessWidget {
+  const _LiveIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PulsingDot(size: 10, duration: Duration(milliseconds: 900)),
+        SizedBox(width: 8),
+        Text(
+          'LIVE',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ],
+    );
   }
 }
 

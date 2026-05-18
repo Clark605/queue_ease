@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/pulsing_dot.dart';
 
 /// Compact row showing today's full date alongside a live indicator dot.
 class QueueDateHeader extends StatelessWidget {
@@ -19,13 +20,10 @@ class QueueDateHeader extends StatelessWidget {
           style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w500),
         ),
         const Spacer(),
-        Container(
-          width: 8,
-          height: 8,
-          decoration: const BoxDecoration(
-            color: AppColors.success,
-            shape: BoxShape.circle,
-          ),
+        const PulsingDot(
+          size: 8,
+          color: AppColors.success,
+          duration: Duration(milliseconds: 900),
         ),
         const SizedBox(width: 4),
         Text(

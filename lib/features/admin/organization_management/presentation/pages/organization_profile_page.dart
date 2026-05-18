@@ -199,8 +199,9 @@ class OrganizationProfilePage extends StatelessWidget {
                   _InfoCard(
                     icon: Icons.admin_panel_settings,
                     title: 'Admin ID',
-                    content: org.adminUid,
-                    subtitle: 'Organization owner',
+                    content: _maskAdminId(org.adminUid),
+                    subtitle: 'Organization owner • Long-press to view full ID',
+                    onLongPress: () => _showFullAdminId(context, org.adminUid),
                   ),
                   const SizedBox(height: 12),
 
@@ -234,6 +235,17 @@ class OrganizationProfilePage extends StatelessWidget {
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
+
+  String _maskAdminId(String adminUid) {
+    if (adminUid.length <= 6) {
+      return '$adminUid...';
+    }
+    return '${adminUid.substring(0, 6)}...';
+  }
+
+  void _showFullAdminId(BuildContext context, String adminUid) {
+    AppSnackBar.showInfo(context, 'Admin ID: $adminUid');
+  }
 }
 
 /// Reusable info card widget for displaying organization details.
@@ -244,6 +256,7 @@ class _InfoCard extends StatelessWidget {
     required this.content,
     this.subtitle,
     this.onTap,
+    this.onLongPress,
   });
 
   final IconData icon;
@@ -251,6 +264,7 @@ class _InfoCard extends StatelessWidget {
   final String content;
   final String? subtitle;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -259,6 +273,7 @@ class _InfoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.all(16),
