@@ -38,14 +38,6 @@ class ServiceListPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [
-          const IconButton(
-            icon: Icon(Icons.search_rounded),
-            color: AppColors.onSurfaceVariant,
-            onPressed: null, // Future: implement search
-            tooltip: 'Search',
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(

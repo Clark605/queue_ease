@@ -111,13 +111,6 @@ class QueueManagementPage extends StatelessWidget {
               date: selectedDate,
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.filter_list_rounded),
-            color: AppColors.onSurfaceVariant,
-            tooltip: 'Filter',
-            onPressed: () =>
-                AppSnackBar.showInfo(context, 'Filter - Coming soon'),
-          ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),

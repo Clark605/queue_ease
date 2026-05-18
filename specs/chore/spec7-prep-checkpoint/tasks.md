@@ -180,12 +180,12 @@
 
 ### Implementation
 
-- [ ] T048 [P] Fix Service list search button in `lib/features/admin/service_management/` - **decision**: hide button (no client-side filtering implemented)
-- [ ] T049 [P] Fix Queue management filter button in `lib/features/admin/queue_management/` - **decision**: hide button (no status filter implemented)
-- [ ] T050 [P] Fix NowServingCard (hardcoded) in admin dashboard - connect to real queue data from `watchQueue` stream OR remove if unused
-- [ ] T051 [P] Fix _StatsStrip (hardcoded numbers) in admin dashboard - connect to real Firestore statistics OR remove
-- [ ] T052 [P] Fix Daily Summary card in `lib/features/admin/daily_summary/` - navigate to daily summary page (create if needed), **do not just show snackbar**
-- [ ] T053 [P] Remove "Coming soon" items (5 items) from Settings page in `lib/features/admin/app_section/` - not in scope for new features
+- [x] T048 [P] Fix Service list search button in `lib/features/admin/service_management/` - **decision**: hide button (no client-side filtering implemented)
+- [x] T049 [P] Fix Queue management filter button in `lib/features/admin/queue_management/` - **decision**: hide button (no status filter implemented)
+- [x] T050 [P] Fix NowServingCard (hardcoded) in admin dashboard - connect to real queue data from `watchQueue` stream OR remove if unused
+- [x] T051 [P] Fix _StatsStrip (hardcoded numbers) in admin dashboard - connect to real Firestore statistics OR remove
+- [x] T052 [P] Fix Daily Summary card in `lib/features/admin/daily_summary/` - navigate to daily summary page (create if needed), **do not just show snackbar**
+- [x] T053 [P] Remove "Coming soon" items (5 items) from Settings page in `lib/features/admin/app_section/` - not in scope for new features
 
 ---
 

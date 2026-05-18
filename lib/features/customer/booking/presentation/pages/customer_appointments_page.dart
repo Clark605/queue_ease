@@ -61,7 +61,7 @@ class _LoadedState extends StatelessWidget {
         final appointment = appointments[index];
         return _AppointmentCard(appointment: appointment);
       },
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemCount: appointments.length,
     );
   }

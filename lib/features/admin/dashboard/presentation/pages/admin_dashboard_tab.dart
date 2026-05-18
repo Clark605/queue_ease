@@ -14,7 +14,6 @@ import '../../../organization_management/presentation/cubit/organization_state.d
 import '../../../tutorial/presentation/cubit/tutorial_cubit.dart';
 import '../../../tutorial/presentation/widgets/tutorial_overlay.dart';
 import '../widgets/management_grid.dart';
-import '../widgets/now_serving_card.dart';
 
 /// Dashboard tab showing the business admin overview.
 ///
@@ -81,8 +80,6 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
                           .read<OrganizationCubit>()
                           .toggleOrganizationOpen(isOpen),
                     ),
-                    const _StatsStrip(),
-                    const NowServingCard(),
                     ManagementGrid(onNavigateToQueue: widget.onNavigateToQueue),
                     const _ShareAccessCard(),
                     const SizedBox(height: 24),
@@ -251,109 +248,8 @@ class _OpenStatusToggle extends StatelessWidget {
           ),
           Switch(
             value: isOpen,
-            activeColor: AppColors.success,
+            activeThumbColor: AppColors.success,
             onChanged: onChanged,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Stats Strip ───────────────────────────────────────────────────────────────
-
-class _StatsStrip extends StatelessWidget {
-  const _StatsStrip();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          _StatChip(
-            icon: Icons.group_outlined,
-            label: 'In Queue',
-            value: '12',
-            accentColor: AppColors.primary,
-          ),
-          SizedBox(width: 12),
-          _StatChip(
-            icon: Icons.check_circle_outline,
-            label: 'Served',
-            value: '45',
-            accentColor: Color(0xFF22C55E),
-          ),
-          SizedBox(width: 12),
-          _StatChip(
-            icon: Icons.person_off_outlined,
-            label: 'No-shows',
-            value: '3',
-            accentColor: Color(0xFFF97316),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatChip extends StatelessWidget {
-  const _StatChip({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.accentColor,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color accentColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border(bottom: BorderSide(color: accentColor, width: 2)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: accentColor, size: 20),
-          const SizedBox(width: 8),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 9,
-                  letterSpacing: 0.8,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D131B),
-                ),
-              ),
-            ],
           ),
         ],
       ),

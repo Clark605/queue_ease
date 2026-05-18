@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/router/app_router.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
-import '../../../../../core/utils/app_snack_bar.dart';
 import '../../../../authentication/presentation/cubit/auth_cubit.dart';
 
 /// Settings page for app and organization configuration.
@@ -78,48 +77,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
           const Divider(height: 32),
 
-          _buildSectionHeader('Preferences'),
-          _buildSettingsTile(
-            context,
-            icon: Icons.notifications_outlined,
-            title: 'Notifications',
-            subtitle: 'Manage notification settings',
-            onTap: () =>
-                AppSnackBar.showInfo(context, 'Notifications - Coming soon'),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.dark_mode_outlined,
-            title: 'Theme',
-            subtitle: 'Light, Dark, or System',
-            onTap: () =>
-                AppSnackBar.showInfo(context, 'Theme settings - Coming soon'),
-          ),
-
-          const Divider(height: 32),
-
-          _buildSectionHeader('Account'),
-          _buildSettingsTile(
-            context,
-            icon: Icons.person_outline,
-            title: 'Account Settings',
-            subtitle: 'Update your account information',
-            onTap: () =>
-                AppSnackBar.showInfo(context, 'Account Settings - Coming soon'),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.lock_outline,
-            title: 'Privacy & Security',
-            subtitle: 'Password and security settings',
-            onTap: () => AppSnackBar.showInfo(
-              context,
-              'Privacy & Security - Coming soon',
-            ),
-          ),
-
-          const Divider(height: 32),
-
           _buildSectionHeader('About'),
           _buildSettingsTile(
             context,
@@ -143,22 +100,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               );
             },
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.description_outlined,
-            title: 'Terms & Privacy',
-            subtitle: 'Read our terms and privacy policy',
-            onTap: () =>
-                AppSnackBar.showInfo(context, 'Terms & Privacy - Coming soon'),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.help_outline,
-            title: 'Help & Support',
-            subtitle: 'Get help and send feedback',
-            onTap: () =>
-                AppSnackBar.showInfo(context, 'Help & Support - Coming soon'),
           ),
 
           const SizedBox(height: 24),

@@ -9,6 +9,7 @@ import 'package:queue_ease/features/admin/service_management/presentation/pages/
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../features/admin/app_section/presentation/pages/admin_main_page.dart';
+import '../../features/admin/daily_summary/presentation/pages/daily_summary_page.dart';
 import '../../features/admin/service_management/presentation/cubit/service_cubit.dart';
 import '../../features/admin/share_access/presentation/cubit/share_access_cubit.dart';
 import '../../features/admin/share_access/presentation/pages/share_access_page.dart';
@@ -58,6 +59,7 @@ abstract final class Routes {
   static const String adminServiceForm = '/a/services/form';
   static const String adminWorkingHours = '/a/working-hours';
   static const String adminShareAccess = '/a/share-access';
+  static const String adminDailySummary = '/a/daily-summary';
   static const String customerHome = '/c/home';
   static const String customerAppointments = '/c/appointments';
   static const String customerOrgLanding = '/c/org/:slug';
@@ -265,6 +267,10 @@ GoRouter createRouter(AuthCubit authCubit) {
           ],
           child: const ShareAccessPage(),
         ),
+      ),
+      GoRoute(
+        path: Routes.adminDailySummary,
+        builder: (context, state) => const DailySummaryPage(),
       ),
       // Customer routes
       GoRoute(
