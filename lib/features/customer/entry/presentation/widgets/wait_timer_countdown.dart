@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 
-class WaitTimerCountdown extends StatefulWidget {
+class WaitTimerCountdown extends StatelessWidget {
   const WaitTimerCountdown({
     super.key,
     required this.expectedServiceTime,
@@ -17,60 +15,22 @@ class WaitTimerCountdown extends StatefulWidget {
   /// The static fallback wait time in minutes if [expectedServiceTime] is null.
   final int? fallbackWaitMinutes;
 
-  @override
-  State<WaitTimerCountdown> createState() => _WaitTimerCountdownState();
-}
-
-class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
   static const _shortWaitThresholdMinutes = 10;
   static const _mediumWaitThresholdMinutes = 30;
 
-  Timer? _timer;
-  int _remainingMinutes = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _updateTime();
-    _timer = Timer.periodic(const Duration(seconds: 20), (_) {
-      _updateTime();
-    });
-  }
-
-  @override
-  void didUpdateWidget(WaitTimerCountdown oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.expectedServiceTime != widget.expectedServiceTime ||
-        oldWidget.fallbackWaitMinutes != widget.fallbackWaitMinutes) {
-      _updateTime();
+  int _remainingMinutes() {
+    if (expectedServiceTime != null) {
+      final mins = expectedServiceTime!.difference(DateTime.now()).inMinutes;
+      return mins > 0 ? mins : 0;
     }
+    return fallbackWaitMinutes ?? 0;
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _updateTime() {
-    if (widget.expectedServiceTime != null) {
-      final diff = widget.expectedServiceTime!.difference(DateTime.now());
-      final mins = diff.inMinutes;
-      setState(() {
-        _remainingMinutes = mins > 0 ? mins : 0;
-      });
-    } else {
-      setState(() {
-        _remainingMinutes = widget.fallbackWaitMinutes ?? 0;
-      });
-    }
-  }
-
-  Color _urgencyColor() {
-    if (_remainingMinutes <= _shortWaitThresholdMinutes) {
+  Color _urgencyColor(int remainingMinutes) {
+    if (remainingMinutes <= _shortWaitThresholdMinutes) {
       return AppColors.waitShort;
     }
-    if (_remainingMinutes <= _mediumWaitThresholdMinutes) {
+    if (remainingMinutes <= _mediumWaitThresholdMinutes) {
       return AppColors.waitMedium;
     }
     return AppColors.waitLong;
@@ -78,8 +38,7 @@ class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.expectedServiceTime == null &&
-        widget.fallbackWaitMinutes == null) {
+    if (expectedServiceTime == null && fallbackWaitMinutes == null) {
       return const Text(
         '—',
         style: TextStyle(
@@ -90,15 +49,16 @@ class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
       );
     }
 
-    final urgencyColor = _urgencyColor();
+    final remainingMinutes = _remainingMinutes();
+    final urgencyColor = _urgencyColor(remainingMinutes);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 260),
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
       child: Text(
-        key: ValueKey<int>(_remainingMinutes),
-        '$_remainingMinutes min',
+        key: ValueKey<int>(remainingMinutes),
+        '$remainingMinutes min',
         style: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w800,

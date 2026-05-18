@@ -142,11 +142,11 @@
 
 ### Implementation for User Story 6
 
-- [ ] T034 [P] [US6] Locate `WaitTimerCountdown` widget (likely in `lib/features/customer/` or `lib/core/widgets/`)
-- [ ] T035 [P] [US6] Remove `Timer.periodic(Duration(seconds: 30), callback)` logic entirely
-- [ ] T036 [US6] Recalculate elapsed/wait time when `WatchCustomerQueueStatusUseCase` stream emits new state (no polling)
-- [ ] T037 [US6] Ensure any remaining timers are properly disposed in `dispose()` method
-- [ ] T038 [US6] Verify timer updates within 1 second of stream emission without unnecessary polling
+- [X] T034 [P] [US6] Locate `WaitTimerCountdown` widget (likely in `lib/features/customer/` or `lib/core/widgets/`)
+- [X] T035 [P] [US6] Remove `Timer.periodic(Duration(seconds: 30), callback)` logic entirely
+- [X] T036 [US6] Recalculate elapsed/wait time when `WatchCustomerQueueStatusUseCase` stream emits new state (no polling)
+- [X] T037 [US6] Ensure any remaining timers are properly disposed in `dispose()` method
+- [X] T038 [US6] Verify timer updates within 1 second of stream emission without unnecessary polling
 
 **Checkpoint**: At this point, User Story 6 should be fully functional and testable independently
 
