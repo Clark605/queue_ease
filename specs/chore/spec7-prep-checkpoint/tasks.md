@@ -124,9 +124,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T029 [P] [US5] Fix `transactionMarkNoShow` validation in `lib/features/admin/queue_management/data/datasources/queue_datasource.dart` (or similar) - handle status check gracefully with Result<T>, return Failure(ValidationException) for invalid statuses
-- [ ] T030 [P] [US5] Ensure `transactionMarkOverdueNoShow` properly handles failure cases from `transactionMarkNoShow`
-- [ ] T031 [P] [US5] Fix `AdminWorkingHoursDatasource.saveAll` in `lib/features/admin/working_hours_management/data/datasources/working_hours_datasource.dart` - replace `batch.update(doc.ref, data)` with `batch.set(doc.ref, data, SetOptions(merge: true))`
+- [X] T029 [P] [US5] Fix `transactionMarkNoShow` validation in `lib/features/admin/queue_management/data/datasources/queue_datasource.dart` (or similar) - handle status check gracefully with Result<T>, return Failure(ValidationException) for invalid statuses
+- [X] T030 [P] [US5] Ensure `transactionMarkOverdueNoShow` properly handles failure cases from `transactionMarkNoShow`
+- [X] T031 [P] [US5] Fix `AdminWorkingHoursDatasource.saveAll` in `lib/features/admin/working_hours_management/data/datasources/working_hours_datasource.dart` - replace `batch.update(doc.ref, data)` with `batch.set(doc.ref, data, SetOptions(merge: true))`
 - [ ] T032 [US5] Test with new organization (no existing working hours documents) - should create documents properly
 - [ ] T033 [US5] Verify no-show marking handles various statuses without throwing errors
 

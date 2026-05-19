@@ -39,19 +39,23 @@ class AdminWorkingHoursDatasource {
       final batch = _firestore.batch();
       for (final entity in days) {
         final docRef = _collection(orgId).doc(entity.dayOfWeek.toString());
-        batch.update(docRef, {
-          ...WorkingHoursModel(
-            orgId: entity.orgId,
-            dayOfWeek: entity.dayOfWeek,
-            isOpen: entity.isOpen,
-            openTime: entity.openTime,
-            closeTime: entity.closeTime,
-            breakStart: entity.breakStart,
-            breakEnd: entity.breakEnd,
-          ).toMap(),
-          'dayOfWeek': entity.dayOfWeek,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+        batch.set(
+          docRef,
+          {
+            ...WorkingHoursModel(
+              orgId: entity.orgId,
+              dayOfWeek: entity.dayOfWeek,
+              isOpen: entity.isOpen,
+              openTime: entity.openTime,
+              closeTime: entity.closeTime,
+              breakStart: entity.breakStart,
+              breakEnd: entity.breakEnd,
+            ).toMap(),
+            'dayOfWeek': entity.dayOfWeek,
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
       }
       await batch.commit();
     } on FirebaseException catch (e, st) {

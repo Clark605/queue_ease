@@ -438,12 +438,10 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
       ),
       'action': 'markNoShow',
     });
-    return Result.guard(
-      () => _datasource.transactionMarkNoShow(
-        orgId: orgId,
-        date: dateStr,
-        appointmentId: appointmentId,
-      ),
+    return _datasource.transactionMarkNoShow(
+      orgId: orgId,
+      date: dateStr,
+      appointmentId: appointmentId,
     );
   }
 
@@ -463,12 +461,10 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
       ),
       'action': 'markOverdueNoShow',
     });
-    return Result.guard(
-      () => _datasource.transactionMarkOverdueNoShow(
-        orgId: orgId,
-        date: dateStr,
-        appointmentId: appointmentId,
-      ),
+    return _datasource.transactionMarkOverdueNoShow(
+      orgId: orgId,
+      date: dateStr,
+      appointmentId: appointmentId,
     );
   }
 
