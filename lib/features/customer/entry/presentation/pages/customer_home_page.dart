@@ -11,10 +11,12 @@ import '../cubit/customer_dashboard_cubit.dart';
 import '../cubit/customer_dashboard_state.dart';
 import '../widgets/active_queue_status_card.dart';
 import '../widgets/customer_action_buttons.dart';
-import '../widgets/customer_dashboard_empty_state.dart';
 import '../widgets/customer_home_drawer.dart';
 import '../widgets/customer_home_header.dart';
 import '../widgets/customer_welcome_section.dart';
+import '../widgets/empty_dashboard_hero_card.dart';
+import '../widgets/empty_info_tiles.dart';
+import '../widgets/quick_actions_section.dart';
 import '../widgets/upcoming_appointment_card.dart';
 import '../../../../shared_domain/entities/appointment_entity.dart';
 
@@ -99,11 +101,31 @@ class CustomerHomePage extends StatelessWidget {
 
     if (dashboard.isEmpty) {
       return [
-        SliverFillRemaining(
-          child: CustomerDashboardEmptyState(
-            onBookAppointment: () => context.push(Routes.customerAccess),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            child: EmptyDashboardHeroCard(
+              hasActiveQueue: dashboard.hasActiveQueue,
+              hasUpcoming: dashboard.hasUpcoming,
+            ),
           ),
         ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: QuickActionsSection(
+              onBook: () => context.push(Routes.customerAccess),
+              onSeeAll: () => context.push(Routes.customerAppointments),
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: EmptyInfoTiles(),
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ];
     }
 
