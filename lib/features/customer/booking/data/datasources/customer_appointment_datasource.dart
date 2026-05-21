@@ -330,6 +330,50 @@ class CustomerAppointmentDatasource {
         });
   }
 
+  /// Watches the customer's appointments across orgs for the list view.
+  ///
+  /// Returns appointments within a bounded window anchored at [date]:
+  /// - 30 days before [date]
+  /// - 7 days after [date]
+  /// Includes all appointment statuses, ordered by [scheduledAt].
+  /// The orgId is extracted from the document path:
+  /// `organizations/{orgId}/appointments/{docId}`.
+  Stream<List<AppointmentEntity>> watchCustomerAppointments({
+    required String customerId,
+    required DateTime date,
+  }) {
+    _logger.debug(
+      'CustomerAppointmentDatasource: watchCustomerAppointments '
+      'customerId=$customerId',
+    );
+    final dayStart = DateTime(date.year, date.month, date.day);
+    final windowStart = dayStart.subtract(const Duration(days: 30));
+    final windowEnd = dayStart.add(const Duration(days: 7));
+
+    return _firestore
+        .collectionGroup('appointments')
+        .where('customerId', isEqualTo: customerId)
+        .where(
+          'scheduledAt',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(windowStart),
+        )
+        .where('scheduledAt', isLessThan: Timestamp.fromDate(windowEnd))
+        .orderBy('scheduledAt')
+        .snapshots()
+        .asyncMap(_buildCustomerAppointments)
+        .handleError((Object e, StackTrace st) {
+          _logger.error(
+            'CustomerAppointmentDatasource: watchCustomerAppointments error',
+            e,
+            st,
+          );
+          throw DatabaseException(
+            'Failed to watch customer appointments.',
+            stackTrace: st,
+          );
+        });
+  }
+
   /// Watches the customer's dashboard appointments across orgs.
   ///
   /// Returns appointments with status in `{booked, inQueue, serving}`:
@@ -383,6 +427,20 @@ class CustomerAppointmentDatasource {
         .where(_isDashboardAppointment)
         .toList(growable: false);
 
+    return _buildAppointmentsWithNames(appointmentDocs);
+  }
+
+  Future<List<AppointmentEntity>> _buildCustomerAppointments(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) async {
+    final appointmentDocs = snapshot.docs.toList(growable: false);
+
+    return _buildAppointmentsWithNames(appointmentDocs);
+  }
+
+  Future<List<AppointmentEntity>> _buildAppointmentsWithNames(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> appointmentDocs,
+  ) async {
     if (appointmentDocs.isEmpty) {
       return const <AppointmentEntity>[];
     }

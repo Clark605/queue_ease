@@ -97,4 +97,16 @@ abstract class CustomerAppointmentRepository {
     required String customerId,
     required DateTime date,
   });
+
+  /// Watches the customer's appointments across orgs for the list view.
+  ///
+  /// Returns appointments within a bounded window anchored at [date]:
+  /// - 30 days before [date]
+  /// - 7 days after [date]
+  /// Includes all appointment statuses, ordered by [scheduledAt].
+  /// Used by [WatchCustomerAppointmentsUseCase] to populate the list view.
+  Stream<Result<List<AppointmentEntity>>> watchCustomerAppointments({
+    required String customerId,
+    required DateTime date,
+  });
 }

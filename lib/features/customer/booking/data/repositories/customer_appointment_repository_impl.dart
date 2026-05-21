@@ -306,6 +306,56 @@ class CustomerAppointmentRepositoryImpl
   }
 
   @override
+  Stream<Result<List<AppointmentEntity>>> watchCustomerAppointments({
+    required String customerId,
+    required DateTime date,
+  }) {
+    _logger.info(
+      'Customer appointments watch started',
+      _queueLogContext(
+        operation: 'watchCustomerAppointments',
+        orgId: '(cross-org)',
+        customerId: customerId,
+        date: date,
+      ),
+    );
+    return _datasource
+        .watchCustomerAppointments(customerId: customerId, date: date)
+        .transform(
+          StreamTransformer<
+            List<AppointmentEntity>,
+            Result<List<AppointmentEntity>>
+          >.fromHandlers(
+            handleData: (data, sink) => sink.add(Success(data)),
+            handleError: (e, st, sink) {
+              if (e is AppException) {
+                _logger.error(
+                  'Customer appointments watch failed',
+                  _sanitizeMessage(e.message),
+                );
+                sink.add(Failure(e));
+              } else {
+                _logger.error(
+                  'Customer appointments watch unexpected failure',
+                  e,
+                  st,
+                );
+                sink.add(
+                  Failure(
+                    UnknownException(
+                      'Unexpected error watching customer appointments.',
+                      cause: e,
+                      stackTrace: st,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        );
+  }
+
+  @override
   Future<Result<void>> updateAppointmentStatus({
     required String orgId,
     required String appointmentId,
@@ -316,7 +366,8 @@ class CustomerAppointmentRepositoryImpl
       _queueLogContext(
         operation: 'updateAppointmentStatus',
         orgId: orgId,
-        customerId: appointmentId,
+        customerId:
+            null, // Not logging customerId here since it's not directly available in this method
       ),
     );
     return Result.guard(

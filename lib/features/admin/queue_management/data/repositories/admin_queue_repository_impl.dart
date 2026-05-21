@@ -319,9 +319,7 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
           );
 
           if (nextIndex != -1) {
-            current = waiting[nextIndex].copyWith(
-              estimatedWaitMinutes: null,
-            );
+            current = waiting[nextIndex].copyWith(estimatedWaitMinutes: null);
             waiting.removeAt(nextIndex);
           }
         }

@@ -20,7 +20,7 @@ class WatchCustomerAppointmentsUseCase {
       'WatchCustomerAppointmentsUseCase',
       'watching appointments customerId=${customerId.substring(0, 4)}...',
     );
-    return _repository.watchTodayActiveAppointments(
+    return _repository.watchCustomerAppointments(
       customerId: customerId,
       date: date,
     );

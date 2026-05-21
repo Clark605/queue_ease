@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/widgets/loading_button.dart';
-
 class QuickActionsSection extends StatelessWidget {
   const QuickActionsSection({
     super.key,
@@ -20,11 +18,14 @@ class QuickActionsSection extends StatelessWidget {
         final buttonShape = RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         );
-        final bookButton = LoadingButton(
-          label: 'Book Appointment',
+        final bookButton = FilledButton.icon(
           onPressed: onBook,
-          leadingIcon: Icons.add,
-          borderRadius: 8,
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(0, 48),
+            shape: buttonShape,
+          ),
+          icon: const Icon(Icons.add),
+          label: const Text('Book Appointment'),
         );
         final seeAllButton = OutlinedButton.icon(
           onPressed: onSeeAll,

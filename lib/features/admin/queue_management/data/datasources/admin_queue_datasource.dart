@@ -472,7 +472,10 @@ class AdminQueueDatasource {
       return result;
     } on FirebaseException catch (e, st) {
       return Failure<void>(
-        DatabaseException('Failed to mark no-show: ${e.message}', stackTrace: st),
+        DatabaseException(
+          'Failed to mark no-show: ${e.message}',
+          stackTrace: st,
+        ),
       );
     } catch (e, st) {
       return Failure<void>(

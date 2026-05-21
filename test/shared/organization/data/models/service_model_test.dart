@@ -60,10 +60,9 @@ void main() {
       final mockDoc = MockDocumentSnapshot();
       when(() => mockDoc.exists).thenReturn(true);
       when(() => mockDoc.id).thenReturn('service1');
-      when(() => mockDoc.data()).thenReturn({
-        'name': 'Haircut',
-        'durationMinutes': 30,
-      });
+      when(
+        () => mockDoc.data(),
+      ).thenReturn({'name': 'Haircut', 'durationMinutes': 30});
 
       final model = ServiceModel.fromDoc(mockDoc, orgId: 'org1');
 
