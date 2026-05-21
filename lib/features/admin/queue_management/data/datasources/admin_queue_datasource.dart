@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/error/app_exception.dart';
+import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
 
 /// Firestore datasource for all admin queue operations.
@@ -396,15 +397,15 @@ class AdminQueueDatasource {
   ///
   /// Status transition: inQueue → noShow.
   ///
-  /// Throws [ValidationException] when a precondition fails.
-  /// Throws [DatabaseException] on Firestore errors.
-  Future<void> transactionMarkNoShow({
+  /// Returns [Failure] with [ValidationException] when a precondition fails.
+  /// Returns [Failure] with [DatabaseException] on Firestore errors.
+  Future<Result<void>> transactionMarkNoShow({
     required String orgId,
     required String date,
     required String appointmentId,
   }) async {
     try {
-      await _firestore.runTransaction((txn) async {
+      final result = await _firestore.runTransaction<Result<void>>((txn) async {
         final queueRef = queueDoc(orgId, date);
         final appointmentRef = appointments(orgId).doc(appointmentId);
 
@@ -412,8 +413,8 @@ class AdminQueueDatasource {
         final appointmentSnap = await txn.get(appointmentRef);
 
         if (!queueSnap.exists) {
-          throw ValidationException(
-            'Queue document does not exist for date $date',
+          return Failure<void>(
+            ValidationException('Queue document does not exist for date $date'),
           );
         }
 
@@ -421,14 +422,18 @@ class AdminQueueDatasource {
         final appointmentData = appointmentSnap.data();
 
         if (appointmentData == null) {
-          throw ValidationException('Appointment $appointmentId not found');
+          return Failure<void>(
+            ValidationException('Appointment $appointmentId not found'),
+          );
         }
 
         final currentStatus = appointmentData['status'] as String?;
         if (currentStatus != 'inQueue') {
-          throw ValidationException(
-            'Appointment $appointmentId is not currently in queue '
-            '(status: $currentStatus)',
+          return Failure<void>(
+            ValidationException(
+              'Appointment $appointmentId is not currently in queue '
+              '(status: $currentStatus)',
+            ),
           );
         }
 
@@ -439,8 +444,10 @@ class AdminQueueDatasource {
 
         if (currentIndex >= orderedIds.length ||
             orderedIds[currentIndex] != appointmentId) {
-          throw ValidationException(
-            'Appointment $appointmentId is not the current serving entry',
+          return Failure<void>(
+            ValidationException(
+              'Appointment $appointmentId is not the current serving entry',
+            ),
           );
         }
 
@@ -448,38 +455,60 @@ class AdminQueueDatasource {
 
         txn.update(appointmentRef, {'status': 'noShow'});
         txn.update(queueRef, {'currentServingIndex': nextIndex});
+        return const Success<void>(null);
       });
-      _logger.info(
-        'AdminQueueDatasource.transactionMarkNoShow',
-        'Marked $appointmentId as no-show for $orgId on $date',
-      );
-    } on ValidationException {
-      rethrow;
+      switch (result) {
+        case Success():
+          _logger.info(
+            'AdminQueueDatasource.transactionMarkNoShow',
+            'Marked $appointmentId as no-show for $orgId on $date',
+          );
+        case Failure(:final exception):
+          _logger.warning(
+            'AdminQueueDatasource.transactionMarkNoShow validation failed',
+            exception.message,
+          );
+      }
+      return result;
     } on FirebaseException catch (e, st) {
-      throw DatabaseException(
-        'Failed to mark no-show: ${e.message}',
-        stackTrace: st,
+      return Failure<void>(
+        DatabaseException(
+          'Failed to mark no-show: ${e.message}',
+          stackTrace: st,
+        ),
       );
     } catch (e, st) {
-      throw UnknownException(
-        'Unexpected error marking no-show',
-        cause: e,
-        stackTrace: st,
+      return Failure<void>(
+        UnknownException(
+          'Unexpected error marking no-show',
+          cause: e,
+          stackTrace: st,
+        ),
       );
     }
   }
 
   /// Marks a current front overdue non-serving entry as no-show.
-  Future<void> transactionMarkOverdueNoShow({
+  Future<Result<void>> transactionMarkOverdueNoShow({
     required String orgId,
     required String date,
     required String appointmentId,
-  }) {
-    return transactionMarkNoShow(
+  }) async {
+    final result = await transactionMarkNoShow(
       orgId: orgId,
       date: date,
       appointmentId: appointmentId,
     );
+    switch (result) {
+      case Success():
+        return result;
+      case Failure(:final exception):
+        _logger.warning(
+          'AdminQueueDatasource.transactionMarkOverdueNoShow failed',
+          exception.message,
+        );
+        return result;
+    }
   }
 
   /// Explicitly starts serving for the current front queue entry.

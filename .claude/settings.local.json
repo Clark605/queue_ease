@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(grep -E '\\\\.dart$')",
-      "mcp__plugin_github_github__issue_read"
-    ]
-  }
-}

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/pulsing_dot.dart';
 import '../../domain/use_cases/watch_customer_queue_status_use_case.dart';
-import 'live_indicator.dart';
 import 'wait_timer_countdown.dart';
 
 /// Card shown while the customer is waiting in the queue.
@@ -12,6 +12,9 @@ import 'wait_timer_countdown.dart';
 /// and stats for the currently-serving position and estimated wait.
 class WaitingQueueCard extends StatelessWidget {
   const WaitingQueueCard({super.key, required this.status});
+
+  static const _shortWaitThresholdMinutes = 10;
+  static const _mediumWaitThresholdMinutes = 30;
 
   final CustomerQueueStatusView status;
 
@@ -32,7 +35,7 @@ class WaitingQueueCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const LiveIndicator(),
+          const _LiveIndicator(),
           const SizedBox(height: 20),
           Text(
             '#${status.position ?? "-"}',
@@ -125,10 +128,24 @@ class WaitingQueueCard extends StatelessWidget {
               fallbackWaitMinutes: status.estimatedWaitMinutes,
             ),
             icon: Icons.schedule_outlined,
+            accentColor: _waitAccentColor(status.estimatedWaitMinutes),
           ),
         ),
       ],
     );
+  }
+
+  Color _waitAccentColor(int? waitMinutes) {
+    if (waitMinutes == null) {
+      return AppColors.outline;
+    }
+    if (waitMinutes <= _shortWaitThresholdMinutes) {
+      return AppColors.waitShort;
+    }
+    if (waitMinutes <= _mediumWaitThresholdMinutes) {
+      return AppColors.waitMedium;
+    }
+    return AppColors.waitLong;
   }
 
   /// Returns `currentServingIndicator / position` clamped to [0, 1].
@@ -140,17 +157,43 @@ class WaitingQueueCard extends StatelessWidget {
   }
 }
 
+class _LiveIndicator extends StatelessWidget {
+  const _LiveIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PulsingDot(size: 10, duration: Duration(milliseconds: 900)),
+        SizedBox(width: 8),
+        Text(
+          'LIVE',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// A compact stat card showing an icon, a short label, and a value.
 class _StatCard extends StatelessWidget {
   const _StatCard({
     required this.label,
     required this.valueWidget,
     required this.icon,
+    this.accentColor = AppColors.primary,
   });
 
   final String label;
   final Widget valueWidget;
   final IconData icon;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -159,11 +202,18 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outline),
+        border: Border.all(color: accentColor.withValues(alpha: 0.36)),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withValues(alpha: 0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(icon, size: 20, color: AppColors.primary),
+          Icon(icon, size: 20, color: accentColor),
           const SizedBox(height: 6),
           Text(
             label,

@@ -212,7 +212,7 @@ abstract class OrganizationRepository {
 
 🔄 **No user-facing changes**: This is pure refactoring; all behavior remains identical
 
-🔄 **Testing strategy unchanged**: Unit tests, integration tests, manual QA still required
+🔄 **Testing strategy updated**: Unit tests, integration tests, and manual QA are used when they reduce risk
 
 ---
 

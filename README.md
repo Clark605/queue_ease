@@ -2,13 +2,17 @@
 
 Smart queue and appointment management for small clinics and service-based businesses.
 
-![Version](https://img.shields.io/badge/version-1.1.0%2B1-blue)
+![Version](https://img.shields.io/badge/version-1.3.0%2B1-blue)
 ![Flutter](https://img.shields.io/badge/Flutter-3.9.0%2B-02569B?logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-3.9.0%2B-0175C2?logo=dart&logoColor=white)
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![Coverage](https://img.shields.io/badge/progress-50--55%25-orange)
+![Status](https://img.shields.io/badge/status-sprint%206a%20in%20progress-orange)
+![Coverage](https://img.shields.io/badge/progress-70%25-orange)
 
 ---
+
+<p align="center">
+   <img src="assets/images/Queue_Ease.png" alt="Queue Ease preview" />
+</p>
 
 ## 📖 What the project does
 
@@ -26,82 +30,21 @@ Queue Ease helps businesses manage appointments and live queues while giving cus
 For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
 
 ---
+## 🎓 Skills Learned
 
-## 🎯 Current Project Status
-
-**Last Updated:** March 10, 2026  
-**Current Branch:** `002-working-hours-qr-share`
-
-### ✅ Completed (Phase 1 - Foundation + Sprint 2 - Admin Core + Sprint 3 - Working Hours & QR/Share)
-- ✅ Complete authentication system (email/password, Google Sign-In, password reset)
-- ✅ Full RBAC with role-based routing (admin vs. customer)
-- ✅ Comprehensive error handling framework (Result type, AppException hierarchy)
-- ✅ Complete onboarding flow with custom illustrations
-- ✅ Clean architecture with dependency injection
-- ✅ ALL 5 core domain entities (Organization, Service, WorkingHours, Appointment, Queue)
-- ✅ ALL 5 Firestore models with complete serialization
-- ✅ Firestore security rules with 78 passing tests (updated for break fields)
-- ✅ Organization creation during admin signup
-- ✅ OrganizationRepository with real-time streams
-- ✅ Organization profile view and edit screens
-- ✅ ServiceRepository with full CRUD operations
-- ✅ Service management UI (list, add, edit, delete, active/inactive toggle)
-- ✅ First-time setup tutorial for new admins
-- ✅ **WorkingHoursRepository with real-time streaming**
-- ✅ **Working hours configuration UI (7-day schedule)**
-- ✅ **Break time configuration (optional lunch breaks)**
-- ✅ **Schedule validation (open/close times, break windows)**
-- ✅ **QR code generation using qr_flutter**
-- ✅ **Share Access page with native sharing (share_plus)**
-- ✅ **QR code download to gallery (gal)**
-- ✅ **Platform permissions configured (Android & iOS)**
-- ✅ 15+ unit tests covering entities, models, auth, and error handling
-
-### 🚧 Next Up (Sprint 4 - Customer Booking Flow)
-- AppointmentRepository implementation
-- Organization landing page for customers
-- Service selection UI
-- Time slot availability calculation
-- Booking form with customer info
-- Appointment confirmation screen
-- Booking conflict prevention logic
-
-**Overall Progress:** ~50-55% complete  
-**Estimated MVP Timeline:** 4-5 weeks remaining
+- ✅ Building multi-role Flutter apps (admin + customer)
+- ✅ Implementing Clean Architecture in Flutter
+- ✅ Real-time data flows with Firestore
+- ✅ Firebase Auth integration (email/password, Google Sign-In)
+- ✅ Advanced state management with flutter_bloc
+- ✅ Dependency injection with GetIt + Injectable
+- ✅ Role-based access control (RBAC) with GoRouter
+- ✅ Structured error handling with Result types
+- ✅ Comprehensive testing strategies
+- ✅ Environment-based configuration (Dev/Prod flavors)
 
 ---
 
-## 🏗️ Architecture Overview
-
-Queue Ease follows **Clean Architecture** principles with feature-based modular organization:
-
-```
-┌─────────────────────────────────────────┐
-│         Presentation Layer              │
-│  (UI, Pages, Widgets, State Management) │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│          Domain Layer                   │
-│     (Entities, Repositories Interface)  │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│           Data Layer                    │
-│   (Models, Datasources, Repositories)   │
-└─────────────────────────────────────────┘
-```
-
-**Key Architectural Decisions:**
-- **State Management:** flutter_bloc (Cubit pattern)
-- **Dependency Injection:** GetIt + Injectable
-- **Navigation:** GoRouter with authentication guards
-- **Error Handling:** Sealed Result<T> type with structured exceptions
-- **Logging:** Talker with environment-specific verbosity
-
-For comprehensive architecture details, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
----
 
 ## 📁 Project Structure
 
@@ -228,6 +171,109 @@ For complete documentation, see [docs/](docs/) folder.
 - **flutter_native_splash** 2.4.5 - Splash screen generation
 
 ---
+## 🎯 Current Project Status
+
+**Last Updated:** April 22, 2026  
+**Current Branch:** `develop`
+
+
+### ✅ Completed
+- Phase 1 foundation: authentication, RBAC, onboarding, error handling, logging, and clean architecture
+- Sprint 2: organization setup and service management
+- Sprint 3: working hours configuration and QR/share access
+- Sprint 4: customer booking flow
+- Sprint 5: queue system, customer dashboard, and access portal
+- Sprint 6: business logic and automation (time margin countdown, pre-booking lock, auto no-show progression)
+
+### 🚧 In Progress (Sprint 6A - Staff Member Management)
+- Staff member entity/model and Firestore schema updates
+- Service and appointment staff assignment fields
+- Staff CRUD, validation, queue filtering, and migration support
+- Firestore security rules for the staff subcollection
+
+### ⏳ Next Up
+- Sprint 7 — Notifications & Polish
+- Sprint 8 — Testing & Deployment
+
+**Overall Progress:** ~70% complete  
+**Estimated MVP Timeline:** ~4-6 weeks remaining
+
+---
+
+
+## 🧪 Testing
+
+### Run all tests:
+```bash
+flutter test
+```
+
+### Run specific test file:
+```bash
+flutter test test/shared/auth/auth_cubit_test.dart
+```
+
+### Run tests with coverage:
+```bash
+flutter test --coverage
+```
+
+### Current Test Coverage:
+- ✅ Auth: AuthCubit (comprehensive)
+- ✅ Core: Result type, AppException hierarchy
+- ✅ Entities: Organization, Service, WorkingHours, Appointment, Queue
+- ✅ Models: All 5 Firestore models with serialization round-trips
+- ✅ Onboarding: Integration test
+
+**Total Test Files:** 15+
+
+---
+
+## 📚 Documentation
+
+All documentation is located in the [docs/](docs/) folder:
+
+| Document | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Comprehensive technical architecture guide |
+| [PRD.md](docs/PRD.md) | Product requirements and specifications |
+| [FEATURE_CHECKLIST.md](docs/FEATURE_CHECKLIST.md) | Feature implementation tracking |
+| [PROJECT_TIMELINE.md](docs/PROJECT_TIMELINE.md) | Timeline, Gantt charts, milestones |
+| [entities.md](docs/entities.md) | Domain entity specifications |
+| [README.md](docs/README.md) | Documentation index |
+
+---
+
+## 🔄 GitHub Workflow
+
+This repository uses a feature-branch workflow:
+
+1. **Create a feature branch** from `main`:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Commit focused changes:**
+   ```bash
+   git add .
+   git commit -m "feat: add user authentication"
+   ```
+
+3. **Push and create a pull request:**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+4. **Review, iterate, and merge** to `main`
+
+**Branch Naming Convention:**
+- `feature/` - New features
+- `bugfix/` - Bug fixes
+- `refactor/` - Code refactoring
+- `docs/` - Documentation updates
+
+---
+
 
 ## 🚀 Getting Started
 
@@ -308,273 +354,3 @@ Use the pre-configured launch options in `.vscode/launch.json`:
 - **Prod** - Production flavor
 
 ---
-
-## 🧪 Testing
-
-### Run all tests:
-```bash
-flutter test
-```
-
-### Run specific test file:
-```bash
-flutter test test/shared/auth/auth_cubit_test.dart
-```
-
-### Run tests with coverage:
-```bash
-flutter test --coverage
-```
-
-### Current Test Coverage:
-- ✅ Auth: AuthCubit (comprehensive)
-- ✅ Core: Result type, AppException hierarchy
-- ✅ Entities: Organization, Service, WorkingHours, Appointment, Queue
-- ✅ Models: All 5 Firestore models with serialization round-trips
-- ✅ Onboarding: Integration test
-
-**Total Test Files:** 15+
-
----
-
-## 📚 Documentation
-
-All documentation is located in the [docs/](docs/) folder:
-
-| Document | Description |
-|----------|-------------|
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Comprehensive technical architecture guide |
-| [PRD.md](docs/PRD.md) | Product requirements and specifications |
-| [FEATURE_CHECKLIST.md](docs/FEATURE_CHECKLIST.md) | Feature implementation tracking |
-| [PROJECT_TIMELINE.md](docs/PROJECT_TIMELINE.md) | Timeline, Gantt charts, milestones |
-| [entities.md](docs/entities.md) | Domain entity specifications |
-| [README.md](docs/README.md) | Documentation index |
-
----
-
-## 🔄 GitHub Workflow
-
-This repository uses a feature-branch workflow:
-
-1. **Create a feature branch** from `main`:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-2. **Commit focused changes:**
-   ```bash
-   git add .
-   git commit -m "feat: add user authentication"
-   ```
-
-3. **Push and create a pull request:**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-4. **Review, iterate, and merge** to `main`
-
-**Branch Naming Convention:**
-- `feature/` - New features
-- `bugfix/` - Bug fixes
-- `refactor/` - Code refactoring
-- `docs/` - Documentation updates
-
----
-
-## 🚢 Deployment
-
-### Firebase App Distribution with Fastlane
-
-Queue Ease uses Fastlane to automate distribution of builds to Firebase App Distribution for testing.
-
-**Manual Distribution:**
-
-```bash
-# Development build
-cd android
-fastlane android distribute_dev
-
-# Production build
-fastlane android distribute_prod
-```
-
-**CI/CD Automation:**
-
-Builds are automatically distributed via GitHub Actions:
-- **Dev builds:** Pushed to `develop` branch
-- **Prod builds:** Pushed to `main` branch
-
-**Required GitHub Secrets:**
-- `FIREBASE_TOKEN` - Firebase CLI authentication token
-- `FIREBASE_APP_ID_DEV` - Dev Firebase app ID
-- `FIREBASE_APP_ID_PROD` - Prod Firebase app ID
-
-**Troubleshooting:**
-- **"Firebase token required" error**: Make sure `FIREBASE_TOKEN` environment variable is set
-- **Firebase permission error**: Verify you have owner/editor permissions on the Firebase project
-- **Tester group not found**: Create the "developers" group in Firebase Console > App Distribution > Testers
-
----
-
-## 🎓 Skills Learned
-
-- ✅ Building multi-role Flutter apps (admin + customer)
-- ✅ Implementing Clean Architecture in Flutter
-- ✅ Real-time data flows with Firestore
-- ✅ Firebase Auth integration (email/password, Google Sign-In)
-- ✅ Advanced state management with flutter_bloc
-- ✅ Dependency injection with GetIt + Injectable
-- ✅ Role-based access control (RBAC) with GoRouter
-- ✅ Structured error handling with Result types
-- ✅ Comprehensive testing strategies
-- ✅ Environment-based configuration (Dev/Prod flavors)
-
----
-
-## 🎥 Demo
-
-> **Coming Soon:** Video demonstration of implemented features
-
-UI mockups and design references: [docs/ui-screens](docs/ui-screens/)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Write/update tests
-5. Update documentation
-6. Submit a pull request
-
-**Before submitting:**
-- Ensure all tests pass: `flutter test`
-- Follow established code conventions (see [ARCHITECTURE.md](docs/ARCHITECTURE.md))
-- Update relevant documentation
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 📞 Contact & Support
-
-**Repository:** [github.com/Clark605/queue_ease](https://github.com/Clark605/queue_ease)  
-**Current Branch:** `feature/auth`  
-**Issues:** [GitHub Issues](https://github.com/Clark605/queue_ease/issues)
-
----
-
-## 🗺️ Roadmap
-
-### ✅ Phase 1: Foundation (COMPLETE)
-- Complete authentication system
-- Clean architecture setup
-- All domain entities & models
-- Comprehensive testing
-
-### 🚧 Phase 2: Repository Layer (In Progress)
-- Firestore security rules
-- Repository implementations
-- Admin service management UI
-- Working hours configuration UI
-
-### ⏳ Phase 3-8: Upcoming
-- Customer booking flow
-- Queue generation system
-- Real-time updates
-- Notifications
-- Testing & deployment
-
-**Estimated MVP Completion:** 5-6 weeks
-
-For detailed timeline, see [PROJECT_TIMELINE.md](docs/PROJECT_TIMELINE.md)
-
----
-
-**Built with ❤️ using Flutter**
-flutter run --flavor prod -t lib/main_prod.dart
-```
-
-**VS Code Launch Configurations:**
-
-You can also use the pre-configured launch options in VS Code:
-- **Dev** - Runs development flavor with device preview
-- **Prod** - Runs production flavor
-
-### Firebase App Distribution with Fastlane
-
-QueueEase uses Fastlane to automate distribution of builds to Firebase App Distribution for testing.
-
-
-
-**CI/CD Automation:**
-
-Builds are automatically distributed via GitHub Actions:
-- **Dev builds**: Automatically distributed when code is pushed to `develop` branch
-- **Prod builds**: Automatically distributed when code is pushed to `main` branch
-
-**Required GitHub Secrets:**
-- `FIREBASE_TOKEN`: Firebase CLI authentication token
-- `FIREBASE_APP_ID_DEV`: Firebase app ID for dev flavor
-- `FIREBASE_APP_ID_PROD`: Firebase app ID for prod flavor
-
-**Troubleshooting:**
-
-- **"Firebase token required" error**: Make sure `FIREBASE_TOKEN` environment variable is set
-- **Firebase permission error**: Verify you have owner/editor permissions on the Firebase project
-- **Tester group not found**: Create the "developers" group in Firebase Console > App Distribution > Testers
-
-### Environment Configuration
-
-The app uses `.env` files for environment-specific configuration:
-
-1. Copy `.env.example` to create your environment files:
-   ```bash
-   cp .env.example .env.dev
-   cp .env.example .env.prod
-   ```
-
-2. Update the values in `.env.dev` and `.env.prod` with your actual API keys and configuration.
-
-**Note:** `.env.dev` and `.env.prod` are git-ignored to protect sensitive data. Never commit these files.
-
-### Install and run
-
-```bash
-flutter pub get
-```
-
-If you use `injectable`, generate DI code:
-
-```bash
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-Run the app:
-
-```bash
-flutter run
-```
-
-Run tests:
-
-```bash
-flutter test
-```
-
-### Firebase setup (optional)
-
-If you enable Firebase, add the platform configuration files and initialize Firebase in your app entry point. See the Firebase docs and follow the setup steps for Flutter.
-
-### Usage example
-
-- Admins sign in to configure services and manage today’s queue.
-- Customers open a shared link or QR code to book a service and track their position.

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
@@ -6,8 +7,13 @@ import '../../../../../core/theme/app_text_styles.dart';
 /// Shown in place of the current queue card when there are no customers in
 /// today's queue (no current, no waiting).
 class EmptyQueueState extends StatelessWidget {
-  const EmptyQueueState({super.key, required this.onGenerate});
+  const EmptyQueueState({
+    super.key,
+    required this.selectedDate,
+    required this.onGenerate,
+  });
 
+  final DateTime selectedDate;
   final VoidCallback onGenerate;
 
   @override
@@ -30,7 +36,7 @@ class EmptyQueueState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No Queue Today',
+            'No queue data for this date',
             style: AppTextStyles.headlineSmall.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -39,8 +45,8 @@ class EmptyQueueState extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'No customers have joined the queue yet. '
-              'They will appear here once they check in.',
+              'There is no queue data for ${DateFormat('MMM d, y').format(selectedDate)} yet. '
+              'Generate the queue to create it for this date.',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.onSurfaceVariant,
               ),
@@ -51,7 +57,7 @@ class EmptyQueueState extends StatelessWidget {
           FilledButton.icon(
             onPressed: onGenerate,
             icon: const Icon(Icons.playlist_add_check_rounded),
-            label: const Text('Generate Today\'s Queue'),
+            label: const Text('Generate Queue'),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

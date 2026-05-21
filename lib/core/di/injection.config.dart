@@ -105,14 +105,20 @@ import '../../features/customer/booking/domain/repositories/customer_working_hou
     as _i492;
 import '../../features/customer/booking/domain/use_cases/calculate_available_slots_use_case.dart'
     as _i499;
+import '../../features/customer/booking/domain/use_cases/cancel_appointment_use_case.dart'
+    as _i372;
 import '../../features/customer/booking/domain/use_cases/create_booking_use_case.dart'
     as _i1040;
 import '../../features/customer/booking/domain/use_cases/get_active_services_use_case.dart'
     as _i48;
 import '../../features/customer/booking/domain/use_cases/get_organization_by_slug_use_case.dart'
     as _i952;
+import '../../features/customer/booking/domain/use_cases/watch_customer_appointments_use_case.dart'
+    as _i1012;
 import '../../features/customer/booking/presentation/cubit/booking_form_cubit.dart'
     as _i651;
+import '../../features/customer/booking/presentation/cubit/customer_appointments_cubit.dart'
+    as _i219;
 import '../../features/customer/booking/presentation/cubit/organization_landing_cubit.dart'
     as _i912;
 import '../../features/customer/booking/presentation/cubit/service_selection_cubit.dart'
@@ -421,6 +427,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.factory<_i372.CancelAppointmentUseCase>(
+      () => _i372.CancelAppointmentUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
+    gh.factory<_i1012.WatchCustomerAppointmentsUseCase>(
+      () => _i1012.WatchCustomerAppointmentsUseCase(
+        gh<_i622.CustomerAppointmentRepository>(),
+        gh<_i924.AppLogger>(),
+      ),
+    );
     gh.lazySingleton<_i742.AuthRepository>(
       () => _i317.AuthRepositoryImpl(
         gh<_i529.FirebaseAuthDatasource>(),
@@ -436,14 +454,21 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.AppLogger>(),
       ),
     );
+    gh.lazySingleton<_i678.AuthCubit>(
+      () => _i678.AuthCubit(gh<_i742.AuthRepository>(), gh<_i924.AppLogger>()),
+    );
     gh.factory<_i424.CustomerDashboardCubit>(
       () => _i424.CustomerDashboardCubit(
         gh<_i979.WatchCustomerDashboardUseCase>(),
+        gh<_i372.CancelAppointmentUseCase>(),
         gh<_i924.AppLogger>(),
       ),
     );
-    gh.lazySingleton<_i678.AuthCubit>(
-      () => _i678.AuthCubit(gh<_i742.AuthRepository>(), gh<_i924.AppLogger>()),
+    gh.factory<_i219.CustomerAppointmentsCubit>(
+      () => _i219.CustomerAppointmentsCubit(
+        gh<_i1012.WatchCustomerAppointmentsUseCase>(),
+        gh<_i924.AppLogger>(),
+      ),
     );
     return this;
   }

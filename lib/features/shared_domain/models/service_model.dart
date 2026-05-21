@@ -56,6 +56,13 @@ class ServiceModel {
       );
     }
 
+    final createdAtValue = data['createdAt'];
+    final createdAt = switch (createdAtValue) {
+      Timestamp() => createdAtValue.toDate(),
+      DateTime() => createdAtValue,
+      _ => DateTime.fromMillisecondsSinceEpoch(0),
+    };
+
     return ServiceModel(
       id: doc.id,
       orgId: orgId,
@@ -63,7 +70,7 @@ class ServiceModel {
       durationMinutes: durationMinutes,
       timeMarginMinutes: data['timeMarginMinutes'] as int? ?? 5,
       isActive: data['isActive'] as bool? ?? true,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt: createdAt,
       price: (data['price'] as num?)?.toDouble(),
       queueType: data['queueType'] as String?,
       description: data['description'] as String?,

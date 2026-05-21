@@ -108,17 +108,29 @@ class CustomerQueueStatusCubit extends Cubit<CustomerQueueStatusState> {
   }
 
   CustomerQueueStatusView _toPresentationStatus(CustomerQueueStatusView data) {
-    if (!data.isNoShow) {
-      return data;
+    if (data.isNoShow) {
+      return CustomerQueueStatusView(
+        position: null,
+        estimatedWaitMinutes: null,
+        isCurrentTurn: false,
+        isCompleted: false,
+        isNoShow: true,
+        currentServingIndicator: data.currentServingIndicator,
+      );
     }
 
-    return CustomerQueueStatusView(
-      position: null,
-      estimatedWaitMinutes: null,
-      isCurrentTurn: false,
-      isNoShow: true,
-      currentServingIndicator: data.currentServingIndicator,
-    );
+    if (data.isCompleted) {
+      return CustomerQueueStatusView(
+        position: null,
+        estimatedWaitMinutes: null,
+        isCurrentTurn: false,
+        isCompleted: true,
+        isNoShow: false,
+        currentServingIndicator: data.currentServingIndicator,
+      );
+    }
+
+    return data;
   }
 
   @override

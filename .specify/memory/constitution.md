@@ -1,48 +1,29 @@
 <!--
-SYNC IMPACT REPORT - Constitution v1.1.0
-Generated: 2026-03-14
+SYNC IMPACT REPORT - Constitution v2.0.0
+Generated: 2026-04-29
 
-VERSION CHANGE: 1.0.0 → 1.1.0
-  Rationale: MINOR bump - Removed TDD requirement (material guidance change, non-breaking relaxation); Updated project structure documentation to reflect current feature organization
+VERSION CHANGE: 1.1.0 → 2.0.0
+  Rationale: MAJOR bump - redefined testing governance from mandatory to
+  pragmatic/risk-based, which changes review gates and template guidance.
 
 PRINCIPLES MODIFIED:
-  ✅ I. Code Quality First - Added explicit feature structure documentation (admin/, customer/, authentication/, onboarding/, shared_domain/)
-  ✅ III. Testing Standards - Removed TDD mandate; tests can be written alongside or after implementation while maintaining coverage requirements
+  ✅ III. Pragmatic Testing - Replaced blanket testing mandate with optional,
+     risk-based validation guidance
+  ✅ I. Code Quality First - Removed mandatory test-coverage wording from
+     layer guidance and repository expectations
+  ✅ V. Fast Delivery - Relaxed CI/test gating so low-risk work is not blocked
+     by a universal testing rule
 
-PRINCIPLES UNCHANGED:
-  ✅ II. Flexibility & Extensibility (Feature modules, DI, env configs)
-  ✅ IV. User Experience Consistency (Material 3, accessibility, offline-first)
-  ✅ V. Fast Delivery (MVP mindset, P1/P2/P3 prioritization, 3-day cycles)
-  ✅ VI. Performance Requirements (Real-time operations, 60fps, <3s startup)
+TEMPLATE AND DOC UPDATES:
+  ✅ .specify/templates/spec-template.md - removed mandatory testing framing
+  ✅ .specify/templates/tasks-template.md - tests remain optional, test-first
+     wording removed
+  ✅ docs/README.md - testing is no longer described as non-negotiable
+  ✅ docs/ARCHITECTURE.md - testing strategy and review gates aligned
+  ✅ docs/ADR/001-role-based-repositories.md - testing note updated
 
-PROJECT STRUCTURE UPDATES:
-  ✅ Documented feature-first organization: lib/features/{admin,customer,authentication,onboarding,shared_domain}
-  ✅ Admin features: organization_management, service_management, working_hours_management, queue_management, daily_summary, dashboard, share_access, tutorial
-  ✅ Customer features: booking, entry
-  ✅ Shared domain entities moved to dedicated shared_domain/ feature for cross-role access
-  ✅ Core utilities remain in lib/core/ (config, theme, widgets, utils, error, router, di, services)
-
-TESTING APPROACH CHANGE:
-  ❌ REMOVED: "Test-first development is MANDATORY" (line 90)
-  ❌ REMOVED: "Tests MUST be written and reviewed BEFORE implementation begins (TDD Red-Green-Refactor)" (line 108)
-  ✅ RETAINED: All coverage targets (80% unit, 70% widget), test patterns, Given-When-Then structure
-  ✅ RETAINED: Mandatory testing for domain/data/presentation code before PR merge
-  ✅ NEW: Pragmatic testing approach - write tests alongside or after implementation, but always before merge
-
-RATIONALE FOR TDD REMOVAL:
-  - TDD can slow initial development velocity during MVP push
-  - Team can achieve same quality with tests written during/after implementation
-  - Coverage gates and PR reviews still enforce test quality
-  - Allows flexibility for exploratory coding and rapid prototyping
-
-TEMPLATE CONSISTENCY STATUS:
-  ✅ plan-template.md - Constitution Check section still enforces test coverage compliance
-  ✅ spec-template.md - User story prioritization unchanged
-  ✅ tasks-template.md - Phase structure unchanged
-  ✅ Command files - No changes required
-
-FOLLOW-UP ACTIONS:
-  None - All updates applied to constitution only
+DEFERRED ITEMS:
+  None
 -->
 
 # Queue Ease Constitution
@@ -60,11 +41,11 @@ All code MUST adhere to Clean Architecture principles with strict layer separati
   - Repository interfaces define contracts (implementation in data layer)
 - **Data Layer** implements domain repository interfaces; never directly accessed by presentation
   - Firestore models handle serialization: `fromDoc()`, `toMap()`, `toEntity()` methods required
-  - Round-trip conversion MUST preserve data integrity (test coverage mandatory)
+  - Round-trip conversion MUST preserve data integrity; validate with tests when the model changes
   - Exception mapping: translate Firebase/platform errors into `AppException` subtypes (sealed hierarchy with 5 final subtypes)
   - Return `Result<T>` from all async operations for explicit error handling
 - **Presentation Layer** depends only on domain abstractions via dependency injection
-  - Use Cubit pattern (not full BLoC) with `bloc_test` for testing
+  - Use Cubit pattern (not full BLoC); `bloc_test` is the preferred harness when tests are added
   - UI never imports data layer or Firebase directly
 - SOLID principles MUST be followed in all implementations
 - Code reviews MUST verify architecture compliance before merge (use Constitution Check in plan templates)
@@ -91,34 +72,17 @@ Every feature MUST be self-contained and independently deployable:
 
 **Rationale**: Feature-first organization with role-based grouping (admin/customer) enables parallel team development, clear ownership, and easier navigation. Modular design enables easier testing and graceful feature deprecation. The shared_domain feature provides clean access to domain entities across roles without coupling.
 
-### III. Testing Standards (NON-NEGOTIABLE)
+### III. Pragmatic Testing
 
-Comprehensive automated testing is MANDATORY for all production code:
-- **Unit Tests**: Required for ALL domain entities, repository interfaces, business logic (target: 80%+ coverage)
-  - Entity tests MUST verify: `Equatable` value equality, differing fields not equal, `props` includes all fields
-  - Model tests MUST verify: `fromDoc()` parsing, `toMap()` serialization, `toEntity()` conversion, round-trip preservation
-  - Exception mapping tests MUST cover ALL `AppException` subtypes (current: AuthException, DatabaseException, ValidationException, StorageException, UnknownException)
-  - Use exhaustive pattern matching in tests - compiler will catch when new exception types added
-- **Widget Tests**: Required for ALL reusable components and pages (target: 70%+ coverage)
-  - Test user interactions (taps, text input, navigation)
-  - Test loading/error/success states
-  - Mock dependencies with `mocktail`
-- **Integration Tests**: Required for critical user flows (authentication, booking, queue operations)
-  - End-to-end scenarios with Firebase mocks (`test/firebase_mocks.dart`)
-  - Test time margin enforcement and auto no-show detection
-  - Real-time update propagation for queue status
-- **Test Structure**: Given-When-Then pattern; use `bloc_test` for Cubit state management testing
-- **Result<T> Pattern**: All async operations returning `Result<T>` MUST test both `Success` and `Failure` branches
-  - Use `Result.guard()` to wrap async calls and convert exceptions
-  - Test `.when()`, `.map()`, `.getOrNull()`, `.getOrElse()` transformations
-- **Testing Approach**: Write tests alongside or after implementation, but ALWAYS before PR merge
-  - Tests can be written during development (parallel to implementation) or immediately after
-  - All code MUST have tests completed before pull request approval
-  - Exploratory coding and rapid prototyping allowed without tests, but production code requires full test coverage
-- All tests MUST pass before PR approval (enforced by CI)
-- Use `mocktail` for mocking; Firebase mocks in `test/firebase_mocks.dart`
+Testing is a validation tool, not a universal merge gate:
+- Tests are recommended for high-risk changes, core business logic, regression-prone code, and critical user flows.
+- There is no blanket requirement that every change include tests before merge.
+- When tests are added, prefer unit tests for domain logic, widget tests for complex UI, and integration tests for critical end-to-end flows.
+- Keep assertions specific enough to document behavior and prevent regressions.
 
-**Rationale**: Comprehensive automated testing ensures code quality and prevents regressions without enforcing a specific development workflow. Real-time features (queue updates, appointment booking) require bulletproof reliability. The time margin policy for no-shows is business-critical and must be rigorously tested. Allowing pragmatic testing approaches maintains quality while supporting fast MVP delivery.
+**Rationale**: Risk-based testing keeps low-risk or exploratory work moving without
+removing the team's ability to add targeted automation where it protects the
+product most.
 
 ### IV. User Experience Consistency
 
@@ -130,7 +94,7 @@ User interface MUST deliver consistent, accessible experiences across all screen
 - **Reusable Widgets** MUST be in `core/widgets/` (app-wide) or `shared/widgets/` (cross-role)
   - Already implemented: `AppErrorWidget`, `AppLoadingIndicator`
   - Planned: `QueuePositionCard`, `ServiceCard`, `TimeSlotPicker`
-  - Every reusable widget MUST have widget tests
+  - Every reusable widget SHOULD have targeted widget tests when behavior is complex or high-risk
 - **State Feedback** MUST provide meaningful user feedback:
   - Loading states: show spinner or skeleton screen (never silent/frozen UI)
   - Error messages: user-friendly with actionable guidance ("Try again", "Check network")
@@ -185,9 +149,9 @@ Development velocity prioritized through iterative, incremental releases:
   - Current branch: `develop` (feature/auth recently merged)
   - Naming convention: `feature/###-name`, `hotfix/###-description`
   - Small, focused PRs preferred over large monolithic changes
-- **CI/CD Pipeline** MUST run tests and linting on every commit
+- **CI/CD Pipeline** MUST run linting and build validation on every commit
   - GitHub Actions or Firebase App Distribution for automated builds
-  - Test failures block merge (no manual override)
+  - Test jobs are optional and only block merge when they are part of the configured pipeline for the change
 - **Environment Strategy**:
   - Staging: `main_dev.dart` with test Firebase project for validation
   - Production: `main_prod.dart` with production Firebase project
@@ -400,12 +364,10 @@ Application MUST meet quantifiable performance benchmarks for real-time operatio
 
 All pull requests MUST satisfy these gates before merge to `develop`:
 
-✅ **CI Checks Passing**
-   - All unit tests passing (no flaky tests allowed)
-   - Widget tests passing
-   - Integration tests passing (if applicable to changed code)
+✅ **Build and Analysis Passing**
    - Dart analyzer: 0 errors, 0 warnings
    - Build succeeds for target platform (Android/iOS)
+   - Any configured automated tests for the change pass
 
 ✅ **Architecture Compliance Verified**
    - Layer separation maintained (domain → data, data → presentation)
@@ -414,13 +376,10 @@ All pull requests MUST satisfy these gates before merge to `develop`:
    - Dependency injection used (no direct instantiation of singletons)
    - Constitution Check from plan template satisfied
 
-✅ **Test Coverage Meets Thresholds**
-   - Unit tests: 80%+ coverage for new/modified domain and data code
-   - Widget tests: 70%+ coverage for new/modified UI components
-   - Integration tests: Required for critical flows (auth, booking, queue management)
-   - All `Result<T>` return types MUST test both Success and Failure branches
-   - Entity tests verify Equatable equality
-   - Model tests verify round-trip serialization
+✅ **Validation Recorded**
+   - Changes include appropriate manual or automated validation for the risk level
+   - High-risk business logic changes should include targeted tests or emulator checks
+   - Test coverage thresholds are advisory, not merge gates
 
 ✅ **No Breaking Changes Without Migration Plan**
    - Shared contracts (entities, repository interfaces) changes require version bump
@@ -445,7 +404,6 @@ All pull requests MUST satisfy these gates before merge to `develop`:
    - For security rule changes: manual testing with Firebase Emulator
 
 **Auto-Reject Scenarios** (no exceptions):
-- Test coverage below threshold without explicit waiver
 - Lint errors or warnings present
 - Unresolved merge conflicts
 - Hardcoded secrets or API keys committed
@@ -454,7 +412,7 @@ All pull requests MUST satisfy these gates before merge to `develop`:
 ### Quality Gates
 
 - **Pre-commit**: Dart formatter and analyzer (via IDE or git hooks)
-- **CI Pipeline**: Automated tests, static analysis, build validation
+- **CI Pipeline**: Static analysis, build validation, and any configured automated tests
 - **Staging**: Manual QA on `develop` branch with test data
 - **Production**: Release notes, version bump, Firebase rollout (gradual 10%/50%/100%)
 
@@ -482,4 +440,4 @@ This constitution supersedes all other development practices and standards. All 
 
 **Living Document**: This constitution evolves with Queue Ease. Pragmatism over dogma—principles serve the project, not vice versa.
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-14
+**Version**: 2.0.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-04-29

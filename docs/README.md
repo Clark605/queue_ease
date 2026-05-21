@@ -11,7 +11,7 @@ Welcome to the Queue Ease documentation hub. This folder contains all technical 
 #### [Constitution (.specify/memory/constitution.md)](../.specify/memory/constitution.md)
 **Project governance: Core principles and development standards**
 
-- 6 Core Principles: Code Quality First, Flexibility & Extensibility, Testing Standards (NON-NEGOTIABLE), UX Consistency, Fast Delivery, Performance Requirements
+- 6 Core Principles: Code Quality First, Flexibility & Extensibility, Pragmatic Testing, UX Consistency, Fast Delivery, Performance Requirements
 - Technical Standards: Flutter/Dart requirements, Result<T> error handling pattern, AppException hierarchy
 - Domain-Specific Rules: 5 core business entities, time margin policy for no-shows, MVP scope constraints
 - Security & Compliance: Firestore security rules, RBAC enforcement, PII protection

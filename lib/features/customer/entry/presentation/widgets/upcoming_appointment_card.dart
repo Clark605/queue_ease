@@ -3,20 +3,31 @@ import 'package:intl/intl.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../features/shared_domain/entities/appointment_entity.dart';
+import '../../../../../features/shared_domain/entities/appointment_status.dart';
 
 /// Card displaying the details of a single upcoming booked appointment.
 ///
 /// The section header ("Next Appointment") is rendered by the parent page —
 /// this card contains only the appointment detail content.
+///
+/// Shows a cancel button for appointments with status [AppointmentStatus.booked].
+/// Other statuses display a read-only card.
 class UpcomingAppointmentCard extends StatelessWidget {
-  const UpcomingAppointmentCard({super.key, required this.appointment});
+  const UpcomingAppointmentCard({
+    super.key,
+    required this.appointment,
+    this.onCancel,
+  });
 
   final AppointmentEntity appointment;
+  final VoidCallback? onCancel;
 
   String get _organizationLabel => appointment.orgName ?? appointment.orgId;
 
   String get _serviceLabel =>
       appointment.serviceName ?? 'Service #${appointment.serviceId}';
+
+  bool get _isCancellable => appointment.status == AppointmentStatus.booked;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +52,30 @@ class UpcomingAppointmentCard extends StatelessWidget {
             child: Divider(height: 1, color: AppColors.outline),
           ),
           _buildDetails(),
+          if (_isCancellable && onCancel != null) ...[
+            const SizedBox(height: 12),
+            _buildCancelButton(context),
+          ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildCancelButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: onCancel,
+        icon: const Icon(Icons.cancel_outlined, size: 18),
+        label: const Text('Cancel Booking'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.error,
+          side: const BorderSide(color: AppColors.error),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+        ),
       ),
     );
   }

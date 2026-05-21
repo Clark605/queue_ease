@@ -17,11 +17,13 @@ class QueueContent extends StatelessWidget {
     required this.snapshot,
     required this.isActionInFlight,
     required this.orgId,
+    required this.selectedDate,
   });
 
   final AdminQueueSnapshot snapshot;
   final bool isActionInFlight;
   final String orgId;
+  final DateTime selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class QueueContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          QueueDateHeader(date: DateTime.now()),
+          QueueDateHeader(date: selectedDate),
           const SizedBox(height: 16),
           if (snapshot.current != null) ...[
             CurrentQueueCard(
@@ -39,27 +41,27 @@ class QueueContent extends StatelessWidget {
               onNext: snapshot.current!.allowedActions.canComplete
                   ? () => context.read<QueueManagementCubit>().next(
                       orgId: orgId,
-                      date: DateTime.now(),
+                      date: selectedDate,
                       appointmentId: snapshot.current!.appointmentId,
                     )
                   : snapshot.current!.allowedActions.canStartServing
                   ? () => context.read<QueueManagementCubit>().startServing(
                       orgId: orgId,
-                      date: DateTime.now(),
+                      date: selectedDate,
                       appointmentId: snapshot.current!.appointmentId,
                     )
                   : null,
               onSkip: snapshot.current!.allowedActions.canSkip
                   ? () => context.read<QueueManagementCubit>().skip(
                       orgId: orgId,
-                      date: DateTime.now(),
+                      date: selectedDate,
                       appointmentId: snapshot.current!.appointmentId,
                     )
                   : null,
               onNoShow: snapshot.current!.allowedActions.canMarkNoShow
                   ? () => context.read<QueueManagementCubit>().markNoShow(
                       orgId: orgId,
-                      date: DateTime.now(),
+                      date: selectedDate,
                       appointmentId: snapshot.current!.appointmentId,
                     )
                   : null,
@@ -67,9 +69,10 @@ class QueueContent extends StatelessWidget {
             const SizedBox(height: 16),
           ] else if (snapshot.waiting.isEmpty) ...[
             EmptyQueueState(
+              selectedDate: selectedDate,
               onGenerate: () => context
                   .read<QueueManagementCubit>()
-                  .generateQueue(orgId: orgId, date: DateTime.now()),
+                  .generateQueue(orgId: orgId, date: selectedDate),
             ),
             const SizedBox(height: 16),
           ],
@@ -79,7 +82,7 @@ class QueueContent extends StatelessWidget {
             onRejoin: (appointmentId) =>
                 context.read<QueueManagementCubit>().rejoin(
                   orgId: orgId,
-                  date: DateTime.now(),
+                  date: selectedDate,
                   appointmentId: appointmentId,
                 ),
           ),

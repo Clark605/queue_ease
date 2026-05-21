@@ -61,6 +61,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   String? _autoNoShowPendingId;
   String? _activeOrgId;
   DateTime? _activeQueueDate;
+  DateTime _selectedDate = DateTime.now();
   final _queueDeadlineEvaluator = const QueueDeadlineEvaluator();
 
   // Debouncing for auto-generate queue functionality
@@ -73,6 +74,11 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   DateTime? _lastAutoNoShowFailure;
   static const _maxAutoNoShowRetries = 5;
   static const _baseBackoffDuration = Duration(seconds: 2);
+
+  DateTime get selectedDate => _selectedDate;
+
+  DateTime _normalizeDate(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
   static const _loadQueueFallbackMessage =
       'Unable to load queue data right now. Please try again.';
@@ -98,11 +104,12 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   /// or [QueueManagementError] as stream events arrive.
   void watchQueue({required String orgId, required DateTime date}) {
     _activeOrgId = orgId;
-    _activeQueueDate = date;
+    _selectedDate = _normalizeDate(date);
+    _activeQueueDate = _selectedDate;
     emit(const QueueManagementLoading());
     _queueSub?.cancel();
     _appointmentsSub?.cancel();
-    _queueSub = _watchDailyQueue(orgId: orgId, date: date).listen(
+    _queueSub = _watchDailyQueue(orgId: orgId, date: _selectedDate).listen(
       (result) {
         switch (result) {
           case Success(:final data):
@@ -133,14 +140,14 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     );
 
     _appointmentsSub = _repository
-        .watchAppointmentsByDate(orgId: orgId, date: date)
+        .watchAppointmentsByDate(orgId: orgId, date: _selectedDate)
         .listen(
           (appointments) {
             final hasBooked = appointments.any(
               (appointment) => appointment.status == AppointmentStatus.booked,
             );
             if (hasBooked) {
-              _scheduleAutoGenerateQueue(orgId: orgId, date: date);
+              _scheduleAutoGenerateQueue(orgId: orgId, date: _selectedDate);
             }
           },
           onError: (Object e, StackTrace st) {
@@ -208,12 +215,13 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     required String orgId,
     required DateTime date,
   }) async {
+    _selectedDate = _normalizeDate(date);
     emit(const QueueManagementLoading());
     _logger.info(
       'QueueManagementCubit',
-      'Generating queue for $orgId on $date',
+      'Generating queue for $orgId on $_selectedDate',
     );
-    final result = await _generateQueue(orgId: orgId, date: date);
+    final result = await _generateQueue(orgId: orgId, date: _selectedDate);
     switch (result) {
       case Success():
         // The watchDailyQueue stream will emit the updated snapshot.

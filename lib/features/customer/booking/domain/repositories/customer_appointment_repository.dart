@@ -39,6 +39,15 @@ abstract class CustomerAppointmentRepository {
     required DateTime date,
   });
 
+  /// Updates the status of a single appointment.
+  ///
+  /// Used by [CancelAppointmentUseCase] to set status to [AppointmentStatus.cancelled].
+  Future<Result<void>> updateAppointmentStatus({
+    required String orgId,
+    required String appointmentId,
+    required AppointmentStatus status,
+  });
+
   // -- Queue status streams (Phase 4, T021/T022) ----------------------------
 
   /// Watches the customer's active appointment for [orgId] on [date].
@@ -85,6 +94,18 @@ abstract class CustomerAppointmentRepository {
   /// future appointments. Used by [WatchCustomerDashboardUseCase] to derive
   /// the active queue entry and the next upcoming booking.
   Stream<Result<List<AppointmentEntity>>> watchTodayActiveAppointments({
+    required String customerId,
+    required DateTime date,
+  });
+
+  /// Watches the customer's appointments across orgs for the list view.
+  ///
+  /// Returns appointments within a bounded window anchored at [date]:
+  /// - 30 days before [date]
+  /// - 7 days after [date]
+  /// Includes all appointment statuses, ordered by [scheduledAt].
+  /// Used by [WatchCustomerAppointmentsUseCase] to populate the list view.
+  Stream<Result<List<AppointmentEntity>>> watchCustomerAppointments({
     required String customerId,
     required DateTime date,
   });

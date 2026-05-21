@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Top header row replacing the Flutter AppBar.
 ///
 /// Shows the menu icon (placeholder for Phase 9 navigation drawer), the
-/// centered app name, and a notification bell with an unread indicator dot.
+/// centered app name, and a notification bell.
 class CustomerHomeHeader extends StatelessWidget {
   const CustomerHomeHeader({super.key, required this.onMenuTap});
 
@@ -28,26 +28,9 @@ class CustomerHomeHeader extends StatelessWidget {
               ),
             ),
           ),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              const IconButton(
-                icon: Icon(Icons.notifications_outlined),
-                onPressed: null, // Phase 9 — notifications panel
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
+          const IconButton(
+            icon: Icon(Icons.notifications_outlined),
+            onPressed: null, // Notifications panel not implemented yet.
           ),
         ],
       ),

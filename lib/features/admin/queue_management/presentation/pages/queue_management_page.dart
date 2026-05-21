@@ -31,9 +31,39 @@ class QueueManagementPage extends StatelessWidget {
     return '';
   }
 
+  Future<void> _pickDate({
+    required BuildContext context,
+    required String orgId,
+    required DateTime selectedDate,
+  }) async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate == null) return;
+
+    if (!context.mounted) return;
+
+    context.read<QueueManagementCubit>().watchQueue(
+      orgId: orgId,
+      date: pickedDate,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
+    final isAuthenticated = context.watch<AuthCubit>().state is Authenticated;
+    final selectedDate = context.select(
+      (QueueManagementCubit cubit) => cubit.selectedDate,
+    );
+
+    if (!isAuthenticated) {
+      return const SizedBox.shrink();
+    }
+
     final orgId = _getOrgId(context);
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -54,7 +84,7 @@ class QueueManagementPage extends StatelessWidget {
               ),
             ),
             Text(
-              'Today, ${DateFormat('EEE d MMM').format(now)}',
+              DateFormat('MMM d, y').format(selectedDate),
               style: AppTextStyles.bodySmall.copyWith(
                 fontWeight: FontWeight.w500,
               ),
@@ -63,20 +93,23 @@ class QueueManagementPage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.playlist_add_check_rounded),
-            color: AppColors.primary,
-            tooltip: 'Generate today\'s queue',
-            onPressed: () => context.read<QueueManagementCubit>().generateQueue(
+            icon: const Icon(Icons.calendar_month_outlined),
+            color: AppColors.onSurfaceVariant,
+            tooltip: 'Select date',
+            onPressed: () => _pickDate(
+              context: context,
               orgId: orgId,
-              date: DateTime.now(),
+              selectedDate: selectedDate,
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.filter_list_rounded),
-            color: AppColors.onSurfaceVariant,
-            tooltip: 'Filter',
-            onPressed: () =>
-                AppSnackBar.showInfo(context, 'Filter - Coming soon'),
+            icon: const Icon(Icons.playlist_add_check_rounded),
+            color: AppColors.primary,
+            tooltip: 'Generate queue for selected date',
+            onPressed: () => context.read<QueueManagementCubit>().generateQueue(
+              orgId: orgId,
+              date: selectedDate,
+            ),
           ),
         ],
         bottom: PreferredSize(
@@ -116,18 +149,20 @@ class QueueManagementPage extends StatelessWidget {
               message: message,
               onRetry: () => ctx.read<QueueManagementCubit>().watchQueue(
                 orgId: orgId,
-                date: DateTime.now(),
+                date: selectedDate,
               ),
             ),
             QueueManagementLoaded(:final snapshot) => QueueContent(
               snapshot: snapshot,
               isActionInFlight: false,
               orgId: orgId,
+              selectedDate: selectedDate,
             ),
             QueueManagementActionInFlight(:final snapshot) => QueueContent(
               snapshot: snapshot,
               isActionInFlight: true,
               orgId: orgId,
+              selectedDate: selectedDate,
             ),
           };
         },

@@ -311,6 +311,19 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
           }
         }
 
+        if (current == null && waiting.isNotEmpty) {
+          final nextIndex = waiting.indexWhere(
+            (entry) =>
+                entry.status != AppointmentStatus.noShow &&
+                entry.status != AppointmentStatus.completed,
+          );
+
+          if (nextIndex != -1) {
+            current = waiting[nextIndex].copyWith(estimatedWaitMinutes: null);
+            waiting.removeAt(nextIndex);
+          }
+        }
+
         return AdminQueueSnapshot(
           queueDate: date,
           current: current,
@@ -423,12 +436,10 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
       ),
       'action': 'markNoShow',
     });
-    return Result.guard(
-      () => _datasource.transactionMarkNoShow(
-        orgId: orgId,
-        date: dateStr,
-        appointmentId: appointmentId,
-      ),
+    return _datasource.transactionMarkNoShow(
+      orgId: orgId,
+      date: dateStr,
+      appointmentId: appointmentId,
     );
   }
 
@@ -448,12 +459,10 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
       ),
       'action': 'markOverdueNoShow',
     });
-    return Result.guard(
-      () => _datasource.transactionMarkOverdueNoShow(
-        orgId: orgId,
-        date: dateStr,
-        appointmentId: appointmentId,
-      ),
+    return _datasource.transactionMarkOverdueNoShow(
+      orgId: orgId,
+      date: dateStr,
+      appointmentId: appointmentId,
     );
   }
 

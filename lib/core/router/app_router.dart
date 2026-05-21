@@ -9,15 +9,18 @@ import 'package:queue_ease/features/admin/service_management/presentation/pages/
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../features/admin/app_section/presentation/pages/admin_main_page.dart';
+import '../../features/admin/daily_summary/presentation/pages/daily_summary_page.dart';
 import '../../features/admin/service_management/presentation/cubit/service_cubit.dart';
 import '../../features/admin/share_access/presentation/cubit/share_access_cubit.dart';
 import '../../features/admin/share_access/presentation/pages/share_access_page.dart';
 import '../../features/admin/working_hours_management/presentation/cubit/working_hours_cubit.dart';
 import '../../features/admin/working_hours_management/presentation/pages/working_hours_page.dart';
+import '../../features/customer/booking/presentation/cubit/customer_appointments_cubit.dart';
 import '../../features/customer/booking/presentation/cubit/booking_form_cubit.dart';
 import '../../features/customer/booking/presentation/cubit/organization_landing_cubit.dart';
 import '../../features/customer/booking/presentation/cubit/service_selection_cubit.dart';
 import '../../features/customer/booking/presentation/cubit/slot_picker_cubit.dart';
+import '../../features/customer/booking/presentation/pages/customer_appointments_page.dart';
 import '../../features/customer/booking/presentation/pages/booking_confirmation_page.dart';
 import '../../features/customer/booking/presentation/pages/booking_form_page.dart';
 import '../../features/customer/booking/presentation/pages/organization_landing_page.dart';
@@ -56,7 +59,9 @@ abstract final class Routes {
   static const String adminServiceForm = '/a/services/form';
   static const String adminWorkingHours = '/a/working-hours';
   static const String adminShareAccess = '/a/share-access';
+  static const String adminDailySummary = '/a/daily-summary';
   static const String customerHome = '/c/home';
+  static const String customerAppointments = '/c/appointments';
   static const String customerOrgLanding = '/c/org/:slug';
   static const String customerServices = '/c/org/:slug/services';
   static const String customerServiceDetails = '/c/org/:slug/service-details';
@@ -263,6 +268,10 @@ GoRouter createRouter(AuthCubit authCubit) {
           child: const ShareAccessPage(),
         ),
       ),
+      GoRoute(
+        path: Routes.adminDailySummary,
+        builder: (context, state) => const DailySummaryPage(),
+      ),
       // Customer routes
       GoRoute(
         path: Routes.customerHome,
@@ -279,6 +288,23 @@ GoRouter createRouter(AuthCubit authCubit) {
             return cubit;
           },
           child: const CustomerHomePage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.customerAppointments,
+        builder: (context, state) => BlocProvider(
+          create: (ctx) {
+            final cubit = getIt<CustomerAppointmentsCubit>();
+            final authState = ctx.read<AuthCubit>().state;
+            if (authState is Authenticated) {
+              cubit.watchAppointments(
+                customerId: authState.user.uid,
+                date: DateTime.now(),
+              );
+            }
+            return cubit;
+          },
+          child: const CustomerAppointmentsPage(),
         ),
       ),
       GoRoute(

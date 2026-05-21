@@ -60,6 +60,22 @@ void main() {
       expect(model.description, isNull);
     });
 
+    test('fromDoc falls back when createdAt is null', () {
+      final mockDoc = MockDocumentSnapshot();
+      when(() => mockDoc.id).thenReturn('org1');
+      when(() => mockDoc.data()).thenReturn({
+        'name': 'Test Clinic',
+        'adminUid': 'admin123',
+        'bookingLinkSlug': 'test-clinic',
+        'isOpen': true,
+        'createdAt': null,
+      });
+
+      final model = OrganizationModel.fromDoc(mockDoc);
+
+      expect(model.createdAt, DateTime.fromMillisecondsSinceEpoch(0));
+    });
+
     test('toMap converts OrganizationModel to Firestore map', () {
       final model = OrganizationModel(
         id: 'org1',

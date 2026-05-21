@@ -33,13 +33,20 @@ class OrganizationModel {
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
     final data = doc.data()!;
+    final createdAtValue = data['createdAt'];
+    final createdAt = switch (createdAtValue) {
+      Timestamp() => createdAtValue.toDate(),
+      DateTime() => createdAtValue,
+      _ => DateTime.fromMillisecondsSinceEpoch(0),
+    };
+
     return OrganizationModel(
       id: doc.id,
       name: data['name'] as String,
       adminUid: data['adminUid'] as String,
       bookingLinkSlug: data['bookingLinkSlug'] as String,
       isOpen: data['isOpen'] as bool? ?? false,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt: createdAt,
       qrCodeUrl: data['qrCodeUrl'] as String?,
       address: data['address'] as String?,
       logoUrl: data['logoUrl'] as String?,

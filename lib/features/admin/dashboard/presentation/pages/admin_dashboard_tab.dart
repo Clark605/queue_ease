@@ -3,14 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../core/router/app_router.dart';
-import '../../../../../core/theme/app_colors.dart';
-import '../widgets/management_grid.dart';
-import '../widgets/now_serving_card.dart';
 import '../../../../authentication/presentation/cubit/auth_cubit.dart';
 import '../../../../authentication/presentation/cubit/auth_state.dart';
+import '../../../../shared_domain/entities/organization_entity.dart';
+import '../../../../../core/router/app_router.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/utils/app_snack_bar.dart';
+import '../../../organization_management/presentation/cubit/organization_cubit.dart';
+import '../../../organization_management/presentation/cubit/organization_state.dart';
 import '../../../tutorial/presentation/cubit/tutorial_cubit.dart';
 import '../../../tutorial/presentation/widgets/tutorial_overlay.dart';
+import '../widgets/management_grid.dart';
 
 /// Dashboard tab showing the business admin overview.
 ///
@@ -47,29 +50,47 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
     final displayName = authState is Authenticated
         ? (authState.user.displayName ?? 'Admin')
         : 'Admin';
+    final organizationState = context.watch<OrganizationCubit>().state;
+    OrganizationEntity? organization;
+    if (organizationState is OrganizationLoaded) {
+      organization = organizationState.organization;
+    } else if (organizationState is OrganizationError) {
+      organization = organizationState.organization;
+    }
 
-    return Stack(
-      children: [
-        Scaffold(
-          backgroundColor: AppColors.background,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _DashboardHeader(displayName: displayName),
-                  const _StatsStrip(),
-                  const NowServingCard(),
-                  ManagementGrid(onNavigateToQueue: widget.onNavigateToQueue),
-                  const _ShareAccessCard(),
-                  const SizedBox(height: 24),
-                ],
+    return BlocListener<OrganizationCubit, OrganizationState>(
+      listener: (context, state) {
+        if (state is OrganizationError) {
+          AppSnackBar.showError(context, state.message);
+        }
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: AppColors.background,
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _DashboardHeader(
+                      displayName: displayName,
+                      organization: organization,
+                      onToggleOpen: (isOpen) => context
+                          .read<OrganizationCubit>()
+                          .toggleOrganizationOpen(isOpen),
+                    ),
+                    ManagementGrid(onNavigateToQueue: widget.onNavigateToQueue),
+                    const _ShareAccessCard(),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        const TutorialOverlay(),
-      ],
+          const TutorialOverlay(),
+        ],
+      ),
     );
   }
 }
@@ -77,9 +98,15 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
 // ── Header ────────────────────────────────────────────────────────────────────
 
 class _DashboardHeader extends StatelessWidget {
-  const _DashboardHeader({required this.displayName});
+  const _DashboardHeader({
+    required this.displayName,
+    required this.organization,
+    required this.onToggleOpen,
+  });
 
   final String displayName;
+  final OrganizationEntity? organization;
+  final ValueChanged<bool> onToggleOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -94,131 +121,103 @@ class _DashboardHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            height: 48,
-            width: 48,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.surface, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
+          Row(
+            children: [
+              Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.surface, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: const Icon(Icons.person, color: AppColors.primary, size: 28),
+                child: const Icon(
+                  Icons.person,
+                  color: AppColors.primary,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$greeting, $displayName',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0D131B),
+                      ),
+                    ),
+                    Text(
+                      dateStr,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.grey,
+                  size: 22,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$greeting, $displayName',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D131B),
-                  ),
-                ),
-                Text(
-                  dateStr,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+          if (organization != null) ...[
+            const SizedBox(height: 12),
+            _OpenStatusToggle(
+              isOpen: organization!.isOpen,
+              onChanged: onToggleOpen,
             ),
-          ),
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.notifications_outlined,
-              color: Colors.grey,
-              size: 22,
-            ),
-          ),
+          ],
         ],
       ),
     );
   }
 }
 
-// ── Stats Strip ───────────────────────────────────────────────────────────────
+class _OpenStatusToggle extends StatelessWidget {
+  const _OpenStatusToggle({required this.isOpen, required this.onChanged});
 
-class _StatsStrip extends StatelessWidget {
-  const _StatsStrip();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          _StatChip(
-            icon: Icons.group_outlined,
-            label: 'In Queue',
-            value: '12',
-            accentColor: AppColors.primary,
-          ),
-          SizedBox(width: 12),
-          _StatChip(
-            icon: Icons.check_circle_outline,
-            label: 'Served',
-            value: '45',
-            accentColor: Color(0xFF22C55E),
-          ),
-          SizedBox(width: 12),
-          _StatChip(
-            icon: Icons.person_off_outlined,
-            label: 'No-shows',
-            value: '3',
-            accentColor: Color(0xFFF97316),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatChip extends StatelessWidget {
-  const _StatChip({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.accentColor,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color accentColor;
+  final bool isOpen;
+  final ValueChanged<bool> onChanged;
 
   @override
   Widget build(BuildContext context) {
+    final statusLabel = isOpen ? 'Open' : 'Closed';
+    final statusColor = isOpen ? AppColors.success : AppColors.onSurfaceVariant;
+
     return Container(
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -229,34 +228,28 @@ class _StatChip extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border(bottom: BorderSide(color: accentColor, width: 2)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: accentColor, size: 20),
-          const SizedBox(width: 8),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 9,
-                  letterSpacing: 0.8,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
+          Expanded(
+            child: Row(
+              children: [
+                Icon(Icons.storefront, size: 18, color: statusColor),
+                const SizedBox(width: 8),
+                Text(
+                  statusLabel,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: statusColor,
+                  ),
                 ),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D131B),
-                ),
-              ),
-            ],
+              ],
+            ),
+          ),
+          Switch(
+            value: isOpen,
+            activeThumbColor: AppColors.success,
+            onChanged: onChanged,
           ),
         ],
       ),

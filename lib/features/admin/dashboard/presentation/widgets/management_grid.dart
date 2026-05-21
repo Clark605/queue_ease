@@ -72,7 +72,7 @@ class ManagementGrid extends StatelessWidget {
                   label: 'Daily Summary',
                   iconColor: const Color(0xFFD97706),
                   iconBgColor: const Color(0xFFFFFBEB),
-                  onTap: () => _showComingSoon(context, 'Daily Summary'),
+                  onTap: () => context.push(Routes.adminDailySummary),
                 ),
               ),
             ],

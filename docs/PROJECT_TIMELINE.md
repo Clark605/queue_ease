@@ -1,9 +1,9 @@
 # Queue Ease - Project Timeline & Network Diagrams
 
-**Last Updated:** March 16, 2026
+**Last Updated:** April 22, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
-**Timeline:** ~6 Weeks Remaining (MVP)
-**Current Status:** ✅ Phase 1 Complete + Sprint 2 (Admin Core) Complete + Sprint 3 (Working Hours & QR/Share) Complete + Sprint 4 (Customer Booking Flow) Complete + Sprint 5 (Queue System + Customer Dashboard + Access Portal) Complete + Sprint 6 (Business Logic & Automation) Complete
+**Timeline:** ~4-6 Weeks Remaining (MVP)
+**Current Status:** ✅ Phase 1 through Sprint 6 complete; 🚧 Sprint 6A (Staff Member Management) in progress; ⏳ Sprint 7 (Notifications & Polish) next
 **Development Approach:** Agile Incremental (Repo + Feature per Sprint)
 
 ---
@@ -539,22 +539,24 @@ pie title Development Time Distribution
 - ✅ **Business Logic & Automation** - Booking-time countdown, pre-booking action lock, auto no-show progression, rejoin refresh, customer no-show guidance
 
 ### Current Status
-- **Overall Progress:** ~80% complete
+- **Overall Progress:** ~70% complete
 - **Phase 1 (Foundation):** ✅ COMPLETE
 - **Sprint 2 (Admin Core):** ✅ COMPLETE
 - **Sprint 3 (Working Hours + QR/Share):** ✅ COMPLETE
 - **Sprint 4 (Customer Booking Flow):** ✅ COMPLETE
 - **Sprint 5 (Queue System + Dashboard + Access Portal):** ✅ COMPLETE
 - **Sprint 6 (Business Logic & Automation):** ✅ COMPLETE
+- **Sprint 6A (Staff Member Management):** 🚧 IN PROGRESS
 - **Current Branch:** `develop`
+- **Current Workstream:** Sprint 6A — Staff Member Management
 - **Next Sprint:** Sprint 7 — Notifications & Polish
-- **Estimated Completion:** ~4 weeks remaining
+- **Estimated Completion:** ~4-6 weeks remaining
 
-### Next Immediate Tasks (Sprint 7 Focus)
-1. Integrate Firebase Cloud Messaging token registration and storage
-2. Implement queue-event notification triggers and delivery handling
-3. Expand widget/integration test coverage for notifications and queue UX
-4. Finalize UI polish and accessibility pass across key screens
+### Next Immediate Tasks (Sprint 6A + Sprint 7 Focus)
+1. Finalize staff member entity, model, repository, and Firestore rules
+2. Wire staff assignment into services, appointments, and queue filtering
+3. Integrate Firebase Cloud Messaging token registration and queue-event notifications
+4. Expand widget/integration test coverage and UI/accessibility polish
 
 ---
 
@@ -567,8 +569,10 @@ pie title Development Time Distribution
 6. ✅ Sprint 6: Business Logic & Automation — COMPLETE (March 16, 2026)
 
 **Current Sprint:**
+6A. 🚧 Sprint 6A: Staff Member Management — IN PROGRESS
 7. ⏳ Sprint 7: Notifications & Polish — NEXT
+8. ⏳ Sprint 8: Testing & Deployment — UPCOMING
 
 **For Updates:**
-- [Feature Checklist](FEATURE_CHECKLIST.md) - ✅ Updated March 16, 2026
+- [Feature Checklist](FEATURE_CHECKLIST.md) - ✅ Updated April 22, 2026
 - [PRD](PRD.md) - Product Requirements Document

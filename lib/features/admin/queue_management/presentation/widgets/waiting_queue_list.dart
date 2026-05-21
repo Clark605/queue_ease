@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/pulsing_dot.dart';
 import '../../domain/repositories/admin_appointment_repository.dart';
-import 'pulsing_dot.dart';
 import 'waiting_entry_card.dart';
 
 /// A section widget listing all customers currently waiting in the queue.
