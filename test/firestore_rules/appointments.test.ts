@@ -513,7 +513,7 @@ describe('Appointments Subcollection Tests (US2)', () => {
     await assertSucceeds(apptDoc.update({ status: 'serving' }));
   });
 
-  it('should allow admin to update cancelled appointment fields without changing status', async () => {
+  it('should allow admin to update queuePosition on cancelled appointment without changing status', async () => {
     await createTestUser('admin1', 'admin', 'org1');
     await createTestOrganization('org1', 'admin1', 'Test Org');
     await createTestUser('customer1', 'customer');
