@@ -317,8 +317,11 @@ service cloud.firestore {
           && request.resource.data.serviceId is string
           && request.resource.data.scheduledAt is timestamp
           // Re-validate status enum and enforce permitted transitions
-          && request.resource.data.status in ['booked','inQueue','serving','completed','noShow']
-          && isValidStatusTransition(resource.data.status, request.resource.data.status, request.resource.data, orgId)
+          && request.resource.data.status in ['booked','inQueue','serving','completed','noShow','cancelled']
+          && (
+            request.resource.data.status == resource.data.status
+            || isValidStatusTransition(resource.data.status, request.resource.data.status, request.resource.data, orgId)
+          )
           && hasOnlyAllowedFields(['orgId','customerId','serviceId','customerName','customerPhone','queuePosition','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
 
 // T052: Customer may cancel their own booked appointment.

@@ -512,4 +512,29 @@ describe('Appointments Subcollection Tests (US2)', () => {
 
     await assertSucceeds(apptDoc.update({ status: 'serving' }));
   });
+
+  it('should allow admin to update cancelled appointment fields without changing status', async () => {
+    await createTestUser('admin1', 'admin', 'org1');
+    await createTestOrganization('org1', 'admin1', 'Test Org');
+    await createTestUser('customer1', 'customer');
+
+    const testEnv = await setupTestEnvironment();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const appointmentData = TestData.appointment('customer1', 'service1', {
+        orgId: 'org1',
+        status: 'cancelled',
+      });
+      await context.firestore()
+        .collection('organizations').doc('org1')
+        .collection('appointments').doc('appt1')
+        .set(appointmentData);
+    });
+
+    const adminContext = getAuthenticatedContext('admin1');
+    const apptDoc = adminContext.firestore()
+      .collection('organizations').doc('org1')
+      .collection('appointments').doc('appt1');
+
+    await assertSucceeds(apptDoc.update({ queuePosition: 7 }));
+  });
 });
