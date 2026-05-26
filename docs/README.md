@@ -42,7 +42,7 @@ Welcome to the Queue Ease documentation hub. This folder contains all technical 
 
 ---
 
-#### [PRD.md](PRD.md)
+#### [domain/PRD.md](domain/PRD.md)
 **Product Requirements Document**
 
 - Product vision and goals
@@ -57,7 +57,7 @@ Welcome to the Queue Ease documentation hub. This folder contains all technical 
 
 ---
 
-#### [entities.md](entities.md)
+#### [domain/ENTITIES.md](domain/ENTITIES.md)
 **Domain Entity Models Specification**
 
 - Complete domain entity definitions
@@ -85,7 +85,7 @@ Welcome to the Queue Ease documentation hub. This folder contains all technical 
 - Implementation status (✅ Complete, 🚧 In Progress, ⏳ Pending)
 - Testing coverage tracking
 - MVP completion criteria
-- Current progress summary (~70-75% complete)
+- Current progress summary (~75% complete; Sprint 6A active)
 - Priority order for development
 - Phase breakdown with weekly estimates
 
@@ -111,7 +111,7 @@ Welcome to the Queue Ease documentation hub. This folder contains all technical 
 #### [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md)
 **Detailed Timeline & Network Diagrams**
 
-- Updated Gantt chart (~6 weeks remaining for MVP)
+- Updated Gantt chart (~4-6 weeks remaining for MVP)
 - Phase breakdown with dates
 - Dependency network diagrams (Mermaid)
 - Critical path analysis
@@ -148,12 +148,12 @@ Video demonstrations and GIFs showcasing implemented features.
 ### Repository
 - **GitHub**: [Clark605/queue_ease](https://github.com/Clark605/queue_ease)
 - **Current Branch**: develop
-- **Default Branch**: main
+- **Default Branch**: develop
 
 ### Project Status
-- **Progress**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for current status
+- **Progress**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for current sprint and progress
 - **Feature Status**: See [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) for implementation details
-- **Next Steps**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for Sprint 6 priorities
+- **Next Steps**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for Sprint 6A priorities
 
 ### Firebase Console
 - **Project**: queue-ease (Dev & Prod environments)
@@ -171,8 +171,8 @@ Video demonstrations and GIFs showcasing implemented features.
 ### For New Developers
 1. **Start with** [Constitution (../.specify/memory/constitution.md)](../.specify/memory/constitution.md) - Project governance and principles (MUST READ)
 2. **Then read** [ARCHITECTURE.md](ARCHITECTURE.md) - Understand the technical architecture
-3. **Review** [PRD.md](PRD.md) - Understand the product and user needs
-4. **Check** [ENTITIES.md](ENTITIES.md) - Understand the domain model
+3. **Review** [domain/PRD.md](domain/PRD.md) - Understand the product and user needs
+4. **Check** [domain/ENTITIES.md](domain/ENTITIES.md) - Understand the domain model
 5. **See status** [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) - What's already implemented
 
 ### For .specify Agent Development
@@ -180,10 +180,10 @@ Video demonstrations and GIFs showcasing implemented features.
 - **Templates**: `../.specify/templates/` - Use spec, plan, and task templates for new features
 
 ### For Feature Implementation
-1. **Check requirements** in [PRD.md](PRD.md)
+1. **Check requirements** in [domain/PRD.md](domain/PRD.md)
 2. **Verify compliance** with [Constitution](../.specify/memory/constitution.md)
 3. **Follow patterns** in [ARCHITECTURE.md](ARCHITECTURE.md)
-4. **Reference domain models** in [ENTITIES.md](ENTITIES.md)
+4. **Reference domain models** in [domain/ENTITIES.md](domain/ENTITIES.md)
 5. **Update status** in [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) when complete
 
 ---
@@ -205,5 +205,5 @@ Video demonstrations and GIFs showcasing implemented features.
 ---
 
 **Document Maintained By**: Development Team  
-**Last Updated**: March 15, 2026  
+**Last Updated**: May 21, 2026  
 **Version**: 1.3.0+1

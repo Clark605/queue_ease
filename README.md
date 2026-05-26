@@ -27,7 +27,7 @@ Queue Ease helps businesses manage appointments and live queues while giving cus
 - 🔔 Push notifications for queue status
 - 📈 Daily summary and analytics
 
-For detailed product requirements, see [docs/PRD.md](docs/PRD.md).
+For detailed product requirements, see [docs/domain/PRD.md](docs/domain/PRD.md).
 
 ---
 ## 🎓 Skills Learned
@@ -92,10 +92,10 @@ test/                               # Mirror of lib/ structure
 
 docs/                               # Documentation
 ├── ARCHITECTURE.md                 # Comprehensive architecture guide (✅)
-├── PRD.md                          # Product requirements (✅)
+├── domain/PRD.md                   # Product requirements (✅)
 ├── FEATURE_CHECKLIST.md            # Implementation tracking (✅)
 ├── PROJECT_TIMELINE.md             # Timeline & Gantt charts (✅)
-├── entities.md                     # Domain model specs (✅)
+├── domain/ENTITIES.md              # Domain model specs (✅)
 └── README.md                       # Documentation index (✅)
 
 .specify/                           # Project governance & specs
@@ -109,8 +109,8 @@ docs/                               # Documentation
 **📋 Key Documents:**
 - **[Constitution](.specify/memory/constitution.md)** - Core development principles and standards (Code Quality, Testing, UX, Performance)
 - **[Architecture](docs/ARCHITECTURE.md)** - Technical implementation details
-- **[PRD](docs/PRD.md)** - Product requirements and MVP scope
-- **[Entities](docs/ENTITIES.md)** - Domain model specifications
+- **[PRD](docs/domain/PRD.md)** - Product requirements and MVP scope
+- **[Entities](docs/domain/ENTITIES.md)** - Domain model specifications
 
 For complete documentation, see [docs/](docs/) folder.
 
@@ -236,10 +236,10 @@ All documentation is located in the [docs/](docs/) folder:
 | Document | Description |
 |----------|-------------|
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Comprehensive technical architecture guide |
-| [PRD.md](docs/PRD.md) | Product requirements and specifications |
+| [PRD.md](docs/domain/PRD.md) | Product requirements and specifications |
 | [FEATURE_CHECKLIST.md](docs/FEATURE_CHECKLIST.md) | Feature implementation tracking |
 | [PROJECT_TIMELINE.md](docs/PROJECT_TIMELINE.md) | Timeline, Gantt charts, milestones |
-| [entities.md](docs/entities.md) | Domain entity specifications |
+| [ENTITIES.md](docs/domain/ENTITIES.md) | Domain entity specifications |
 | [README.md](docs/README.md) | Documentation index |
 
 ---

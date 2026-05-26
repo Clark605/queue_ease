@@ -1,6 +1,6 @@
 ﻿# Queue Ease - Architecture Documentation
 
-**Last Updated:** March 12, 2026  
+**Last Updated:** May 21, 2026  
 **Version:** 1.1.0+1  
 **Architecture Pattern:** Clean Architecture with Role-Based Feature Repositories (ADR-001)
 
@@ -373,8 +373,8 @@ lib/
 │   ├── queue_management/
 │   │   └── presentation/
 │   │       └── pages/
-│   │           └── queue_management_page.dart  # Placeholder (Sprint 5)
-│   └── daily_summary/                     # Placeholder (Sprint 7)
+│   │           └── queue_management_page.dart  # Queue management page
+│   └── daily_summary/                     # Daily summary page shell
 │
 ├── customer/                              # Legacy shell (presentation only)
 │   ├── entry/
@@ -570,9 +570,9 @@ Houses entities and Firestore models that are referenced by both admin and custo
 
 ---
 
-### Admin: Queue Management (`features/admin/queue_management/`) — ⏳ Sprint 5
+### Admin: Queue Management (`features/admin/queue_management/`) — ✅ Complete
 
-Interface only. `AdminAppointmentRepository` is defined; UI and cubit are pending.
+Queue management UI, cubit, and queue actions are implemented.
 
 ---
 
@@ -609,9 +609,9 @@ Placeholder. Real-time queue position tracking.
 
 ---
 
-### Admin: Daily Summary — ⏳ Sprint 7
+### Admin: Daily Summary — 🚧 Basic shell
 
-Placeholder. Performance reports.
+Basic page shell is present; summary data is not yet wired.
 
 ---
 

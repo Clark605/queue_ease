@@ -41,8 +41,7 @@ DEFERRED ITEMS:
 
 All code MUST adhere to Clean Architecture principles with strict layer separation:
 - **Domain Layer** MUST be framework-agnostic with zero external dependencies (no Flutter/Firebase imports)
-  - 5 core entities: `OrganizationEntity`, `ServiceEntity`, `WorkingHoursEntity`, `AppointmentEntity`, `QueueEntity`
-  - All entities extend `Equatable` for value equality
+  - Canonical entity definitions live in [docs/domain/ENTITIES.md](../../docs/domain/ENTITIES.md)
   - Repository interfaces define contracts (implementation in data layer)
 - **Data Layer** implements domain repository interfaces; never directly accessed by presentation
   - Firestore models handle serialization: `fromDoc()`, `toMap()`, `toEntity()` methods required
@@ -57,7 +56,7 @@ All code MUST adhere to Clean Architecture principles with strict layer separati
 - Dart effective patterns and lint rules (`analysis_options.yaml`) are NON-NEGOTIABLE
   - `prefer_single_quotes: true`, `camel_case_types: true`, exclude generated files (*.g.dart, *.config.dart)
 
-**Rationale**: Clean architecture ensures testability, maintainability, and long-term flexibility. Layer violations create technical debt that compounds exponentially in Flutter projects. The 5 domain entities represent core business concepts that must remain stable as Firebase or UI frameworks evolve. Sealed exception hierarchy enables compile-time exhaustive checking while allowing controlled extension as new error types are discovered during development.
+**Rationale**: Clean architecture ensures testability, maintainability, and long-term flexibility. Layer violations create technical debt that compounds exponentially in Flutter projects. The domain entities represent core business concepts that must remain stable as Firebase or UI frameworks evolve. Sealed exception hierarchy enables compile-time exhaustive checking while allowing controlled extension as new error types are discovered during development.
 
 ### II. Flexibility & Extensibility
 
@@ -282,29 +281,14 @@ Flutter and Dart work MUST use the Dart MCP toolchain whenever a supported tool 
 
 ## Domain-Specific Rules
 
-### Core Business Entities (5 Total)
+### Canonical Entity Reference
 
-1. **OrganizationEntity** - Clinic/business profile with QR code and booking link
-   - Firestore path: `organizations/{orgId}`
-   - Fields: `id`, `name`, `adminUid`, `bookingLinkSlug`, `qrCodeUrl`, `address`, `isOpen`, `logoUrl`, `description`, `createdAt`
-2. **ServiceEntity** - Services offered with duration and time margin settings
-   - Firestore path: `organizations/{orgId}/services/{serviceId}` (subcollection)
-   - Fields: `id`, `orgId`, `name`, `durationMinutes`, `timeMarginMinutes`, `isActive`, `price`, `queueType`, `description`, `createdAt`
-3. **WorkingHoursEntity** - Weekly schedule configuration (0=Monday...6=Sunday)
-   - Firestore path: `organizations/{orgId}/working_hours/{dayOfWeek}` (subcollection, dayOfWeek is doc ID)
-   - Fields: `orgId`, `dayOfWeek`, `isOpen`, `openTime`, `closeTime`, `breakStart`, `breakEnd` (times as "HH:mm" strings)
-4. **AppointmentEntity** - Customer bookings with queue position tracking
-   - Firestore path: `organizations/{orgId}/appointments/{appointmentId}` (subcollection)
-   - Fields: `id`, `orgId`, `serviceId`, `customerId`, `customerName`, `customerPhone`, `scheduledAt`, `status`, `queuePosition`, `createdAt`
-   - Status enum: `booked`, `inQueue`, `serving`, `completed`, `noShow`
-5. **QueueEntity** - Daily queue with ordered appointments
-   - Firestore path: `organizations/{orgId}/queues/{date}` (date is doc ID in "yyyy-MM-dd" format)
-   - Fields: composite `id` (orgId-date), `orgId`, `date`, `orderedAppointmentIds`, `currentServingIndex`, `status`, `generatedAt`
-   - Status enum: `active`, `paused`, `closed`
+- The full domain entity specification lives in [docs/domain/ENTITIES.md](../../docs/domain/ENTITIES.md)
+- The constitution only keeps behavioral rules that depend on those entities
 
 ### Time Margin Policy (BUSINESS-CRITICAL)
 
-- Each `ServiceEntity` defines `timeMarginMinutes` (e.g., 5-10 minutes grace period)
+- Each service defines a configurable time margin (e.g., 5-10 minutes grace period)
 - When customer's turn begins (`status: serving`), countdown timer starts
 - If customer does NOT check in within the time margin:
   - Appointment `status` automatically changes to `noShow`
@@ -383,11 +367,11 @@ Flutter and Dart work MUST use the Dart MCP toolchain whenever a supported tool 
 - **README.md** MUST be updated with:
   - Setup instructions (Firebase config, environment setup)
   - Current project status (% complete, active branch)
-  - Link to comprehensive docs (`docs/ARCHITECTURE.md`, `docs/PRD.md`)
+  - Link to comprehensive docs (`docs/ARCHITECTURE.md`, `docs/domain/PRD.md`)
 - **Entity & Model Documentation**:
   - Every entity MUST document its Firestore path and purpose
   - Every model MUST document serialization format and field mappings
-  - See `docs/ENTITIES.md` for canonical entity specifications
+  - See [docs/domain/ENTITIES.md](../../docs/domain/ENTITIES.md) for canonical entity specifications
 
 ## Development Workflow
 
