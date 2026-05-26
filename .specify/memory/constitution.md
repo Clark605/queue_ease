@@ -1,26 +1,31 @@
 <!--
-SYNC IMPACT REPORT - Constitution v2.0.0
-Generated: 2026-04-29
+SYNC IMPACT REPORT - Constitution v2.2.0
+Generated: 2026-05-26
 
-VERSION CHANGE: 1.1.0 → 2.0.0
-  Rationale: MAJOR bump - redefined testing governance from mandatory to
-  pragmatic/risk-based, which changes review gates and template guidance.
+VERSION CHANGE: 2.1.0 → 2.2.0
+  Rationale: MINOR bump - expanded the Dart MCP tooling discipline to cover
+  pub.dev package discovery/search in addition to runtime control, debugging,
+  logs, repo search, and dependency management.
 
 PRINCIPLES MODIFIED:
-  ✅ III. Pragmatic Testing - Replaced blanket testing mandate with optional,
-     risk-based validation guidance
-  ✅ I. Code Quality First - Removed mandatory test-coverage wording from
-     layer guidance and repository expectations
-  ✅ V. Fast Delivery - Relaxed CI/test gating so low-risk work is not blocked
-     by a universal testing rule
+  ✅ VII. Dart MCP Tooling Discipline - Expanded to require pub.dev package
+     discovery/search before dependency changes
+
+ADDED SECTIONS:
+  None
+
+REMOVED SECTIONS:
+  None
 
 TEMPLATE AND DOC UPDATES:
-  ✅ .specify/templates/spec-template.md - removed mandatory testing framing
-  ✅ .specify/templates/tasks-template.md - tests remain optional, test-first
-     wording removed
-  ✅ docs/README.md - testing is no longer described as non-negotiable
-  ✅ docs/ARCHITECTURE.md - testing strategy and review gates aligned
-  ✅ docs/ADR/001-role-based-repositories.md - testing note updated
+  ✅ .specify/templates/plan-template.md - reviewed; no conflicting workflow
+     text required changes
+  ✅ .specify/templates/spec-template.md - reviewed; no conflicting scope text
+     required changes
+  ✅ .specify/templates/tasks-template.md - reviewed; no conflicting task text
+     required changes
+  ✅ README.md - reviewed; runtime and testing notes remain compatible with the
+     constitution amendment
 
 DEFERRED ITEMS:
   None
@@ -198,6 +203,32 @@ Application MUST meet quantifiable performance benchmarks for real-time operatio
   - Index queues by `orgId + date` for daily queue retrieval
 
 **Rationale**: Real-time queue updates and appointment booking demand high responsiveness. Customers checking queue position expect instant updates. Poor performance erodes trust in critical clinic workflows (no-shows cause cascading delays). Firebase costs scale with inefficient queries, impacting small clinic budgets. Time margin enforcement accuracy directly affects fairness and business operations.
+
+### VII. Dart MCP Tooling Discipline
+
+Flutter and Dart work MUST use the Dart MCP toolchain whenever a supported tool exists; shell commands are fallback only when no tool covers the task.
+- Runtime and app control MUST prefer these tools:
+  - `mcp_dart_sdk_mcp__connect_dart_tooling_daemon`
+  - `mcp_dart_sdk_mcp__create_project`
+  - `mcp_dart_sdk_mcp__hot_reload`
+  - `mcp_dart_sdk_mcp__hot_restart`
+  - `mcp_dart_sdk_mcp__stop_app`
+- Debugging and runtime inspection MUST use these tools:
+  - `mcp_dart_sdk_mcp__get_runtime_errors`
+  - `mcp_dart_sdk_mcp__flutter_driver`
+- Pub.dev package operations MUST use `mcp_dart_sdk_mcp__pub` for dependency
+  management, including `add`, `get`, `remove`, `upgrade`, `deps`, and
+  `outdated`.
+- Pub.dev package discovery/search MUST happen before dependency changes by
+  checking the package catalog on pub.dev or the closest available discovery
+  tool, so package selection is based on current package metadata rather than
+  guesswork.
+- Repository search MUST use workspace search tools instead of shell search:
+  - `semantic_search`
+  - `grep_search`
+  - `file_search`
+- If no MCP tool covers the task, the smallest necessary fallback MAY be used,
+  but the gap and fallback reason MUST be stated before proceeding.
 
 ## Technical Standards
 
