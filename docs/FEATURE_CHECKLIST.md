@@ -1,6 +1,6 @@
 # Queue Ease - Feature Implementation Checklist
 
-**Last Updated:** April 22, 2026
+**Last Updated:** May 21, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 
 ---
@@ -18,7 +18,6 @@
 
 ### Firebase Spark Plan Limitations
 **Decision**: Queue Ease will NOT use Cloud Functions due to Firebase Spark (free) plan limitations.
-
 **Alternatives Implemented**:
 1. **Queue Generation**: Client-side auto-generation when admin opens queue management (vs. scheduled Cloud Function)
 2. **No-Show Detection**: Client-side logic triggered by admin viewing queue (vs. Cloud Function cron job)
@@ -27,7 +26,6 @@
 **Trade-offs**:
 - ✅ **Benefits**: Zero backend costs, simpler deployment, no vendor lock-in
 - ✅ **No Limitations**: Full push notification support using FCM (works even when app is terminated)
-- ✅ **Implementation**: Admin app sends FCM messages when updating queue status; Customer apps receive via FCM
 
 **Future Upgrade Path**: If needed post-MVP, can migrate to Blaze plan and implement Cloud Functions for scheduled tasks and more complex backend logic.
 
@@ -45,7 +43,6 @@
 - ✅ Environment-specific configurations (FlavorConfig with logLevel support)
 - ✅ Error handling framework (Result type, AppException hierarchy)
 - ✅ Logger setup (AppLogger with Talker, dev/prod verbosity)
-
 ### 1.2 Firebase Backend
 - ✅ Firebase project initialization
 - ✅ Firebase Authentication setup (FirebaseAuth, GoogleSignIn)
@@ -72,7 +69,6 @@
 - ✅ Auth repository implementation (AuthRepositoryImpl with proper error handling)
 - ✅ Auth BLoC/state management (AuthCubit with 6 states)
 
-### 2.2 User Roles
 - ✅ Admin role definition
 - ✅ Customer role definition
 - ✅ Role assignment during signup (via AuthRoleSelector widget)
@@ -132,7 +128,6 @@
 - ✅ Update user schema to include organizationId field
 - ✅ Organization profile view screen (admin UI)
 - ✅ Organization profile edit screen (admin UI)
-- ✅ Organization validation logic
 - ✅ Organization state management (OrganizationCubit)
 - ✅ Real-time organization profile streaming
 - ✅ Organization repository unit tests
@@ -195,7 +190,6 @@
 - ✅ Success/error snackbar feedback
 - ⏳ Link customization (future enhancement)
 
-### 4.7 Staff Member Management - 🚧 IN PROGRESS (Sprint 6A)
 - ⏳ Staff member entity and model definition
 - ⏳ Staff member CRUD operations (create, read, update, delete)
 - ⏳ Staff management UI (list, add, edit, delete)
@@ -232,7 +226,6 @@
 ### 5.2 Organization Landing Screen - ✅ COMPLETE (Sprint 4)
 - ✅ Organization landing page (OrganizationLandingPage)
 - ✅ Organization name and description display
-- ✅ Open/closed status indicator (derived from WorkingHoursEntity)
 - ✅ Address display
 - ⏳ Branch/location information (future enhancement)
 - ✅ "Book Appointment" CTA (enabled only when organization is open)
@@ -536,9 +529,9 @@
 - [ ] App deployed to Firebase Hosting / App Stores (internal testing)
 
 ### Current Progress Summary
-**Completed:** ~70% (Core infrastructure, booking flow, queue system, customer dashboard, access portal, business automation)
+**Completed:** ~75% (Core infrastructure, booking flow, queue system, customer dashboard, access portal, business automation, customer appointment watching)
 **In Progress:** Sprint 6A - Staff Member Management (hybrid approach)
-**Pending:** ~25-30% (Notifications, testing, deployment)
+**Pending:** ~20-25% (Notifications, testing, deployment)
 
 **Key Achievements:**
 - ✅ Complete authentication system (email/password, Google Sign-In, password reset)
@@ -556,6 +549,8 @@
 - ✅ **Queue system — end-to-end (Sprint 5)**: generation → admin queue actions → customer live status → wait estimates
 - ✅ **Customer dashboard (Sprint 5/US5)**: active queue card, upcoming appointment card, empty state CTA
 - ✅ **Customer access portal (Sprint 5/US6)**: camera QR, gallery QR, manual URL parsing to org landing
+- ✅ **Customer appointment watching (May 2026)**: appointments list page, watch use case, cancellation flow integration
+- ✅ **Customer dashboard refinements (May 2026)**: refreshed UI components and supporting polish
 
 **Critical Path Next Steps:**
 1. ~~Define all Firestore entity models~~ ✅ COMPLETE
@@ -638,6 +633,11 @@
 
 ## Notes
 
+- This checklist was last updated on **May 21, 2026** to reflect:
+  - **Customer appointment watching and dashboard refinements added**
+  - **Sprint 7 prep checkpoint merged**
+  - **Current progress estimate updated to ~75% complete**
+  - Existing Sprint 6A scope remains the active in-progress workstream
 - This checklist was last updated on **March 17, 2026** to reflect:
   - **Sprint 6A (Staff Management) added** using hybrid approach (critical for MVP)
   - Staff member entity and CRUD added to feature list
@@ -661,7 +661,7 @@
   - Comprehensive architecture documentation
 - All auth UI components are implemented with proper error handling
 - Clean architecture patterns established with DI, state management, and error handling
-- Estimated remaining MVP timeline: ~6 weeks from current state
+- Estimated remaining MVP timeline: ~4-6 weeks from current state
 - Domain layer is 100% complete - ready for repository implementation
 - Items marked with ✅ have confirmed implementation in the codebase
 - Items marked with 🚧 are currently being worked on

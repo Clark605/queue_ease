@@ -1,16 +1,16 @@
 # Queue Ease - Project Timeline & Network Diagrams
 
-**Last Updated:** April 22, 2026
+**Last Updated:** May 21, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 **Timeline:** ~4-6 Weeks Remaining (MVP)
-**Current Status:** ✅ Phase 1 through Sprint 6 complete; 🚧 Sprint 6A (Staff Member Management) in progress; ⏳ Sprint 7 (Notifications & Polish) next
+**Current Status:** ✅ Phase 1 through Sprint 6 complete; 🚧 Sprint 6A (Staff Member Management) in progress; ✅ Sprint 7 prep checkpoint merged; ⏳ Sprint 7 (Notifications & Polish) implementation next
 **Development Approach:** Agile Incremental (Repo + Feature per Sprint)
 
 ---
 
 ## 📊 Current Progress Summary
 
-**✅ COMPLETED (as of March 15, 2026)**
+**✅ COMPLETED (through May 21, 2026)**
 - **Phase 1: Foundation** - COMPLETE
   - ✅ Authentication System (email/password, Google Sign-In, password reset)
   - ✅ User Role Management (RBAC with router integration)
@@ -68,6 +68,8 @@
 - ✅ Customer access portal (camera QR, gallery QR, manual URL entry)
 - ✅ Queue logging and user-facing error messaging alignment across queue cubits
 - ✅ DI and routing updates for dashboard, queue status, and access portal
+- ✅ Customer appointment watching flow (appointments list, watch use case, cancel action)
+- ✅ Customer dashboard UI refinements and supporting components
 
 **✅ SPRINT 6/7 COMPLETE (March 16, 2026)**
 - ✅ Time margin countdown for current customer (booking-time based)
@@ -112,7 +114,7 @@
 
 ```mermaid
 gantt
-    title Queue Ease MVP Development Timeline (Updated Mar 17, 2026)
+    title Queue Ease MVP Development Timeline (Updated May 21, 2026)
     dateFormat YYYY-MM-DD
     section ✅ Phase 1: Foundation (COMPLETE)
     Authentication System           :done, p1a, 2026-02-17, 5d
@@ -539,7 +541,7 @@ pie title Development Time Distribution
 - ✅ **Business Logic & Automation** - Booking-time countdown, pre-booking action lock, auto no-show progression, rejoin refresh, customer no-show guidance
 
 ### Current Status
-- **Overall Progress:** ~70% complete
+- **Overall Progress:** ~75% complete
 - **Phase 1 (Foundation):** ✅ COMPLETE
 - **Sprint 2 (Admin Core):** ✅ COMPLETE
 - **Sprint 3 (Working Hours + QR/Share):** ✅ COMPLETE
