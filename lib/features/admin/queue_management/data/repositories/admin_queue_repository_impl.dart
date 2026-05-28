@@ -208,17 +208,22 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
           );
         }
 
-        // Bulk-fetch all ordered appointments in a single whereIn query.
-        // Firestore supports up to 30 items in whereIn; sufficient for a
-        // daily queue. Chunking is deferred to a later task if needed.
-        final apptSnap = await _datasource
-            .appointments(orgId)
-            .where(FieldPath.documentId, whereIn: orderedIds)
-            .get();
+        final apptChunks = _chunks(orderedIds, 30).toList();
+        final apptSnapshots = await Future.wait(
+          apptChunks.map(
+            (chunk) => _datasource
+                .appointments(orgId)
+                .where(FieldPath.documentId, whereIn: chunk)
+                .get(),
+          ),
+        );
 
-        final apptMap = <String, Map<String, dynamic>>{
-          for (final doc in apptSnap.docs) doc.id: doc.data(),
-        };
+        final apptMap = <String, Map<String, dynamic>>{};
+        for (final apptSnap in apptSnapshots) {
+          for (final doc in apptSnap.docs) {
+            apptMap[doc.id] = doc.data();
+          }
+        }
 
         final serviceIds = apptMap.values
             .map((data) => data['serviceId'] as String?)

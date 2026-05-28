@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:queue_ease/features/shared_domain/entities/service_entity.dart';
 
+import '../../../issue_resolution_fixtures.dart';
+
 void main() {
   group('ServiceEntity', () {
     final testDate = DateTime(2026, 2, 21);
@@ -75,6 +77,20 @@ void main() {
       );
 
       expect(service1, isNot(equals(service2)));
+    });
+
+    test('supports zero-duration service fixture', () {
+      final service = issueResolutionService(durationMinutes: 0);
+
+      expect(service.durationMinutes, equals(0));
+      expect(service.timeMarginMinutes, equals(15));
+    });
+
+    test('supports positive-duration service fixture', () {
+      final service = issueResolutionService(durationMinutes: 45);
+
+      expect(service.durationMinutes, equals(45));
+      expect(service.isActive, isTrue);
     });
 
     test('nullable fields are included in equality', () {

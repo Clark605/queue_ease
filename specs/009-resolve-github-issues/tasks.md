@@ -13,8 +13,8 @@
 
 **Purpose**: Shared fixtures and test scaffolding that make the issue fixes easier to implement and validate.
 
-- [ ] T001 [P] Add shared regression fixtures for appointments, services, and working-hours data in `test/shared/issue_resolution_fixtures.dart` and wire them through `test/firebase_mocks.dart`
-- [ ] T002 [P] Add reusable Firestore rules helpers for appointment-status and booking-window cases in `test/firestore_rules/issue_resolution_rules.dart`
+- [X] T001 [P] Add shared regression fixtures for appointments, services, and working-hours data in `test/shared/issue_resolution_fixtures.dart` and wire them through `test/firebase_mocks.dart`
+- [X] T002 [P] Add reusable Firestore rules helpers for appointment-status and booking-window cases in `test/firestore_rules/issue_resolution_rules.dart`
 
 ---
 
@@ -24,9 +24,9 @@
 
 **⚠️ CRITICAL**: These tasks establish shared regression coverage for the status, duration, and time assumptions used by later stories.
 
-- [ ] T003 [P] Add baseline appointment-status coverage for `cancelled` and `inQueue` cases in `test/shared/booking/domain/entities/appointment_entity_test.dart`
-- [ ] T004 [P] Add baseline service-duration coverage for zero and positive defaults in `test/shared/organization/domain/entities/service_entity_test.dart`
-- [ ] T005 [P] Add baseline server-time coverage in `test/core/utils/time_utils_test.dart` for the date/time assumptions used by issues #22 and #28
+- [X] T003 [P] Add baseline appointment-status coverage for `cancelled` and `inQueue` cases in `test/shared/booking/domain/entities/appointment_entity_test.dart`
+- [X] T004 [P] Add baseline service-duration coverage for zero and positive defaults in `test/shared/organization/domain/entities/service_entity_test.dart`
+- [X] T005 [P] Add baseline server-time coverage in `test/core/utils/time_utils_test.dart` for the date/time assumptions used by issues #22 and #28
 
 **Checkpoint**: Shared fixtures and baseline regressions are ready, so issue-specific work can begin.
 
@@ -40,15 +40,15 @@
 
 ### Validation for User Story 1
 
-- [ ] T006 [P] [US1] Add regression coverage for Firestore `whereIn` chunking in `test/admin/queue_management/data/repositories/admin_queue_repository_impl_test.dart` for issue #17
-- [ ] T008 [P] [US1] Add regression coverage for cancelled slots being released in `test/customer/booking/domain/use_cases/calculate_available_slots_use_case_test.dart` for issue #18
-- [ ] T010 [P] [US1] Add regression coverage for mixed-case booking slugs in `test/customer/access_portal/domain/use_cases/parse_access_url_use_case_test.dart` for issue #19
+- [X] T006 [P] [US1] Add regression coverage for Firestore `whereIn` chunking in `test/admin/queue_management/data/repositories/admin_queue_repository_impl_test.dart` for issue #17
+- [X] T008 [P] [US1] Add regression coverage for cancelled slots being released in `test/customer/booking/domain/use_cases/calculate_available_slots_use_case_test.dart` for issue #18
+- [X] T010 [P] [US1] Add regression coverage for mixed-case booking slugs in `test/customer/access_portal/domain/use_cases/parse_access_url_use_case_test.dart` for issue #19
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implement chunked `whereIn` loading and result merging in `lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart` for issue #17
-- [ ] T009 [US1] Update `lib/features/customer/booking/domain/use_cases/calculate_available_slots_use_case.dart` to exclude `cancelled` appointments from taken slots for issue #18
-- [ ] T011 [US1] Lowercase the extracted slug before lookup in `lib/features/customer/access_portal/domain/use_cases/parse_access_url_use_case.dart` for issue #19
+- [X] T007 [US1] Implement chunked `whereIn` loading and result merging in `lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart` for issue #17
+- [X] T009 [US1] Update `lib/features/customer/booking/domain/use_cases/calculate_available_slots_use_case.dart` to exclude `cancelled` appointments from taken slots for issue #18
+- [X] T011 [US1] Lowercase the extracted slug before lookup in `lib/features/customer/access_portal/domain/use_cases/parse_access_url_use_case.dart` for issue #19
 - [ ] T012 [US1] Run the targeted unit tests for issues #17-#19 and record the results in `specs/009-resolve-github-issues/quickstart.md`
 
 **Checkpoint**: The P1 blockers are fixed, tested, and ready for an isolated PR per issue.

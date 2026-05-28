@@ -2,6 +2,8 @@ import 'package:firebase_core_platform_interface/firebase_core_platform_interfac
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+export 'shared/issue_resolution_fixtures.dart';
+
 typedef Callback = void Function(MethodCall call);
 
 /// Sets up Firebase mocks for testing.
