@@ -20,8 +20,9 @@ class ParseAccessUrlUseCase {
     if (parsedSlug != null) return Success(parsedSlug);
 
     final normalizedSlug = trimmed.toLowerCase();
-    if (_plainSlugPattern.hasMatch(normalizedSlug))
+    if (_plainSlugPattern.hasMatch(normalizedSlug)) {
       return Success(normalizedSlug);
+    }
 
     return const Failure(
       ValidationException('Could not find a valid booking URL or code.'),
