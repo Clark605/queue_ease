@@ -4,7 +4,7 @@
   "branch": "007-staff-management",
   "selectedAt": "2026-05-26T12:50:47.891Z",
   "currentStep": "specify",
-  "status": "specifying",
+  "status": "archived",
   "stepHistory": {
     "specify": {
       "startedAt": "2026-05-21T10:00:34.778Z",
@@ -31,6 +31,16 @@
       },
       "by": "extension",
       "at": "2026-05-26T12:53:09.018Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "from": {
+        "step": "specify",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-05-26T17:10:29.166Z"
     }
   ]
 }
