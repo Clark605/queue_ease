@@ -38,6 +38,28 @@ class AdminQueueDatasource {
   CollectionReference<Map<String, dynamic>> services(String orgId) =>
       _firestore.collection('organizations/$orgId/services');
 
+  /// Public helper: determine the next index to advance to given the
+  /// ordered appointment ids, the current index, and a map of appointment
+  /// statuses keyed by appointment id.
+  ///
+  /// Returns the first index > currentIndex whose status is `'inQueue'`,
+  /// or `currentIndex + 1` if none found.
+  static int findNextInQueueIndex(
+    List<String> orderedIds,
+    int currentIndex,
+    Map<String, String?> statuses,
+  ) {
+    final nextIndex = currentIndex + 1;
+    for (var i = currentIndex + 1; i < orderedIds.length; i++) {
+      final id = orderedIds[i];
+      final status = statuses[id];
+      if (status == 'inQueue') {
+        return i;
+      }
+    }
+    return nextIndex;
+  }
+
   // ---------------------------------------------------------------------------
   // Queue generation — T029 (Phase 3 / US3)
   // ---------------------------------------------------------------------------
@@ -281,7 +303,18 @@ class AdminQueueDatasource {
           );
         }
 
-        final nextIndex = currentIndex + 1;
+        // Find the next index pointing to an appointment with status 'inQueue'.
+        var nextIndex = currentIndex + 1;
+        for (var i = currentIndex + 1; i < orderedIds.length; i++) {
+          final id = orderedIds[i];
+          final snap = await txn.get(appointments(orgId).doc(id));
+          final data = snap.data();
+          final status = data == null ? null : data['status'] as String?;
+          if (status == 'inQueue') {
+            nextIndex = i;
+            break;
+          }
+        }
 
         // Writes after all reads.
         txn.update(appointmentRef, {'status': 'completed'});

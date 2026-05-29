@@ -63,22 +63,22 @@
 
 ### Validation for User Story 2
 
-- [ ] T013 [P] [US2] Add regression coverage for live working-hours refresh in `test/customer/booking/presentation/cubit/slot_picker_cubit_test.dart` for issue #20
-- [ ] T015 [P] [US2] Add regression coverage for advancing past completed and no-show entries in `test/admin/queue_management/data/datasources/admin_queue_datasource_test.dart` for issue #21
-- [ ] T017 [P] [US2] Add regression coverage for server-time-based open/closed state in `test/customer/booking/presentation/cubit/organization_landing_cubit_test.dart` for issue #22
-- [ ] T019 [P] [US2] Add widget coverage for timer-driven countdown updates in `test/customer/entry/presentation/widgets/wait_timer_countdown_test.dart` for issue #30
-- [ ] T021 [P] [US2] Extend cancellation regression coverage in `test/customer/booking/domain/use_cases/cancel_appointment_use_case_test.dart` and `test/customer/entry/presentation/pages/customer_home_page_test.dart` for issue #31
-- [ ] T023 [P] [US2] Add Firestore rules regression coverage for cancelled appointment updates in `test/firestore_rules/appointment_rules_test.dart` for issue #32
+ - [X] T013 [P] [US2] Add regression coverage for live working-hours refresh in `test/customer/booking/presentation/cubit/slot_picker_cubit_test.dart` for issue #20
+ - [X] T015 [P] [US2] Add regression coverage for advancing past completed and no-show entries in `test/admin/queue_management/data/datasources/admin_queue_datasource_test.dart` for issue #21
+ - [X] T017 [P] [US2] Add regression coverage for server-time-based open/closed state in `test/customer/booking/presentation/cubit/organization_landing_cubit_test.dart` for issue #22
+ - [X] T019 [P] [US2] Add widget coverage for timer-driven countdown updates in `test/customer/entry/presentation/widgets/wait_timer_countdown_test.dart` for issue #30
+ - [X] T021 [P] [US2] Extend cancellation regression coverage in `test/customer/booking/domain/use_cases/cancel_appointment_use_case_test.dart` and `test/customer/entry/presentation/pages/customer_home_page_test.dart` for issue #31
+ - [X] T023 [P] [US2] Add Firestore rules regression coverage for cancelled appointment updates in `test/firestore_rules/appointment_rules_test.dart` for issue #32
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Update `lib/features/customer/booking/presentation/cubit/slot_picker_cubit.dart` to refresh slots when working-hours streams emit for issue #20
-- [ ] T016 [US2] Update `lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart` to scan forward to the next `inQueue` appointment for issue #21
-- [ ] T018 [US2] Replace device-clock checks in `lib/features/customer/booking/presentation/cubit/organization_landing_cubit.dart` with shared server-time logic for issue #22
-- [ ] T020 [US2] Restore periodic rebuilds in `lib/features/customer/entry/presentation/widgets/wait_timer_countdown.dart` for issue #30
-- [ ] T022 [US2] Allow `booked` and `inQueue` cancellations in `lib/features/customer/booking/domain/use_cases/cancel_appointment_use_case.dart` and surface the cancel action from `lib/features/customer/entry/presentation/pages/customer_home_page.dart` and `lib/features/customer/entry/presentation/widgets/active_queue_status_card.dart` for issue #31
-- [ ] T024 [US2] Update `firestore.rules` to whitelist `cancelled` appointment status transitions and safe no-op admin updates for issue #32
-- [ ] T025 [US2] Run the targeted regression suites for issues #20-#22 and #30-#32, including the Firestore rules tests, and record the results in `specs/009-resolve-github-issues/quickstart.md`
+ - [X] T014 [US2] Update `lib/features/customer/booking/presentation/cubit/slot_picker_cubit.dart` to refresh slots when working-hours streams emit for issue #20
+ - [X] T016 [US2] Update `lib/features/admin/queue_management/data/datasources/admin_queue_datasource.dart` to scan forward to the next `inQueue` appointment for issue #21
+ - [X] T018 [US2] Replace device-clock checks in `lib/features/customer/booking/presentation/cubit/organization_landing_cubit.dart` with shared server-time logic for issue #22
+ - [X] T020 [US2] Restore periodic rebuilds in `lib/features/customer/entry/presentation/widgets/wait_timer_countdown.dart` for issue #30
+ - [X] T022 [US2] Allow `booked` and `inQueue` cancellations in `lib/features/customer/booking/domain/use_cases/cancel_appointment_use_case.dart` and surface the cancel action from `lib/features/customer/entry/presentation/pages/customer_home_page.dart` and `lib/features/customer/entry/presentation/widgets/active_queue_status_card.dart` for issue #31
+ - [X] T024 [US2] Update `firestore.rules` to whitelist `cancelled` appointment status transitions and safe no-op admin updates for issue #32
+ - [X] T025 [US2] Run the targeted regression suites for issues #20-#22 and #30-#32, including the Firestore rules tests, and record the results in `specs/009-resolve-github-issues/quickstart.md`
 
 **Checkpoint**: The high-priority regressions are fixed and validated without depending on the low-priority backlog.
 

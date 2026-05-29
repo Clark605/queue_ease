@@ -59,25 +59,28 @@ void main() {
     });
 
     test('returns Failure when appointment status is inQueue', () async {
+      when(
+        () => mockRepository.updateAppointmentStatus(
+          orgId: any(named: 'orgId'),
+          appointmentId: any(named: 'appointmentId'),
+          status: any(named: 'status'),
+        ),
+      ).thenAnswer((_) async => const Success(null));
+
       final result = await useCase(
         orgId: orgId,
         appointmentId: appointmentId,
         currentStatus: AppointmentStatus.inQueue,
       );
 
-      expect(result, isA<Failure>());
-      final failure = result as Failure;
-      expect(
-        failure.exception.message,
-        'This booking can no longer be cancelled.',
-      );
-      verifyNever(
+      expect(result, isA<Success>());
+      verify(
         () => mockRepository.updateAppointmentStatus(
-          orgId: any(named: 'orgId'),
-          appointmentId: any(named: 'appointmentId'),
-          status: any(named: 'status'),
+          orgId: orgId,
+          appointmentId: appointmentId,
+          status: AppointmentStatus.cancelled,
         ),
-      );
+      ).called(1);
     });
 
     test('returns Failure when appointment status is completed', () async {

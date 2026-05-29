@@ -73,3 +73,23 @@ rtk flutter test \
 - Reference the issue number in the PR body and in the closing comment.
 - Close the issue only after the PR merges and validation passes.
 - Record any items intentionally deferred with the reason they were not fixed.
+
+---
+
+### P2 Validation Results: ✅ ALL PASSING (Targeted)
+
+**Command:**
+```bash
+rtk flutter test \
+  test/customer/booking/presentation/cubit/organization_landing_cubit_test.dart \
+  test/customer/booking/presentation/cubit/slot_picker_cubit_test.dart \
+  test/customer/entry/presentation/widgets/wait_timer_countdown_test.dart \
+  test/admin/queue_management/data/datasources/admin_queue_datasource_test.dart \
+  test/customer/booking/domain/use_cases/cancel_appointment_use_case_test.dart \
+  test/firestore_rules/appointment_rules_test.dart -v
+```
+
+**Test Summary**: Targeted P2 tests passed (17 tests: 17 passed, 0 failed).
+
+Notes:
+- The Firestore rules regression check is a lightweight content assertion (file-based) — further integration validation against the emulator is recommended before production deploy.

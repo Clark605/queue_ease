@@ -22,8 +22,10 @@ class CancelAppointmentUseCase {
     required String appointmentId,
     required AppointmentStatus currentStatus,
   }) async {
-    // Validate that the appointment can be cancelled
-    if (currentStatus != AppointmentStatus.booked) {
+    // Validate that the appointment can be cancelled. Allow cancelling
+    // both `booked` and `inQueue` statuses per issue #31.
+    if (currentStatus != AppointmentStatus.booked &&
+        currentStatus != AppointmentStatus.inQueue) {
       final exception = ValidationException(
         cancellationMessage(currentStatus),
         field: 'status',
@@ -51,6 +53,7 @@ class CancelAppointmentUseCase {
       AppointmentStatus.completed => 'This appointment is already completed.',
       AppointmentStatus.serving =>
         'This appointment is currently being served.',
+      AppointmentStatus.inQueue => 'This booking is currently in the queue.',
       AppointmentStatus.cancelled => 'This booking has already been cancelled.',
       AppointmentStatus.noShow => 'This booking was marked as no-show.',
       _ => 'This booking can no longer be cancelled.',

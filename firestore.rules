@@ -143,11 +143,14 @@ service cloud.firestore {
       * to prevent malicious clients from bypassing auto no-show logic.
      */
     function isValidStatusTransition(from, to, appointmentData, orgId) {
-      let basicTransition = (from == 'booked'  && to == 'inQueue')
+        let basicTransition = (from == 'booked'  && to == 'inQueue')
           || (from == 'inQueue' && to == 'serving')
           || (from == 'serving' && to == 'completed')
           || (from == 'serving' && to == 'inQueue')
           || (from == 'noShow'  && to == 'inQueue');
+
+        // Allow explicit cancellation transitions: booked -> cancelled and inQueue -> cancelled
+        let cancellationTransition = (from == 'booked' && to == 'cancelled') || (from == 'inQueue' && to == 'cancelled');
 
       // Special validation for noShow transition - must be after deadline
       return (from == 'inQueue' && to == 'noShow')
@@ -156,7 +159,7 @@ service cloud.firestore {
             orgId,
             appointmentData.serviceId
           ))
-        : basicTransition;
+        : (basicTransition || cancellationTransition);
     }
     
     // =============================================================================
@@ -321,11 +324,11 @@ service cloud.firestore {
           && isValidStatusTransition(resource.data.status, request.resource.data.status, request.resource.data, orgId)
           && hasOnlyAllowedFields(['orgId','customerId','serviceId','customerName','customerPhone','queuePosition','scheduledAt','status','customerNotes','adminNotes','createdAt','updatedAt']);
 
-// T052: Customer may cancel their own booked appointment.
+// T052: Customer may cancel their own booked or in-queue appointment.
 allow update: if isAuthenticated()
   && request.auth.uid == resource.data.customerId
   && resource.data.customerId == request.auth.uid
-  && resource.data.status == 'booked'
+  && (resource.data.status == 'booked' || resource.data.status == 'inQueue')
   && request.resource.data.status == 'cancelled'
   && request.resource.data.orgId == orgId
   && request.resource.data.customerId == resource.data.customerId

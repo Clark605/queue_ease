@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:queue_ease/core/error/result.dart';
@@ -24,6 +26,7 @@ class SlotPickerCubit extends Cubit<SlotPickerState> {
   late String _orgId;
   late String _serviceId;
   late int _durationMinutes;
+  StreamSubscription<List<WorkingHoursEntity>>? _workingHoursSub;
 
   /// Loads working hours for [orgId] and then calculates slots for today.
   Future<void> init({
@@ -40,17 +43,35 @@ class SlotPickerCubit extends Cubit<SlotPickerState> {
     );
 
     try {
-      _workingHours = await _workingHoursRepository
+      // Subscribe to working-hours stream and refresh slots on every update.
+      _workingHoursSub = _workingHoursRepository
           .watchWorkingHours(orgId)
-          .first;
-      _logger.debug(
-        'SlotPickerCubit: fetched ${_workingHours.length} working hour entries',
-      );
-      await loadSlotsForDate(DateTime.now());
+          .listen(
+            (entries) async {
+              _workingHours = entries;
+              _logger.debug(
+                'SlotPickerCubit: working-hours updated (${entries.length} entries)',
+              );
+              await loadSlotsForDate(DateTime.now());
+            },
+            onError: (e, st) {
+              _logger.error(
+                'SlotPickerCubit: working-hours stream error',
+                e,
+                st,
+              );
+            },
+          );
     } catch (e, st) {
       _logger.error('SlotPickerCubit: failed to init', e, st);
       emit(const SlotPickerError('Failed to load availability.'));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _workingHoursSub?.cancel();
+    return super.close();
   }
 
   /// Calculates available slots for [date] and emits the appropriate state.
