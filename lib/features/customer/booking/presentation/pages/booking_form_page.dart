@@ -71,7 +71,9 @@ class _BookingFormPageState extends State<BookingFormPage> {
             final retryableErrorMessage = state is BookingFormRetryableError
                 ? state.message
                 : null;
-            final errorMessage = state is BookingFormError ? state.message : null;
+            final errorMessage = state is BookingFormError
+                ? state.message
+                : null;
 
             return Column(
               children: [
@@ -125,9 +127,7 @@ class _BookingFormPageState extends State<BookingFormPage> {
                                 Expanded(
                                   child: Text(
                                     errorMessage,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
+                                    style: Theme.of(context).textTheme.bodySmall
                                         ?.copyWith(color: AppColors.error),
                                   ),
                                 ),

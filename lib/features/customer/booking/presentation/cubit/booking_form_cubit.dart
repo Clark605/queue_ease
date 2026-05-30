@@ -71,8 +71,7 @@ class BookingFormCubit extends Cubit<BookingFormState> {
       case Success(:final data):
         emit(BookingFormSuccess(data));
       case Failure(:final exception)
-          when exception is ValidationException &&
-              _isSlotConflict(exception):
+          when exception is ValidationException && _isSlotConflict(exception):
         emit(BookingFormConflict(exception.message));
       case Failure(:final exception)
           when exception is DatabaseException || exception is UnknownException:

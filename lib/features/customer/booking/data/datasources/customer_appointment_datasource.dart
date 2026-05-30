@@ -414,15 +414,10 @@ class CustomerAppointmentDatasource {
 
     return primaryQuery
         .snapshots()
-        .asyncMap(
-          (primarySnapshot) async {
-            final orphanedSnapshot = await orphanedActiveQuery.get();
-            return _buildDashboardAppointments(
-              primarySnapshot,
-              orphanedSnapshot,
-            );
-          },
-        )
+        .asyncMap((primarySnapshot) async {
+          final orphanedSnapshot = await orphanedActiveQuery.get();
+          return _buildDashboardAppointments(primarySnapshot, orphanedSnapshot);
+        })
         .handleError((Object e, StackTrace st) {
           _logger.error(
             'CustomerAppointmentDatasource: watchTodayActiveAppointments error',
@@ -446,7 +441,10 @@ class CustomerAppointmentDatasource {
     final orphanedActiveDocs = orphanedSnapshot.docs
         .where(_isOrphanedActiveAppointment)
         .toList(growable: false);
-    final appointmentDocs = _mergeAppointmentDocs(primaryDocs, orphanedActiveDocs);
+    final appointmentDocs = _mergeAppointmentDocs(
+      primaryDocs,
+      orphanedActiveDocs,
+    );
 
     return _buildAppointmentsWithNames(appointmentDocs);
   }
@@ -537,7 +535,8 @@ class CustomerAppointmentDatasource {
 
   bool _isBookedOrActiveStatus(String? statusStr) {
     final status = _parseAppointmentStatus(statusStr);
-    return status == AppointmentStatus.booked || _isActiveQueueStatusValue(status);
+    return status == AppointmentStatus.booked ||
+        _isActiveQueueStatusValue(status);
   }
 
   bool _isActiveQueueStatus(String? statusStr) {

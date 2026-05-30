@@ -70,9 +70,9 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   static final _dateFormatter = DateFormat('yyyy-MM-dd');
 
   // Exponential backoff for auto no-show failures
-    final Map<String, int> _autoNoShowFailureCountByAppointmentId =
+  final Map<String, int> _autoNoShowFailureCountByAppointmentId =
       <String, int>{};
-    final Map<String, DateTime> _lastAutoNoShowFailureByAppointmentId =
+  final Map<String, DateTime> _lastAutoNoShowFailureByAppointmentId =
       <String, DateTime>{};
   static const _maxAutoNoShowRetries = 5;
   static const _baseBackoffDuration = Duration(seconds: 2);
@@ -432,8 +432,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
 
   /// Checks if we can retry auto no-show based on exponential backoff.
   bool _canRetryAutoNoShow(String appointmentId) {
-    final lastFailure =
-        _lastAutoNoShowFailureByAppointmentId[appointmentId];
+    final lastFailure = _lastAutoNoShowFailureByAppointmentId[appointmentId];
     if (lastFailure == null) return true;
 
     final failureCount =
@@ -442,9 +441,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     final backoffMs =
         math.pow(2, failureCount.clamp(0, _maxAutoNoShowRetries)) *
         _baseBackoffDuration.inMilliseconds;
-    final elapsed = TimeUtils.nowUtc()
-        .difference(lastFailure)
-        .inMilliseconds;
+    final elapsed = TimeUtils.nowUtc().difference(lastFailure).inMilliseconds;
 
     return elapsed >= backoffMs;
   }

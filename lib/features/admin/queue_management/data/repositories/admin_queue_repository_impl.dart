@@ -243,9 +243,9 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
             final data = serviceDoc.data();
             final duration = data['durationMinutes'] as int?;
             serviceDurationById[serviceDoc.id] =
-              duration == null || duration < _minimumServiceDurationMinutes
-              ? _minimumServiceDurationMinutes
-              : duration;
+                duration == null || duration < _minimumServiceDurationMinutes
+                ? _minimumServiceDurationMinutes
+                : duration;
             serviceMarginById[serviceDoc.id] =
                 data['timeMarginMinutes'] as int?;
           }
@@ -255,8 +255,9 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
         for (final entry in apptMap.entries) {
           final serviceId = entry.value['serviceId'] as String?;
           durationByAppointmentId[entry.key] = serviceId == null
-            ? _minimumServiceDurationMinutes
-            : serviceDurationById[serviceId] ?? _minimumServiceDurationMinutes;
+              ? _minimumServiceDurationMinutes
+              : serviceDurationById[serviceId] ??
+                    _minimumServiceDurationMinutes;
         }
 
         QueueEntryView? current;
