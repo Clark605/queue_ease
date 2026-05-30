@@ -29,6 +29,7 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
   final _deadlineEvaluator = const QueueDeadlineEvaluator();
 
   static final _dateFormatter = DateFormat('yyyy-MM-dd');
+  static const _minimumServiceDurationMinutes = 5;
 
   String _maskId(String value) {
     if (value.isEmpty) return '***';
@@ -242,7 +243,9 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
             final data = serviceDoc.data();
             final duration = data['durationMinutes'] as int?;
             serviceDurationById[serviceDoc.id] =
-                duration == null || duration < 0 ? 0 : duration;
+              duration == null || duration < _minimumServiceDurationMinutes
+              ? _minimumServiceDurationMinutes
+              : duration;
             serviceMarginById[serviceDoc.id] =
                 data['timeMarginMinutes'] as int?;
           }
@@ -252,8 +255,8 @@ class AdminQueueRepositoryImpl implements AdminAppointmentRepository {
         for (final entry in apptMap.entries) {
           final serviceId = entry.value['serviceId'] as String?;
           durationByAppointmentId[entry.key] = serviceId == null
-              ? 0
-              : serviceDurationById[serviceId] ?? 0;
+            ? _minimumServiceDurationMinutes
+            : serviceDurationById[serviceId] ?? _minimumServiceDurationMinutes;
         }
 
         QueueEntryView? current;

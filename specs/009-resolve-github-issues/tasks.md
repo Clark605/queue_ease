@@ -102,13 +102,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Separate retryable booking errors from slot conflicts in `lib/features/customer/booking/presentation/cubit/booking_form_cubit.dart` and `lib/features/customer/booking/presentation/pages/booking_form_page.dart` for issue #23
-- [ ] T029 [US3] Update `lib/features/customer/entry/domain/use_cases/watch_customer_dashboard_use_case.dart` to surface or log multiple active appointments instead of dropping them silently for issue #24
-- [ ] T031 [US3] Enforce a positive fallback duration in `lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart` and mirror the constraint in `firestore.rules` for issue #25
-- [ ] T033 [US3] Merge the secondary active-appointment query in `lib/features/customer/booking/data/datasources/customer_appointment_datasource.dart` for issue #26
-- [ ] T035 [US3] Show the break-end validation error immediately in `lib/features/admin/working_hours_management/presentation/widgets/break_time_section.dart` for issue #27
-- [ ] T037 [US3] Reject bookings beyond the configured horizon in `lib/features/customer/booking/domain/use_cases/create_booking_use_case.dart` and `firestore.rules` for issue #28
-- [ ] T039 [US3] Key the auto no-show backoff state by appointment ID in `lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart` for issue #29
+- [X] T027 [US3] Separate retryable booking errors from slot conflicts in `lib/features/customer/booking/presentation/cubit/booking_form_cubit.dart` and `lib/features/customer/booking/presentation/pages/booking_form_page.dart` for issue #23
+- [X] T029 [US3] Update `lib/features/customer/entry/domain/use_cases/watch_customer_dashboard_use_case.dart` to surface or log multiple active appointments instead of dropping them silently for issue #24
+- [X] T031 [US3] Enforce a positive fallback duration in `lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart` and mirror the constraint in `firestore.rules` for issue #25
+- [X] T033 [US3] Merge the secondary active-appointment query in `lib/features/customer/booking/data/datasources/customer_appointment_datasource.dart` for issue #26
+- [X] T035 [US3] Show the break-end validation error immediately in `lib/features/admin/working_hours_management/presentation/widgets/break_time_section.dart` for issue #27
+- [X] T037 [US3] Reject bookings beyond the configured horizon in `lib/features/customer/booking/domain/use_cases/create_booking_use_case.dart` and `firestore.rules` for issue #28
+- [X] T039 [US3] Key the auto no-show backoff state by appointment ID in `lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart` for issue #29
 - [ ] T040 [US3] Run the targeted regression suites for issues #23-#29 and record the results in `specs/009-resolve-github-issues/quickstart.md`
 
 **Checkpoint**: The low-priority guardrails are fixed, validated, and ready for the final cleanup pass.

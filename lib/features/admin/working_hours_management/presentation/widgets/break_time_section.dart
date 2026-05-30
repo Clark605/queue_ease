@@ -28,8 +28,21 @@ class BreakTimeSection extends StatefulWidget {
 class _BreakTimeSectionState extends State<BreakTimeSection> {
   static const _defaultStart = '12:00';
   static const _defaultEnd = '13:00';
+  static const _invalidRangeMessage =
+      'Break end must be later than break start.';
 
   bool get _enabled => widget.breakStart != null;
+  bool get _hasInvalidRange {
+    if (!_enabled || widget.breakStart == null || widget.breakEnd == null) {
+      return false;
+    }
+
+    final start = TimePickerHelper.parse(widget.breakStart!);
+    final end = TimePickerHelper.parse(widget.breakEnd!);
+    final startMinutes = (start.hour * 60) + start.minute;
+    final endMinutes = (end.hour * 60) + end.minute;
+    return endMinutes <= startMinutes;
+  }
 
   void _onToggle(bool value) {
     if (value) {
@@ -80,6 +93,19 @@ class _BreakTimeSectionState extends State<BreakTimeSection> {
                     );
                   }
                 },
+              ),
+            if (_enabled && _hasInvalidRange)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _invalidRangeMessage,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.error,
+                    ),
+                  ),
+                ),
               ),
           ],
         ),

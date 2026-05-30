@@ -395,8 +395,7 @@ class CustomerAppointmentDatasource {
     );
     final dayStart = DateTime(date.year, date.month, date.day);
     final horizon = dayStart.add(const Duration(days: 30));
-
-    return _firestore
+    final primaryQuery = _firestore
         .collectionGroup('appointments')
         .where('customerId', isEqualTo: customerId)
         .where(
@@ -404,9 +403,26 @@ class CustomerAppointmentDatasource {
           isGreaterThanOrEqualTo: Timestamp.fromDate(dayStart),
         )
         .where('scheduledAt', isLessThan: Timestamp.fromDate(horizon))
-        .orderBy('scheduledAt')
+        .orderBy('scheduledAt');
+
+    final orphanedActiveQuery = _firestore
+        .collectionGroup('appointments')
+        .where('customerId', isEqualTo: customerId)
+        .where('scheduledAt', isLessThan: Timestamp.fromDate(dayStart))
+        .orderBy('scheduledAt', descending: true)
+        .limit(30);
+
+    return primaryQuery
         .snapshots()
-        .asyncMap(_buildDashboardAppointments)
+        .asyncMap(
+          (primarySnapshot) async {
+            final orphanedSnapshot = await orphanedActiveQuery.get();
+            return _buildDashboardAppointments(
+              primarySnapshot,
+              orphanedSnapshot,
+            );
+          },
+        )
         .handleError((Object e, StackTrace st) {
           _logger.error(
             'CustomerAppointmentDatasource: watchTodayActiveAppointments error',
@@ -422,12 +438,40 @@ class CustomerAppointmentDatasource {
 
   Future<List<AppointmentEntity>> _buildDashboardAppointments(
     QuerySnapshot<Map<String, dynamic>> snapshot,
+    QuerySnapshot<Map<String, dynamic>> orphanedSnapshot,
   ) async {
-    final appointmentDocs = snapshot.docs
+    final primaryDocs = snapshot.docs
         .where(_isDashboardAppointment)
         .toList(growable: false);
+    final orphanedActiveDocs = orphanedSnapshot.docs
+        .where(_isOrphanedActiveAppointment)
+        .toList(growable: false);
+    final appointmentDocs = _mergeAppointmentDocs(primaryDocs, orphanedActiveDocs);
 
     return _buildAppointmentsWithNames(appointmentDocs);
+  }
+
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> _mergeAppointmentDocs(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> primaryDocs,
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> orphanedActiveDocs,
+  ) {
+    final docsById = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{
+      for (final doc in primaryDocs) doc.id: doc,
+    };
+
+    for (final doc in orphanedActiveDocs) {
+      docsById.putIfAbsent(doc.id, () => doc);
+    }
+
+    final mergedDocs = docsById.values.toList(growable: false);
+    mergedDocs.sort((a, b) {
+      final aScheduledAt = (a.data()['scheduledAt'] as Timestamp?)?.toDate();
+      final bScheduledAt = (b.data()['scheduledAt'] as Timestamp?)?.toDate();
+      if (aScheduledAt == null || bScheduledAt == null) return 0;
+      return aScheduledAt.compareTo(bScheduledAt);
+    });
+
+    return mergedDocs;
   }
 
   Future<List<AppointmentEntity>> _buildCustomerAppointments(
@@ -482,15 +526,35 @@ class CustomerAppointmentDatasource {
   bool _isDashboardAppointment(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) {
-    final statusStr = doc.data()['status'] as String?;
-    final status = AppointmentStatus.values.firstWhere(
+    return _isBookedOrActiveStatus(doc.data()['status'] as String?);
+  }
+
+  bool _isOrphanedActiveAppointment(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    return _isActiveQueueStatus(doc.data()['status'] as String?);
+  }
+
+  bool _isBookedOrActiveStatus(String? statusStr) {
+    final status = _parseAppointmentStatus(statusStr);
+    return status == AppointmentStatus.booked || _isActiveQueueStatusValue(status);
+  }
+
+  bool _isActiveQueueStatus(String? statusStr) {
+    final status = _parseAppointmentStatus(statusStr);
+    return _isActiveQueueStatusValue(status);
+  }
+
+  bool _isActiveQueueStatusValue(AppointmentStatus status) {
+    return status == AppointmentStatus.inQueue ||
+        status == AppointmentStatus.serving;
+  }
+
+  AppointmentStatus _parseAppointmentStatus(String? statusStr) {
+    return AppointmentStatus.values.firstWhere(
       (value) => value.name == statusStr,
       orElse: () => AppointmentStatus.booked,
     );
-
-    return status == AppointmentStatus.booked ||
-        status == AppointmentStatus.inQueue ||
-        status == AppointmentStatus.serving;
   }
 
   Future<Map<String, String>> _fetchOrganizationNames(

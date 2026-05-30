@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import '../../../../../core/error/app_exception.dart';
 import '../../../../../core/error/result.dart';
 import '../../../../../core/utils/app_logger.dart';
+import '../../../../../core/utils/time_utils.dart';
 import '../../../../shared_domain/entities/appointment_entity.dart';
 import '../../../../shared_domain/entities/appointment_status.dart';
 import '../../domain/repositories/customer_appointment_repository.dart';
@@ -14,6 +15,8 @@ import '../../domain/repositories/customer_appointment_repository.dart';
 @lazySingleton
 class CreateBookingUseCase {
   const CreateBookingUseCase(this._appointmentRepository, this._logger);
+
+  static const _bookingHorizonDays = 30;
 
   final CustomerAppointmentRepository _appointmentRepository;
   final AppLogger _logger;
@@ -37,6 +40,22 @@ class CreateBookingUseCase {
     }
 
     final trimmedPhone = customerPhone?.trim();
+    final normalizedScheduledAt = TimeUtils.normalizeToUtc(scheduledAt);
+    final maxAllowedSchedule = TimeUtils.nowUtc().add(
+      const Duration(days: _bookingHorizonDays),
+    );
+    if (normalizedScheduledAt.isAfter(maxAllowedSchedule)) {
+      final exception = const ValidationException(
+        'Bookings are limited to the next $_bookingHorizonDays days.',
+        field: 'scheduledAt',
+      );
+      _logger.warning(
+        'CreateBookingUseCase: scheduledAt exceeds horizon '
+        'scheduledAt=${normalizedScheduledAt.toIso8601String()} '
+        'maxAllowed=${maxAllowedSchedule.toIso8601String()}',
+      );
+      return Failure(exception);
+    }
 
     final appointment = AppointmentEntity(
       id: '',
@@ -45,9 +64,9 @@ class CreateBookingUseCase {
       customerId: customerId,
       customerName: trimmedName,
       customerPhone: (trimmedPhone?.isEmpty ?? true) ? null : trimmedPhone,
-      scheduledAt: scheduledAt,
+      scheduledAt: normalizedScheduledAt,
       status: AppointmentStatus.booked,
-      createdAt: DateTime.now(),
+      createdAt: TimeUtils.nowUtc(),
     );
 
     final result = await _appointmentRepository.createAppointment(appointment);

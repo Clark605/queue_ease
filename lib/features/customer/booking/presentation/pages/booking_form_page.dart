@@ -68,9 +68,10 @@ class _BookingFormPageState extends State<BookingFormPage> {
         body: BlocBuilder<BookingFormCubit, BookingFormState>(
           builder: (context, state) {
             final isSubmitting = state is BookingFormSubmitting;
-            final errorMessage = state is BookingFormError
+            final retryableErrorMessage = state is BookingFormRetryableError
                 ? state.message
                 : null;
+            final errorMessage = state is BookingFormError ? state.message : null;
 
             return Column(
               children: [
@@ -93,13 +94,45 @@ class _BookingFormPageState extends State<BookingFormPage> {
                           phoneController: _phoneController,
                           enabled: !isSubmitting,
                         ),
-                        if (errorMessage != null) ...[
+                        if (retryableErrorMessage != null) ...[
                           const SizedBox(height: 16),
                           InlineErrorBanner(
-                            message: errorMessage,
+                            message: retryableErrorMessage,
                             onRetry: context
                                 .read<BookingFormCubit>()
                                 .retrySubmit,
+                          ),
+                        ],
+                        if (errorMessage != null) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.error.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.error_outline,
+                                  color: AppColors.error,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    errorMessage,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(color: AppColors.error),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ],

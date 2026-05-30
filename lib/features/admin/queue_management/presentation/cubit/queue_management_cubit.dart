@@ -70,8 +70,10 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   static final _dateFormatter = DateFormat('yyyy-MM-dd');
 
   // Exponential backoff for auto no-show failures
-  int _autoNoShowFailureCount = 0;
-  DateTime? _lastAutoNoShowFailure;
+    final Map<String, int> _autoNoShowFailureCountByAppointmentId =
+      <String, int>{};
+    final Map<String, DateTime> _lastAutoNoShowFailureByAppointmentId =
+      <String, DateTime>{};
   static const _maxAutoNoShowRetries = 5;
   static const _baseBackoffDuration = Duration(seconds: 2);
 
@@ -429,14 +431,19 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
   }
 
   /// Checks if we can retry auto no-show based on exponential backoff.
-  bool _canRetryAutoNoShow() {
-    if (_lastAutoNoShowFailure == null) return true;
+  bool _canRetryAutoNoShow(String appointmentId) {
+    final lastFailure =
+        _lastAutoNoShowFailureByAppointmentId[appointmentId];
+    if (lastFailure == null) return true;
+
+    final failureCount =
+        _autoNoShowFailureCountByAppointmentId[appointmentId] ?? 0;
 
     final backoffMs =
-        math.pow(2, _autoNoShowFailureCount.clamp(0, _maxAutoNoShowRetries)) *
+        math.pow(2, failureCount.clamp(0, _maxAutoNoShowRetries)) *
         _baseBackoffDuration.inMilliseconds;
     final elapsed = TimeUtils.nowUtc()
-        .difference(_lastAutoNoShowFailure!)
+        .difference(lastFailure)
         .inMilliseconds;
 
     return elapsed >= backoffMs;
@@ -456,7 +463,7 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
     if (!isOverdueFront ||
         _isAutoNoShowInFlight ||
         _autoNoShowPendingId == current.appointmentId ||
-        !_canRetryAutoNoShow()) {
+        !_canRetryAutoNoShow(current.appointmentId)) {
       return;
     }
 
@@ -473,8 +480,8 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
           'appointmentId': current.appointmentId,
         });
         // Reset failure tracking on success
-        _autoNoShowFailureCount = 0;
-        _lastAutoNoShowFailure = null;
+        _autoNoShowFailureCountByAppointmentId.remove(current.appointmentId);
+        _lastAutoNoShowFailureByAppointmentId.remove(current.appointmentId);
         emit(
           QueueManagementLoaded(
             snapshot: snapshot,
@@ -487,14 +494,20 @@ class QueueManagementCubit extends Cubit<QueueManagementState> {
         _autoNoShowPendingId = null;
 
         // Track failure for exponential backoff
-        _autoNoShowFailureCount++;
-        _lastAutoNoShowFailure = TimeUtils.nowUtc();
+        final nextFailureCount =
+            (_autoNoShowFailureCountByAppointmentId[current.appointmentId] ??
+                0) +
+            1;
+        _autoNoShowFailureCountByAppointmentId[current.appointmentId] =
+            nextFailureCount;
+        _lastAutoNoShowFailureByAppointmentId[current.appointmentId] =
+            TimeUtils.nowUtc();
 
-        if (_autoNoShowFailureCount >= _maxAutoNoShowRetries) {
+        if (nextFailureCount >= _maxAutoNoShowRetries) {
           _logger.error(
             'QueueManagementCubit: max auto no-show retries exceeded',
             {
-              'failureCount': _autoNoShowFailureCount,
+              'failureCount': nextFailureCount,
               'appointmentId': current.appointmentId,
             },
           );

@@ -70,11 +70,23 @@ class BookingFormCubit extends Cubit<BookingFormState> {
     switch (result) {
       case Success(:final data):
         emit(BookingFormSuccess(data));
-      case Failure(:final exception) when exception is ValidationException:
+      case Failure(:final exception)
+          when exception is ValidationException &&
+              _isSlotConflict(exception):
         emit(BookingFormConflict(exception.message));
+      case Failure(:final exception)
+          when exception is DatabaseException || exception is UnknownException:
+        emit(BookingFormRetryableError(exception.message));
       case Failure(:final exception):
         emit(BookingFormError(exception.message));
     }
+  }
+
+  bool _isSlotConflict(ValidationException exception) {
+    final message = exception.message.toLowerCase();
+    return exception.field == 'scheduledAt' ||
+        message.contains('slot') ||
+        message.contains('no longer available');
   }
 
   /// Re-submits the booking using the previously captured name and phone.
