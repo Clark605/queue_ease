@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger.dart';
-
 import 'core/app.dart';
 import 'core/di/injection.dart';
 import 'core/config/flavor_config.dart';
@@ -76,7 +75,7 @@ Future<void> main() async {
   await getIt<AuthCubit>().checkAuthStatus();
 
   final useDevicePreview =
-      kDebugMode && FlavorConfig.instance.enableDevicePreview && false;
+      kDebugMode && FlavorConfig.instance.enableDevicePreview;
 
   runApp(useDevicePreview ? DevicePreview(builder: (context) => App()) : App());
 }

@@ -49,7 +49,7 @@
 - [X] T007 [US1] Implement chunked `whereIn` loading and result merging in `lib/features/admin/queue_management/data/repositories/admin_queue_repository_impl.dart` for issue #17
 - [X] T009 [US1] Update `lib/features/customer/booking/domain/use_cases/calculate_available_slots_use_case.dart` to exclude `cancelled` appointments from taken slots for issue #18
 - [X] T011 [US1] Lowercase the extracted slug before lookup in `lib/features/customer/access_portal/domain/use_cases/parse_access_url_use_case.dart` for issue #19
-- [ ] T012 [US1] Run the targeted unit tests for issues #17-#19 and record the results in `specs/009-resolve-github-issues/quickstart.md`
+- [X] T012 [US1] Run the targeted unit tests for issues #17-#19 and record the results in `specs/009-resolve-github-issues/quickstart.md`
 
 **Checkpoint**: The P1 blockers are fixed, tested, and ready for an isolated PR per issue.
 
@@ -109,7 +109,7 @@
 - [X] T035 [US3] Show the break-end validation error immediately in `lib/features/admin/working_hours_management/presentation/widgets/break_time_section.dart` for issue #27
 - [X] T037 [US3] Reject bookings beyond the configured horizon in `lib/features/customer/booking/domain/use_cases/create_booking_use_case.dart` and `firestore.rules` for issue #28
 - [X] T039 [US3] Key the auto no-show backoff state by appointment ID in `lib/features/admin/queue_management/presentation/cubit/queue_management_cubit.dart` for issue #29
-- [ ] T040 [US3] Run the targeted regression suites for issues #23-#29 and record the results in `specs/009-resolve-github-issues/quickstart.md`
+- [X] T040 [US3] Run the targeted regression suites for issues #23-#29 and record the results in `specs/009-resolve-github-issues/quickstart.md`
 
 **Checkpoint**: The low-priority guardrails are fixed, validated, and ready for the final cleanup pass.
 
@@ -119,10 +119,10 @@
 
 **Purpose**: Final validation, documentation updates, and GitHub issue closure work that spans multiple stories.
 
-- [ ] T041 [P] Update `specs/009-resolve-github-issues/research.md` with the final issue-to-PR matrix and any deferred items
-- [ ] T042 [P] Run `flutter analyze`, the full `flutter test` suite, and the Firestore rules suite for the touched files, then capture the command list in `specs/009-resolve-github-issues/quickstart.md`
-- [ ] T043 Publish the PRs for the P1 fixes and grouped P2/P3 batches, linking each issue number in the PR body and recording the PR URLs in `specs/009-resolve-github-issues/research.md`
-- [ ] T044 Close the GitHub issues that were resolved in this cycle and annotate the outcome in `specs/009-resolve-github-issues/research.md`
+- [X] T041 [P] Update `specs/009-resolve-github-issues/research.md` with the final issue-to-PR matrix and any deferred items
+- [X] T042 [P] Run `flutter analyze`, the full `flutter test` suite, and the Firestore rules suite for the touched files, then capture the command list in `specs/009-resolve-github-issues/quickstart.md`
+- [X] T043 Update the current PR #35 body so it lists all resolved issues, links the evidence, and records the PR URL in `specs/009-resolve-github-issues/research.md`
+- [ ] T044 Close the GitHub issues that were resolved in this cycle after merge and annotate the outcome in `specs/009-resolve-github-issues/research.md`
 
 ---
 

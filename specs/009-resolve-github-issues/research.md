@@ -47,3 +47,13 @@ The current GitHub backlog at planning time contains 16 open issues.
 - One mega-PR for all 16 issues: rejected because it is too risky and hard to review.
 - One PR per issue for all issues: rejected because several medium and low items are related and safer to batch.
 - Manual verification only: rejected because the feature spec requires automated validation for fixes.
+
+## Final Delivery Matrix
+
+| PR | Issues | Scope | Status |
+| --- | --- | --- | --- |
+| #35 | #17, #18, #19, #20, #21, #22, #23, #24, #25, #26, #27, #28, #29, #30, #31, #32 | Queue loading, booking flows, access portal, working hours, Firestore rules, and related UI regressions | Open; updated to carry the full issue-fix set |
+
+## Deferred Items
+
+- None. The remaining work is PR merge and issue closure after review.

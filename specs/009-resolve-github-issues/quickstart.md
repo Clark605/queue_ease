@@ -74,6 +74,18 @@ rtk flutter test \
 - Close the issue only after the PR merges and validation passes.
 - Record any items intentionally deferred with the reason they were not fixed.
 
+## 6. Current PR Status
+
+- The active PR is [#35](https://github.com/Clark605/queue_ease/pull/35).
+- Its body now reflects the full issue set, not just the original P1 subset.
+- Issue closure is still pending merge, which keeps the GitHub history accurate.
+
+## 7. Final Validation
+
+- `rtk flutter analyze` - passed with no issues.
+- `rtk flutter test` - passed, 240/240 tests green.
+- `rtk flutter test test/firestore_rules/appointment_rules_test.dart -v` - passed.
+
 ---
 
 ### P2 Validation Results: ✅ ALL PASSING (Targeted)
