@@ -88,11 +88,30 @@ class WatchCustomerDashboardUseCase {
       final appointments = latestAppointments;
       if (appointments == null) return;
 
-      final active = appointments.firstWhereOrNull(
-        (a) =>
-            a.status == AppointmentStatus.inQueue ||
-            a.status == AppointmentStatus.serving,
-      );
+      final activeAppointments = appointments
+          .where(
+            (a) =>
+                a.status == AppointmentStatus.inQueue ||
+                a.status == AppointmentStatus.serving,
+          )
+          .toList(growable: false);
+
+      if (activeAppointments.length > 1) {
+        _logger.warning(
+          'WatchCustomerDashboardUseCase: multiple active appointments detected',
+          {
+            'count': activeAppointments.length,
+            'appointmentIds': activeAppointments
+                .map((appointment) => appointment.id)
+                .toList(growable: false),
+            'orgIds': activeAppointments
+                .map((appointment) => appointment.orgId)
+                .toList(growable: false),
+          },
+        );
+      }
+
+      final active = activeAppointments.firstWhereOrNull((_) => true);
       final upcoming = appointments.firstWhereOrNull(
         (a) => a.status == AppointmentStatus.booked,
       );

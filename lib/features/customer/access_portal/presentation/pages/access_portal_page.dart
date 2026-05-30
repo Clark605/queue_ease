@@ -92,7 +92,7 @@ class _AccessPortalPageState extends State<AccessPortalPage> {
       listener: (context, state) {
         if (state is AccessPortalSuccess) {
           HapticFeedback.mediumImpact();
-          context.go('/c/org/${state.slug}');
+          context.push('/c/org/${state.slug}');
           _hasScanned = false;
         } else if (state is AccessPortalError) {
           AppSnackBar.showError(context, state.message);

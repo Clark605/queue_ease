@@ -46,7 +46,19 @@ final class BookingFormConflict extends BookingFormState {
   List<Object?> get props => [message];
 }
 
-/// Emitted on network or unknown errors; the form stays mounted for retry.
+/// Emitted on retryable failures (for example transient network/database
+/// failures). The form stays mounted and can show a Retry affordance.
+final class BookingFormRetryableError extends BookingFormState {
+  const BookingFormRetryableError(this.message);
+
+  final String message;
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// Emitted on non-retryable errors that should keep the form mounted but
+/// should not trigger automatic retry behavior.
 final class BookingFormError extends BookingFormState {
   const BookingFormError(this.message);
 

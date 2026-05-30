@@ -203,6 +203,8 @@ After reading the spec files, present the PR information in two parts:
 
 **Always use GitHub MCP tools when available:**
 
+0. Before opening any pull request, run the relevant CI checks locally first, including formatting, linter/analyzer, and tests. If any local check fails, fix the issue and rerun the checks until they pass.
+
 1. **Search for GitHub MCP tools**: Use `tool_search_tool_regex` with pattern `create_pull_request` to load the GitHub MCP tool
 2. **Create PR directly**: Use `mcp_github_github_create_pull_request` with:
    - `owner`: Repository owner (Clark605)

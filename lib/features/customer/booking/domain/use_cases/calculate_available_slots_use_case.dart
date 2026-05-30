@@ -76,7 +76,11 @@ class CalculateAvailableSlotsUseCase {
 
     // Step 4: remove taken slots (active appointments only)
     final takenTimes = existing
-        .where((a) => a.status != AppointmentStatus.noShow)
+        .where(
+          (a) =>
+              a.status != AppointmentStatus.noShow &&
+              a.status != AppointmentStatus.cancelled,
+        )
         .map((a) => a.scheduledAt)
         .toSet();
 

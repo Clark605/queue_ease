@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:queue_ease/core/utils/time_utils.dart';
 
+import '../../shared/issue_resolution_fixtures.dart';
+
 void main() {
   group('TimeUtils', () {
     group('nowUtc', () {
@@ -33,6 +35,14 @@ void main() {
         expect(result, equals(utcTime));
         expect(result.isUtc, isTrue);
       });
+    });
+
+    test('supports issue resolution UTC reference fixtures', () {
+      final reference = issueResolutionReferenceDate;
+      final result = TimeUtils.calculateDeadline(reference, 30);
+
+      expect(reference.isUtc, isTrue);
+      expect(result, equals(reference.add(const Duration(minutes: 30))));
     });
 
     group('calculateDeadline', () {

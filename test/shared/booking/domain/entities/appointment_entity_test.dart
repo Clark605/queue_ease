@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_entity.dart';
 import 'package:queue_ease/features/shared_domain/entities/appointment_status.dart';
 
+import '../../../issue_resolution_fixtures.dart';
+
 void main() {
   group('AppointmentEntity', () {
     final testDate = DateTime(2026, 2, 21, 10, 0);
@@ -82,6 +84,25 @@ void main() {
       );
 
       expect(appointment1, isNot(equals(appointment2)));
+    });
+
+    test('supports cancelled status fixtures', () {
+      final appointment = issueResolutionAppointment(
+        status: AppointmentStatus.cancelled,
+      );
+
+      expect(appointment.status, equals(AppointmentStatus.cancelled));
+      expect(appointment.customerName, equals('Test Customer'));
+    });
+
+    test('supports inQueue status fixtures', () {
+      final appointment = issueResolutionAppointment(
+        status: AppointmentStatus.inQueue,
+        queuePosition: 4,
+      );
+
+      expect(appointment.status, equals(AppointmentStatus.inQueue));
+      expect(appointment.queuePosition, equals(4));
     });
 
     test('nullable fields are included in equality', () {

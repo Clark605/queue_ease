@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/utils/time_utils.dart';
 
-class WaitTimerCountdown extends StatelessWidget {
+class WaitTimerCountdown extends StatefulWidget {
   const WaitTimerCountdown({
     super.key,
     required this.expectedServiceTime,
@@ -15,15 +18,49 @@ class WaitTimerCountdown extends StatelessWidget {
   /// The static fallback wait time in minutes if [expectedServiceTime] is null.
   final int? fallbackWaitMinutes;
 
+  @override
+  State<WaitTimerCountdown> createState() => _WaitTimerCountdownState();
+}
+
+class _WaitTimerCountdownState extends State<WaitTimerCountdown> {
   static const _shortWaitThresholdMinutes = 10;
   static const _mediumWaitThresholdMinutes = 30;
 
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Update every 15 seconds to keep the UI responsive; this is a tradeoff
+    // between accuracy and battery/network usage. Display is in minutes.
+    _timer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant WaitTimerCountdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If the expected time changed, trigger a rebuild immediately.
+    if (oldWidget.expectedServiceTime != widget.expectedServiceTime) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   int _remainingMinutes() {
-    if (expectedServiceTime != null) {
-      final mins = expectedServiceTime!.difference(DateTime.now()).inMinutes;
+    if (widget.expectedServiceTime != null) {
+      final mins = widget.expectedServiceTime!
+          .difference(TimeUtils.nowUtc())
+          .inMinutes;
       return mins > 0 ? mins : 0;
     }
-    return fallbackWaitMinutes ?? 0;
+    return widget.fallbackWaitMinutes ?? 0;
   }
 
   Color _urgencyColor(int remainingMinutes) {
@@ -38,7 +75,8 @@ class WaitTimerCountdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (expectedServiceTime == null && fallbackWaitMinutes == null) {
+    if (widget.expectedServiceTime == null &&
+        widget.fallbackWaitMinutes == null) {
       return const Text(
         '—',
         style: TextStyle(

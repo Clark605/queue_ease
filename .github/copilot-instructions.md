@@ -53,3 +53,18 @@ Flutter and Dart work MUST use the Dart MCP toolchain whenever a supported tool 
   - `file_search`
 - If no MCP tool covers the task, the smallest necessary fallback MAY be used,
   but the gap and fallback reason MUST be stated before proceeding.
+
+## GitHub MCP Tooling Discipline
+
+Any GitHub workflow MUST use the GitHub MCP server tools whenever a supported tool exists. This includes fetching, creating, updating, or publishing PRs and issues, managing review comments, checking pull request status, handling Copilot code review, and any other repository-hosted GitHub operation.
+- Use GitHub MCP tools for PR and issue lifecycle actions instead of shelling out to `gh` or the GitHub web UI when a supported tool exists.
+- Use GitHub MCP tools for Copilot review and review-comment workflows when supported.
+- If a GitHub task cannot be completed with a GitHub MCP tool, use the smallest necessary fallback and state the gap before proceeding.
+
+## Firebase MCP Tooling Discipline
+
+Any Firebase workflow MUST use Firebase MCP tools whenever a supported tool exists. This includes Firestore documents, security rules, databases, indexes, Crashlytics issues and notes, project/environment configuration, initialization, validation, and other Firebase service management.
+- Use Firebase MCP tools for Firestore reads, writes, deletes, indexes, security rules, and database updates.
+- Use Firebase MCP tools for Crashlytics issue management and related status updates.
+- Use Firebase MCP tools for Firebase project configuration, environment updates, and validation tasks.
+- If a Firebase task cannot be completed with a Firebase MCP tool, use the smallest necessary fallback and state the gap before proceeding.

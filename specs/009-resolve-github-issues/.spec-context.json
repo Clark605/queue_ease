@@ -1,0 +1,15 @@
+{
+  "workflow": "speckit",
+  "specName": "009-resolve-github-issues",
+  "branch": "009-resolve-github-issues",
+  "selectedAt": "2026-05-26T17:10:40.557Z",
+  "currentStep": "specify",
+  "status": "draft",
+  "stepHistory": {
+    "specify": {
+      "startedAt": "2026-05-26T17:09:57.113Z",
+      "completedAt": null
+    }
+  },
+  "transitions": []
+}

@@ -19,7 +19,10 @@ class ActiveQueueStatusCard extends StatelessWidget {
     super.key,
     required this.appointment,
     this.queueStatus,
+    this.onCancel,
   });
+
+  final VoidCallback? onCancel;
 
   final AppointmentEntity appointment;
   final CustomerQueueStatusView? queueStatus;
@@ -104,6 +107,14 @@ class ActiveQueueStatusCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
+        if ((appointment.status == AppointmentStatus.booked ||
+                appointment.status == AppointmentStatus.inQueue) &&
+            onCancel != null)
+          IconButton(
+            onPressed: onCancel,
+            icon: const Icon(Icons.cancel, color: Colors.white),
+            tooltip: 'Cancel booking',
+          ),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(

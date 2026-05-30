@@ -19,7 +19,10 @@ class ParseAccessUrlUseCase {
     final parsedSlug = _parseSlugFromUrl(trimmed);
     if (parsedSlug != null) return Success(parsedSlug);
 
-    if (_plainSlugPattern.hasMatch(trimmed)) return Success(trimmed);
+    final normalizedSlug = trimmed.toLowerCase();
+    if (_plainSlugPattern.hasMatch(normalizedSlug)) {
+      return Success(normalizedSlug);
+    }
 
     return const Failure(
       ValidationException('Could not find a valid booking URL or code.'),
@@ -47,7 +50,7 @@ class ParseAccessUrlUseCase {
   }
 
   String? _extractSlug(String rawSlug) {
-    final normalizedSlug = rawSlug.trim();
+    final normalizedSlug = rawSlug.trim().toLowerCase();
     if (_plainSlugPattern.hasMatch(normalizedSlug)) {
       return normalizedSlug;
     }

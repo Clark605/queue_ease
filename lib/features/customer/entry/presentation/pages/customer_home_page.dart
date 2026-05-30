@@ -137,6 +137,8 @@ class CustomerHomePage extends StatelessWidget {
             child: ActiveQueueStatusCard(
               appointment: dashboard.activeAppointment!,
               queueStatus: dashboard.queueStatus,
+              onCancel: () =>
+                  _handleCancel(context, dashboard.activeAppointment!),
             ),
           ),
         ),
@@ -175,7 +177,8 @@ class CustomerHomePage extends StatelessWidget {
     final cubit = context.read<CustomerDashboardCubit>();
 
     // Show confirmation dialog for cancellable appointments
-    if (appointment.status == AppointmentStatus.booked) {
+    if (appointment.status == AppointmentStatus.booked ||
+        appointment.status == AppointmentStatus.inQueue) {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
