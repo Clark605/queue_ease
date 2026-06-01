@@ -16,7 +16,7 @@ class AutomationContext {
   }
 
   void runFormatCheck() {
-    _runCommand('dart', ['format', '.']);
+    _runCommand('dart', ['format', '--set-exit-if-changed', '.']);
   }
 
   void runAnalyze() {
