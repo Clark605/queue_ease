@@ -288,3 +288,27 @@ flutter run --flavor dev -t lib/main_dev.dart
 # Production
 flutter run --flavor prod -t lib/main_prod.dart
 ```
+
+### Automation
+
+The repository now keeps the local git hooks and CI checks in Dart for easier reuse.
+
+```bash
+# One-time developer setup
+dart run tool/automation/setup_dev.dart
+
+# Run the same validation that CI uses
+dart run tool/automation/ci.dart
+
+# Regenerate DI output manually
+dart run tool/automation/run_build_runner.dart
+```
+
+What the hooks do:
+
+- `pre-commit` runs `dart format --set-exit-if-changed .` and `flutter analyze` before every commit.
+- `commit-msg` enforces Conventional Commits formatting for commit messages.
+- If staged changes touch DI annotations or `lib/core/di/`, the hook runs build_runner and re-stages the generated output.
+- `post-commit` deploys `firestore.rules` to the dev Firebase project automatically when a commit includes that file.
+
+To install the hooks locally, run `dart run tool/automation/setup_dev.dart` once after cloning.

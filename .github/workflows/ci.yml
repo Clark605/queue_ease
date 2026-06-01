@@ -32,20 +32,5 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Create placeholder env files
-        run: |
-          touch .env.dev
-          touch .env.prod
-        # Required for flutter analyze (env files are gitignored)
-
-      - name: Check code formatting
-        run: dart format --set-exit-if-changed .
-        # Fails if any file needs formatting
-
-      - name: Run static analysis
-        run: flutter analyze
-        # Checks for errors, warnings, and lints
-
-      - name: Run unit and widget tests
-        run: flutter test
-        # Executes all tests in test/ directory
+      - name: Run shared automation checks
+        run: dart run tool/automation/ci.dart
