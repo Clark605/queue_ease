@@ -85,7 +85,7 @@ Welcome to the Queue Ease documentation hub. This folder contains all technical 
 - Implementation status (✅ Complete, 🚧 In Progress, ⏳ Pending)
 - Testing coverage tracking
 - MVP completion criteria
-- Current progress summary (~75% complete; Sprint 6A active)
+- Current progress summary (~80% complete; Sprint 6A archived/paused)
 - Priority order for development
 - Phase breakdown with weekly estimates
 
@@ -153,7 +153,7 @@ Video demonstrations and GIFs showcasing implemented features.
 ### Project Status
 - **Progress**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for current sprint and progress
 - **Feature Status**: See [FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md) for implementation details
-- **Next Steps**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for Sprint 6A priorities
+- **Next Steps**: See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) — Sprint 7 (Notifications & Polish) is next; Sprint 009 (Resolve GitHub Issues) mostly complete
 
 ### Firebase Console
 - **Project**: queue-ease (Dev & Prod environments)
@@ -205,5 +205,5 @@ Video demonstrations and GIFs showcasing implemented features.
 ---
 
 **Document Maintained By**: Development Team  
-**Last Updated**: May 21, 2026  
+**Last Updated**: May 31, 2026  
 **Version**: 1.3.0+1

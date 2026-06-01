@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+dart run tool/automation/commit_msg.dart "$1"

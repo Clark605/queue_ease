@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+dart run tool/automation/post_commit.dart

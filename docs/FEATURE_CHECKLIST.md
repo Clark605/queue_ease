@@ -1,6 +1,6 @@
 # Queue Ease - Feature Implementation Checklist
 
-**Last Updated:** May 21, 2026
+**Last Updated:** May 31, 2026
 **Project:** Appointment & Queue Manager (Queue Ease)
 
 ---
@@ -11,671 +11,386 @@
 - ⏳ **Pending** - Not started yet
 - 📋 **Planned** - Post-MVP / Future enhancement
 - ❌ **Removed** - Excluded from implementation
+- 🔄 **Deferred** - Descoped from MVP, spec complete
 
 ---
 
 ## 🔧 Architectural Decisions
 
 ### Firebase Spark Plan Limitations
-**Decision**: Queue Ease will NOT use Cloud Functions due to Firebase Spark (free) plan limitations.
+**Decision**: Queue Ease will NOT use Cloud Functions (Spark plan).
 **Alternatives Implemented**:
-1. **Queue Generation**: Client-side auto-generation when admin opens queue management (vs. scheduled Cloud Function)
-2. **No-Show Detection**: Client-side logic triggered by admin viewing queue (vs. Cloud Function cron job)
-3. **Notifications**: FCM push notifications sent from Flutter client (admin app) when queue changes (vs. Cloud Function triggers)
-
-**Trade-offs**:
-- ✅ **Benefits**: Zero backend costs, simpler deployment, no vendor lock-in
-- ✅ **No Limitations**: Full push notification support using FCM (works even when app is terminated)
-
-**Future Upgrade Path**: If needed post-MVP, can migrate to Blaze plan and implement Cloud Functions for scheduled tasks and more complex backend logic.
+1. **Queue Generation**: Client-side auto-generation when admin opens queue management
+2. **No-Show Detection**: Client-side logic triggered by admin viewing queue
+3. **Notifications**: FCM push notifications from Flutter client (Sprint 7)
 
 ---
 
-## 1. Core Infrastructure & Setup
+## 1. Core Infrastructure & Setup ✅
 
-### 1.1 Project Foundation
-- ✅ Flutter project structure with clean architecture
-- ✅ Dependency injection setup (GetIt, injectable)
-- ✅ App routing with GoRouter
-- ✅ Flavor configuration (dev/prod environments)
+- ✅ Flutter project with clean architecture
+- ✅ Dependency injection (GetIt, injectable)
+- ✅ App routing with GoRouter + RBAC guards
+- ✅ Flavor configuration (dev/prod)
 - ✅ Theme system (AppColors, AppTextStyles, AppTheme)
-- ✅ Firebase project setup (firebase.json, firebase_options.dart)
-- ✅ Environment-specific configurations (FlavorConfig with logLevel support)
+- ✅ Firebase project setup
 - ✅ Error handling framework (Result type, AppException hierarchy)
-- ✅ Logger setup (AppLogger with Talker, dev/prod verbosity)
-### 1.2 Firebase Backend
-- ✅ Firebase project initialization
-- ✅ Firebase Authentication setup (FirebaseAuth, GoogleSignIn)
-- ✅ Firestore basic integration (FirestoreUserDatasource)
-- ✅ Firestore database structure (5 core entities with complete models)
-- ✅ Firestore security rules (78 tests passing, deployed to dev & prod, updated for break fields)
-- ❌ **Cloud Functions** - **REMOVED** (Spark plan limitation - using client-side alternatives)
-- ⏳ Firebase Cloud Messaging (FCM) integration (FREE on Spark plan)
-- ✅ Firebase Crashlytics integration (integrated with Talker logging)
+- ✅ Logger setup (AppLogger with Talker, Crashlytics)
+- ✅ Firestore security rules (78 tests passing, deployed dev & prod)
+- ❌ **Cloud Functions** — REMOVED (Spark plan limitation)
+- ⏳ Firebase Cloud Messaging (FCM) — Sprint 7
 
 ---
 
-## 2. Authentication & User Management
+## 2. Authentication & User Management ✅
 
 ### 2.1 Authentication Core
-- ✅ User entity and role definitions (UserEntity, UserRole enum)
-- ✅ Login page UI (complete with email/password, Google Sign-In, forgot password)
-- ✅ Email/password authentication implementation (FirebaseAuthDatasource)
-- ✅ Google Sign-In integration (GoogleSignIn SDK)
-- ✅ Sign-up flow (complete with role selection, org name for admin)
-- ✅ Password reset functionality (sendPasswordResetEmail with bottom sheet UI)
-- ✅ Auth state persistence (UserSessionService with SharedPreferences)
-- ✅ Role-based access control (RBAC) enforcement
-- ✅ Auth repository implementation (AuthRepositoryImpl with proper error handling)
-- ✅ Auth BLoC/state management (AuthCubit with 6 states)
+- ✅ Login / signup pages
+- ✅ Email/password authentication
+- ✅ Google Sign-In
+- ✅ Password reset (bottom sheet with success state)
+- ✅ Auth state persistence (UserSessionService + SharedPreferences)
+- ✅ Role-based access control (RBAC)
+- ✅ AuthCubit (6 states, fully tested)
 
-- ✅ Admin role definition
-- ✅ Customer role definition
-- ✅ Role assignment during signup (via AuthRoleSelector widget)
-- ✅ Role verification middleware (router redirect logic)
-- ✅ Role-based route protection (admin=/a/, customer=/c/)
+### 2.2 Roles
+- ✅ Admin role
+- ✅ Customer role
+- ✅ Role assignment during signup (AuthRoleSelector)
+- ✅ Role-based route protection (/a/, /c/)
 
-### 2.3 Authentication UI Components
-- ✅ AuthHeader widget (logo & welcome message)
-- ✅ AuthTextField widget (reusable text field with validation)
-- ✅ PasswordField widget (with show/hide toggle)
-- ✅ GoogleSignInButton widget (custom branded button)
-- ✅ AuthRoleSelector widget (admin/customer toggle)
-- ✅ AuthDivider widget ("Or" divider)
-- ✅ AuthFooterPanel widget (sign-up/login navigation)
-- ✅ ForgotPasswordBottomSheet widget (password reset with success state)
-
-### 2.4 Authentication Testing
-- ✅ AuthCubit unit tests (all auth operations covered)
-- ⏳ AuthRepository unit tests
-- ⏳ Firebase datasource integration tests
-- ⏳ UI widget tests for auth flows
+### 2.3 UI Components
+- ✅ AuthHeader, AuthTextField, PasswordField (show/hide toggle)
+- ✅ GoogleSignInButton, AuthRoleSelector, AuthDivider, AuthFooterPanel
+- ✅ ForgotPasswordBottomSheet
 
 ---
 
-## 3. Onboarding Flow
+## 3. Onboarding Flow ✅
 
-### 3.1 Onboarding Experience
-- ✅ Onboarding page structure (PageView with controller)
-- ✅ Three-screen onboarding flow
-- ✅ Custom illustrations (Skip the Wait, Real-Time Tracking, Fair Turns)
-- ✅ Onboarding content model (OnboardingContentModel)
-- ✅ Skip functionality (dismiss button + auto-complete)
-- ✅ Page indicators (active/inactive dots)
-- ✅ OnboardingService for completion tracking
-- ✅ Completion state persistence via SharedPreferences
-- ✅ Router integration with onboarding check (redirect logic)
-- ✅ Unit/integration tests for onboarding (onboarding_integration_test.dart)
+- ✅ 3-screen PageView (Skip the Wait, Real-Time Tracking, Fair Turns)
+- ✅ Skip button, Next/Get Started buttons
+- ✅ SmoothPageIndicator
+- ✅ Completion persisted via SharedPreferences
+- ✅ Router integration (checks on app launch)
+- ✅ Custom illustrations (SVG-style Flutter widgets)
+- ✅ Integration tests
 
 ---
 
 ## 4. Admin Features
 
-### 4.1 Admin Dashboard
-- ✅ Admin dashboard page structure (AdminDashboardPage)
-- ✅ Basic dashboard UI (GridView with placeholder cards)
-- ✅ Sign out functionality
-- ✅ Navigation to admin features (Services, Organization Profile)
-- ✅ First-time setup tutorial for new admins
-- ⏳ Real-time queue overview
-- ⏳ Quick actions panel
-- ⏳ Daily statistics display
+### 4.1 Admin Dashboard ✅
+- ✅ Greeting header with date/time salutation
+- ✅ Management grid (Services, Working Hours, Queue, Summary)
+- ✅ Share Access quick-action card
+- ✅ Open/closed status toggle for organization
+- ✅ First-time setup tutorial overlay (TutorialCubit, 3 steps)
 
-### 4.2 Organization Setup (MVP - Sprint 2) - ✅ COMPLETE
-- ✅ Organization entity/model definition (complete with Firestore serialization)
-- ✅ Organization repository implementation (OrganizationRepository)
-- ✅ Modify signup flow to create Organization document
-- ✅ Update user schema to include organizationId field
-- ✅ Organization profile view screen (admin UI)
-- ✅ Organization profile edit screen (admin UI)
-- ✅ Organization state management (OrganizationCubit)
-- ✅ Real-time organization profile streaming
-- ✅ Organization repository unit tests
-- ✅ Error recovery for incomplete organization setup
+### 4.2 Organization Setup ✅
+- ✅ Organization entity/model (Firestore serialization)
+- ✅ Org created atomically on admin signup (WriteBatch)
+- ✅ Organization profile view and edit screens
+- ✅ OrganizationCubit with real-time stream
+- ✅ bookingLinkSlug for customer deep-link generation
+- ✅ Error recovery for incomplete setup
 
-### 4.3 Service Management - ✅ COMPLETE
-- ✅ Service entity/model definition (complete with Firestore serialization)
-- ✅ Service repository implementation (ServiceRepository)
-- ✅ Service list page with real-time updates
-- ✅ Add new service form with validation
-- ✅ Edit service functionality
-- ✅ Delete service with confirmation
-- ✅ Service duration configuration UI
-- ✅ Time margin/grace period setup per service UI
-- ✅ Service active/inactive toggle
-- ✅ Service state management (ServiceCubit)
-- ✅ Firestore CRUD operations with real-time streaming
-- ✅ Service repository unit tests
+### 4.3 Service Management ✅
+- ✅ ServiceEntity/Model with full Firestore serialization
+- ✅ Real-time service list (stream)
+- ✅ Add / edit / delete with confirmation dialog
+- ✅ Duration and time margin configuration (NumericStepperRow)
+- ✅ Active/inactive toggle
+- ✅ ServiceCubit + ServiceFormCubit
 
-### 4.4 Working Hours Setup - ✅ COMPLETE (Sprint 3)
-- ✅ Working hours entity/model definition (complete with Firestore serialization)
-- ✅ Working hours repository implementation (WorkingHoursRepository)
-- ✅ Working hours configuration page (WorkingHoursPage)
-- ✅ Daily schedule setup UI (DayWorkingHoursTile with time pickers)
-- ✅ Break time configuration UI (BreakTimeSection with enable toggle)
-- ✅ Working hours state management (WorkingHoursCubit)
-- ✅ Real-time working hours streaming from Firestore
-- ✅ Batch save operation for all 7 days
-- ✅ Schedule validation logic (open/close times, break within working hours)
-- ✅ Default initialization (Mon-Fri 09:00-17:00, Sat-Sun closed)
-- ✅ Firestore security rules updated for breakStart/breakEnd fields
-- ⏳ Special hours/holidays (future enhancement)
+### 4.4 Working Hours ✅
+- ✅ WorkingHoursEntity/Model
+- ✅ 7-day schedule configuration (DayWorkingHoursTile)
+- ✅ Break time configuration (BreakTimeSection)
+- ✅ Break-end before break-start inline validation — `#27` fixed
+- ✅ Batch save (Firestore WriteBatch)
+- ✅ Schedule validation (open < close, break within hours)
+- ✅ "Apply Monday to weekdays" shortcut
+- ✅ WorkingHoursCubit with dirty-state tracking
 
-### 4.5 Queue Management (Live Queue)
-- ✅ Queue entity/model definition (complete with Firestore serialization)
-- ✅ Queue repository implementation
-- ✅ Today's queue view page
-- ✅ Current serving customer display
-- ✅ Queue list with status indicators
-- ✅ "Mark Next" action
-- ✅ "Mark No-Show" action
-- ✅ "Skip" and "Rejoin" queue actions
-- ✅ Real-time queue updates
-- ✅ Queue state management (QueueManagementCubit)
-- ✅ Queue generation trigger and status feedback in queue management flow
+### 4.5 Queue Management ✅
+- ✅ QueueEntity/Model
+- ✅ Daily queue auto-generation from `booked` appointments (idempotent)
+- ✅ Admin queue view — current + waiting list
+- ✅ Mark Next (advance + complete)
+- ✅ Skip (move to end)
+- ✅ Mark No-Show
+- ✅ Rejoin (noShow → inQueue)
+- ✅ Start Serving (explicit inQueue → serving)
+- ✅ Real-time updates (Firestore stream)
+- ✅ Countdown timer for current entry (booking-time based)
+- ✅ Pre-booking action lock (notDueYet state)
+- ✅ Auto no-show detection on overdue entries (client-side)
+- ✅ Exponential backoff on auto no-show failures, keyed per appointment — `#29` fixed
+- ✅ QueueManagementCubit with full action set
+- ✅ Date picker for historical queue view
+- ✅ Queue generation now skips ghost entries (completed/noShow) — `#21` fixed
 
-### 4.6 Share Access (QR & Link) - ✅ COMPLETE (Sprint 3)
-- ✅ QR code generation for organization (using qr_flutter 4.1.0)
-- ✅ Unique booking link generation (based on bookingLinkSlug)
-- ✅ QR code display page (ShareAccessPage)
-- ✅ Share functionality (native share using share_plus 12.0.1)
-- ✅ Download QR code option (using gal 2.3.0 for gallery access)
-- ✅ Copy link to clipboard functionality
-- ✅ Share access state management (ShareAccessCubit)
-- ✅ QR code display widget (QrCodeDisplay with QrImageView)
-- ✅ Share action buttons (ShareActionButtons)
-- ✅ QR code capture as PNG image (RepaintBoundary + toImage)
-- ✅ Platform permissions configured (Android WRITE_EXTERNAL_STORAGE, READ_MEDIA_IMAGES; iOS NSPhotoLibraryAddUsageDescription)
-- ✅ Error handling for permission denials
-- ✅ Success/error snackbar feedback
-- ⏳ Link customization (future enhancement)
+### 4.6 Share Access (QR & Link) ✅
+- ✅ QR code generation (qr_flutter)
+- ✅ Unique booking URL from bookingLinkSlug
+- ✅ Native share (share_plus)
+- ✅ Download QR to gallery (gal)
+- ✅ Copy link to clipboard
+- ✅ ShareAccessCubit
+- ✅ Platform permissions (Android + iOS)
 
-- ⏳ Staff member entity and model definition
-- ⏳ Staff member CRUD operations (create, read, update, delete)
-- ⏳ Staff management UI (list, add, edit, delete)
-- ⏳ Service-to-staff assignment (one service = one staff member)
-- ⏳ Staff member active/inactive toggle
-- ⏳ Staff deletion prevention when services assigned
-- ⏳ Queue UI enhancements (staff column display)
-- ⏳ Staff filtering in queue management
-- ⏳ Customer booking with transparent staff assignment
-- ⏳ Data migration script for existing services/appointments
-- ⏳ Firestore security rules for staff subcollection
-- ⏳ Staff assignment validation in service form
+### 4.7 Staff Management 🔄 DEFERRED to Post-MVP
+- 🔄 StaffMemberEntity and CRUD operations — spec complete, implementation deferred
+- 🔄 Service-staff assignment (one service → one staff)
+- 🔄 Appointment staff inheritance from service
+- 🔄 Queue UI staff column + filter dropdown
+- 🔄 Firestore rules for staff subcollection
+- **Spec**: `specs/007-staff-management/` (complete — tasks, quickstart, spec)
 
-### 4.8 Daily Summary
-- ⏳ Daily summary page
-- ⏳ Total appointments served count
-- ⏳ Average waiting time calculation
-- ⏳ No-show rate display
-- ⏳ Summary data repository
-- ⏳ Analytics calculation logic
+### 4.8 Daily Summary ⏳
+- ⏳ Daily summary page (shell exists, data not wired)
+- ⏳ Total appointments served, average wait, no-show rate
 
 ---
 
 ## 5. Customer Features
 
-### 5.1 Customer Entry Point
-- ✅ Customer home page structure (CustomerHomePage)
-- ✅ Dashboard UI with active queue card, upcoming appointment card, and explicit empty state
-- ✅ Sign out functionality
-- ✅ QR code scanning functionality (camera + gallery)
-- ✅ Link-based navigation implementation (manual URL entry + parse)
-- ✅ Access portal route `/c/access` integrated from dashboard CTA
+### 5.1 Customer Entry Point ✅
+- ✅ CustomerHomePage with drawer
+- ✅ Active queue status card (position, wait time)
+- ✅ Upcoming appointment card with cancel action
+- ✅ Empty state with info tiles + quick actions
+- ✅ CustomerDashboardCubit with live streams
 
-### 5.2 Organization Landing Screen - ✅ COMPLETE (Sprint 4)
-- ✅ Organization landing page (OrganizationLandingPage)
-- ✅ Organization name and description display
-- ✅ Address display
-- ⏳ Branch/location information (future enhancement)
-- ✅ "Book Appointment" CTA (enabled only when organization is open)
-- ✅ Organization lookup by booking link slug (getOrganizationBySlug)
-- ✅ Not-found screen for unrecognized slugs
-- ✅ OrganizationLandingCubit with state management
-- ✅ Deep link route `/c/org/:slug` with RBAC redirect
+### 5.2 Access Portal ✅
+- ✅ QR scanner (camera + gallery via mobile_scanner)
+- ✅ Manual URL/slug entry (UrlEntryBottomSheet)
+- ✅ ParseAccessUrlUseCase — now case-insensitive — `#19` fixed
+- ✅ AccessPortalCubit, route `/c/access`
 
-### 5.3 Service Selection & Details - ✅ COMPLETE (Sprint 4)
-- ✅ Service selection page (ServiceSelectionPage with real-time stream)
-- ✅ Service card widget (ServiceCard with name, duration, price, description)
-- ✅ Service details page (ServiceDetailsPage with stats grid)
-- ✅ Service description display
-- ✅ Duration information
-- ✅ Price display (omitted when null)
-- ✅ Queue type display (omitted when null)
-- ✅ Empty state widget when no active services exist
-- ✅ "Continue to Booking" navigation to slot picker
-- ✅ ServiceSelectionCubit with state management
+### 5.3 Organization Landing ✅
+- ✅ OrganizationLandingPage (slug lookup, open/closed badge, CTA)
+- ✅ Open/closed derived from server-normalized time — `#22` fixed
+- ✅ Not-found screen
+- ✅ OrganizationLandingCubit with working-hours stream
 
-### 5.4 Booking & Appointment Flow - ✅ COMPLETE (Sprint 4)
-- ✅ Appointment entity/model definition (complete with Firestore serialization)
-- ✅ Appointment repository implementation (AppointmentRepositoryImpl)
-- ✅ FirestoreAppointmentDatasource (transactional create + date/service query)
-- ✅ Time slot selection page (SlotPickerPage)
-- ✅ Available slots calculation (CalculateAvailableSlotsUseCase)
-- ✅ Conflict prevention logic (excludes confirmed appointments, break times, past times)
-- ✅ Date selector widget (DateSelector — 7-day row, closed days disabled)
-- ✅ Time slot grid widget (TimeSlotGrid — tap-to-select chips)
-- ✅ Customer information form (name required, phone optional) (BookingFormPage)
-- ✅ Booking summary card (BookingSummaryCard — org, service, date/time, duration)
-- ✅ Booking state management (BookingFormCubit with retry support)
+### 5.4 Service Selection & Details ✅
+- ✅ ServiceSelectionPage (real-time active services)
+- ✅ ServiceCard (name, duration, price, description)
+- ✅ ServiceDetailsPage (stats grid)
+- ✅ ServiceSelectionCubit
+
+### 5.5 Booking Flow ✅
+- ✅ CalculateAvailableSlotsUseCase (break exclusion, past filtering, conflict check)
+- ✅ Cancelled appointments excluded from taken slots — `#18` fixed
+- ✅ SlotPickerCubit refreshes when working-hours stream emits — `#20` fixed
+- ✅ DateSelector (7-day row, closed days disabled)
+- ✅ TimeSlotGrid (morning / afternoon / evening sections)
+- ✅ BookingFormPage (name, phone, summary card)
 - ✅ Transactional write with slot conflict detection
-- ✅ Inline error banner with "Retry" on network error
-- ✅ Slot conflict snackbar + pop back to slot picker
+- ✅ Inline retry on network error; conflict → pop back to slot picker
+- ✅ Retryable vs conflict error states separated — `#23` fixed
+- ✅ CreateBookingUseCase — 30-day horizon enforced — `#28` fixed
 
-### 5.5 Queue Joining
-- ⏳ Join queue functionality
-- ⏳ Walk-in queue support
-- ⏳ Queue number assignment
-- ⏳ Queue position tracking
+### 5.6 Booking Confirmation ✅
+- ✅ BookingConfirmationPage (org/service/time/address)
+- ✅ "Track Status" CTA → queue status page
+- ✅ "Back to Home" clears booking stack
 
-### 5.6 Booking Confirmation - ✅ COMPLETE (Sprint 4)
-- ✅ Confirmation screen (BookingConfirmationPage)
-- ✅ Organization name and service name display
-- ✅ Scheduled date/time display
-- ✅ Optional address display
-- ✅ "Back to Home" clears booking stack and navigates to customer home
-- ✅ "Track Status" CTA (navigates to customer queue status)
+### 5.7 Queue Status Tracking ✅
+- ✅ CustomerQueueStatusPage (live position, wait, serving indicator)
+- ✅ WaitTimerCountdown widget — periodic ticking restored — `#30` fixed
+- ✅ YourTurnQueueCard, WaitingQueueCard, NoShowQueueCard, ServiceCompletedQueueCard
+- ✅ WaitTimeChip with urgency color coding
+- ✅ CustomerQueueStatusCubit with refresh support
+- ✅ Pull-to-refresh
 
-### 5.7 Queue Status Tracking
-- ✅ Queue status page
-- ✅ Current queue number display
-- ✅ Position in queue
-- ✅ Estimated waiting time
-- ✅ Current serving indicator
-- ✅ Status badges and privacy-safe status messaging
-- ✅ Auto-refresh/real-time updates
-- ✅ Queue status repository stream integration
+### 5.8 Appointment Management ✅
+- ✅ CustomerAppointmentsPage (full appointment list)
+- ✅ WatchCustomerAppointmentsUseCase (30-day window)
+- ✅ Cancel booking action (booked AND inQueue status) — `#31` fixed
+- ✅ Orphaned inQueue appointments from prior day visible on dashboard — `#26` fixed
+- ✅ Multiple active appointments from different orgs logged, not silently dropped — `#24` fixed
+- ✅ CancelAppointmentUseCase
+- ✅ CustomerAppointmentsCubit
+
+### 5.9 Customer Dashboard ✅
+- ✅ WatchCustomerDashboardUseCase (active + upcoming stream)
+- ✅ CustomerDashboardCubit
+- ✅ Active queue card with queue status inline
+- ✅ Upcoming appointment card
 
 ---
 
-## 6. Core Business Logic
+## 6. Core Business Logic ✅
 
 ### 6.1 Appointment System
-- ✅ Appointment booking validation
-- ✅ Double booking prevention
-- ✅ Working hours enforcement
-- ✅ Appointment conflict detection
-- ✅ Appointment status management (booked, in_queue, serving, completed, no_show)
+- ✅ Booking validation (name required, no past slots)
+- ✅ Double booking prevention (transactional)
+- ✅ Working hours enforcement (slot generation algorithm)
+- ✅ Conflict detection (slot conflict → snackbar + pop)
+- ✅ Appointment status lifecycle (booked → inQueue → serving → completed / noShow / cancelled)
 
 ### 6.2 Queue System
-- ✅ Daily queue auto-generation from appointments (client-side on admin queue flow)
-- ✅ Queue ordering algorithm
-- ✅ Queue position calculation
-- ✅ Estimated wait time calculation
-- ✅ Time margin enforcement (client-side with Firestore rules validation)
-- ✅ Automatic no-show detection (client-side triggered by admin viewing queue)
-- ✅ Queue advancement logic
+- ✅ Daily queue generation from `booked` appointments
+- ✅ Queue ordering (scheduledAt ASC)
+- ✅ Queue position calculation (1-based index)
+- ✅ Estimated wait time (duration sum + updatedAt reference)
+- ✅ Time margin / grace period per service
+- ✅ Automatic no-show detection (client-side)
+- ✅ Queue advancement skips completed/noShow entries — `#21` fixed
+- ✅ Zero-duration service fallback (5 min minimum) — `#25` fixed
 
-### 6.3 Time Management
-- ⏳ Service duration tracking
-- ✅ Time margin/grace period logic
-- ⏳ Countdown timer for customer turns
-- ✅ Automatic status updates on timeout
-
----
-
-## 7. Real-Time Features
-
-### 7.1 Real-Time Updates
-- ✅ Firestore real-time listeners setup
-- ✅ Queue updates propagation
-- ✅ Customer view auto-refresh
-- ✅ Admin view auto-refresh
-- ✅ Connection state handling (error mapping + retry UX in cubits)
+### 6.3 Firestore Rules ✅
+- ✅ `cancelled` status whitelisted for admin and customer updates — `#32` fixed
+- ✅ Service duration validation in rules — `#25` fixed
+- ✅ Appointment booking horizon enforced — `#28` fixed
+- ✅ 78+ tests passing
 
 ---
 
-## 8. Notifications
+## 7. Real-Time Features ✅
 
-### 8.1 Push Notifications (FCM - Client-Triggered)
-- ⏳ Firebase Cloud Messaging (FCM) setup
+- ✅ Firestore real-time listeners (queue, appointments, org, services, working hours)
+- ✅ Queue updates propagate instantly
+- ✅ Customer view auto-updates
+- ✅ Admin view auto-updates
+- ✅ Error mapping + retry UX in all cubits
+
+---
+
+## 8. Notifications ⏳ Sprint 7
+
+- ⏳ FCM setup in Firebase Console
+- ⏳ FCM configuration in Flutter (firebase_messaging package)
 - ⏳ FCM token management and storage in Firestore
-- ⏳ Admin app sends FCM when updating queue status (next, skip, no-show)
-- ⏳ "Turn approaching" notification (sent when 2-3 customers before)
-- ⏳ "It's your turn" notification (sent when current serving index matches)
-- ⏳ "Appointment delayed" notification (sent by admin if delays occur)
-- ⏳ "Missed turn" notification (sent when marked no-show)
-- ⏳ Notification permission handling
-- ⏳ FCM message handling (foreground, background, terminated states)
-- **Implementation**: Admin Flutter app uses `firebase_messaging` package to send notifications via FCM REST API or Admin SDK
-
-### 8.2 In-App Notifications
+- ⏳ Admin-triggered notifications: turn approaching, your turn, missed turn, delayed
 - ⏳ In-app notification UI
-- ⏳ Notification history (stored in Firestore)
-- ⏳ Notification preferences
+- ⏳ Push in foreground, background, and terminated states
 
 ---
 
-## 9. Data Models & Entities
+## 9. Data Models ✅
 
-### 9.1 Core Entities
-- ✅ UserEntity (uid, email, role, displayName, phone, orgId, createdAt)
-- ✅ UserRole enum (admin, customer)
-- ✅ OrganizationEntity (id, name, adminUid, bookingLinkSlug, isOpen, qrCodeUrl, address, logoUrl, description, createdAt)
-- 🚧 ServiceEntity (id, orgId, name, durationMinutes, timeMarginMinutes, isActive, price, queueType, description, **staffId**, **staffName**, createdAt) [Sprint 6A: Breaking change - added staff fields]
-- ✅ WorkingHoursEntity (orgId, dayOfWeek, isOpen, openTime, closeTime, breakStart, breakEnd)
-- 🚧 AppointmentEntity (id, orgId, serviceId, customerId, customerName, customerPhone, scheduledAt, status, queuePosition, **staffId**, **staffName**, createdAt) [Sprint 6A: Breaking change - added staff fields]
-- ✅ AppointmentStatus enum (booked, inQueue, serving, completed, noShow)
-- ✅ QueueEntity (id, orgId, date, orderedAppointmentIds, currentServingIndex, status, generatedAt)
-- ✅ QueueStatus enum (active, paused, closed)
-- 🚧 StaffMemberEntity (id, orgId, name, role, phone, email, isActive, createdAt) [Sprint 6A: NEW entity]
-
-### 9.2 Firestore Data Models
-- ✅ Users collection (basic schema implemented in FirestoreUserDatasource)
-- ✅ OrganizationModel with Firestore serialization (fromFirestore, toFirestore)
-- 🚧 ServiceModel with Firestore serialization [Sprint 6A: Updated with staffId/staffName]
-- ✅ WorkingHoursModel with Firestore serialization
-- 🚧 AppointmentModel with Firestore serialization [Sprint 6A: Updated with staffId/staffName]
-- ✅ QueueModel with Firestore serialization
-- 🚧 StaffMemberModel with Firestore serialization [Sprint 6A: NEW model]
-- ⏳ Notifications collection schema
-
-### 9.3 Entity & Model Tests
-- ✅ OrganizationEntity unit tests (equality, props)
-- ✅ ServiceEntity unit tests
-- ✅ WorkingHoursEntity unit tests
-- ✅ AppointmentEntity unit tests
-- ✅ QueueEntity unit tests
-- ✅ OrganizationModel unit tests (Firestore serialization round-trip)
-- ✅ ServiceModel unit tests
-- ✅ WorkingHoursModel unit tests
-- ✅ AppointmentModel unit tests
-- ✅ QueueModel unit tests
+- ✅ UserEntity / UserModel
+- ✅ OrganizationEntity / OrganizationModel
+- ✅ ServiceEntity / ServiceModel
+- ✅ WorkingHoursEntity / WorkingHoursModel
+- ✅ AppointmentEntity / AppointmentModel
+- ✅ QueueEntity / QueueModel
+- ✅ All 5 entity + 5 model unit tests (round-trip Firestore serialization)
 
 ---
 
 ## 10. Testing
 
-### 10.1 Unit Tests
-- ✅ Onboarding integration test (onboarding_integration_test.dart)
-- ✅ AuthCubit tests (auth_cubit_test.dart - comprehensive coverage)
-- ✅ Result type tests (result_test.dart)
-- ✅ AppException tests (app_exception_test.dart)
-- ✅ OrganizationEntity tests (organization_entity_test.dart)
-- ✅ ServiceEntity tests (service_entity_test.dart)
-- ✅ WorkingHoursEntity tests (working_hours_entity_test.dart)
-- ✅ AppointmentEntity tests (appointment_entity_test.dart)
-- ✅ QueueEntity tests (queue_entity_test.dart)
-- ✅ OrganizationModel tests (organization_model_test.dart)
-- ✅ ServiceModel tests (service_model_test.dart)
-- ✅ WorkingHoursModel tests (working_hours_model_test.dart)
-- ✅ AppointmentModel tests (appointment_model_test.dart)
-- ✅ QueueModel tests (queue_model_test.dart)
+### 10.1 Completed
+- ✅ AuthCubit unit tests
+- ✅ Result type, AppException hierarchy
+- ✅ All 5 entities (equality, props)
+- ✅ All 5 Firestore models (fromDoc, toMap round-trips)
+- ✅ Onboarding integration test
+- ✅ P1 regression: whereIn chunking, cancelled slots, slug case — `#17 #18 #19`
+- ✅ P2 regression: working-hours refresh, transactionNext, server time, countdown, cancellation, rules — `#20–22 #30–32`
+- ✅ P3 regression implementations verified
+
+### 10.2 Pending (Sprint 8)
+- ⏳ P3 regression test coverage — `#23–29` (tests, not implementations)
 - ⏳ Auth repository tests
-- ⏳ Service repository tests
-- ⏳ Booking repository tests
-- ⏳ Queue repository tests
-- ⏳ Business logic tests (conflict detection, time margin, etc.)
-
-### 10.2 Widget Tests
-- ⏳ Onboarding widget tests
-- ⏳ Login page tests
-- ⏳ Service management screen tests
-- ⏳ Queue management screen tests
-- ⏳ Customer booking flow tests
-- ⏳ Queue status screen tests
-
-### 10.3 Integration Tests
-- ⏳ End-to-end booking flow test
-- ⏳ End-to-end queue management test
-- ⏳ Authentication flow test
-- ⏳ Real-time updates test
+- ⏳ Service / booking / queue repository tests
+- ⏳ Widget tests for complex stateful components
+- ⏳ Integration tests for end-to-end flows
 
 ---
 
-## 11. UI/UX Polish
+## 11. UI/UX Polish ⏳ Sprint 7
 
-### 11.1 Design System
-- ✅ Color palette (AppColors)
-- ✅ Typography (AppTextStyles)
-- ✅ Theme configuration (AppTheme)
-- ⏳ Custom widgets library
-- ⏳ Loading states
-- ⏳ Error states
-- ⏳ Empty states
-- ⏳ Animations and transitions
-
-### 11.2 Accessibility
-- ⏳ Screen reader support
-- ⏳ Sufficient color contrast
-- ⏳ Font scaling support
-- ⏳ Focus management
-
-### 11.3 Responsive Design
-- ⏳ Mobile layout optimization
-- ⏳ Tablet layout support
-- ⏳ Orientation handling
+- ✅ Color palette, typography, theme
+- ✅ Loading / error / empty states (all major screens)
+- ✅ Animations (onboarding, form transitions, queue cards)
+- ⏳ Accessibility audit (screen reader, contrast, tap targets)
+- ⏳ Final responsive design pass
 
 ---
 
-## 12. DevOps & Deployment
+## 12. DevOps & Deployment ⏳ Sprint 8
 
-### 12.1 Build & Release
 - ✅ Android build configuration
+- ✅ Firebase Crashlytics
 - ⏳ iOS build configuration
-- ⏳ Code signing setup
+- ⏳ Code signing
 - ⏳ Version management
-- ⏳ Fastlane integration (Android configured)
-- ⏳ CI/CD pipeline setup
-
-### 12.2 Monitoring & Analytics
-- ✅ Firebase Crashlytics implementation
-- ⏳ Firebase Analytics events
-- ⏳ Performance monitoring
-- ⏳ User behavior tracking
+- ⏳ CI/CD pipeline
 
 ---
 
-## 13. Documentation
+## 13. Documentation ✅
 
-- ✅ Product Requirements Document (PRD.md)
-- ✅ Feature checklist (this document - FEATURE_CHECKLIST.md)
-- ✅ Project timeline with Gantt charts (PROJECT_TIMELINE.md)
-- ✅ Entity models specification (entities.md)
-- ✅ Architecture documentation (ARCHITECTURE.md - comprehensive)
+- ✅ PRD.md
+- ✅ ENTITIES.md
+- ✅ ARCHITECTURE.md
+- ✅ FEATURE_CHECKLIST.md (this document)
+- ✅ PROJECT_TIMELINE.md
+- ✅ ADR/001-role-based-repositories.md
+- ✅ README.md
 - ⏳ API documentation
-- ⏳ User guide
-- ⏳ Admin guide
-- ⏳ Developer onboarding guide
-- ✅ Code comments and inline documentation (established standards)
+- ⏳ User guide / Admin guide
 
 ---
 
-## 14. Post-MVP Features (Future Enhancements)
+## 14. Post-MVP Features
 
-### 14.1 Advanced Features
-- 📋 Online payment integration
+- 📋 Staff management (spec complete in `specs/007-staff-management/`) — single queue + staff filter
+- 📋 Separate queues per staff member (v1.1)
+- 📋 Staff-specific working hours (v1.1)
+- 📋 Customer staff preferences (v1.1)
+- 📋 Online payments
 - 📋 Multi-branch support
-- 📋 Video call integration
 - 📋 Advanced analytics dashboards
-- 📋 Queue history & reports
-- 📋 Customer feedback system
-- 🚧 Staff management (MVP implementation in Sprint 6A - hybrid single-queue model)
-- 📋 Separate queues per staff member (post-MVP - v1.1)
-- 📋 Staff-specific working hours (post-MVP - v1.1)
-- 📋 Customer staff preferences (post-MVP - v1.1)
-- 📋 Staff performance analytics (post-MVP - v1.1)
-- 📋 Multiple admin users per organization
-- 📋 Custom branding per organization
-
-### 14.2 Extended Settings
-- 📋 Advanced organization settings (multi-branch, custom branding)
-- 📋 Advanced notification preferences
-- 📋 Custom queue behavior rules
-- 📋 Holiday calendar management
-- 📋 Service categories
 - 📋 Customer loyalty programs
 
 ---
 
 ## MVP Completion Criteria
 
-### Definition of Done
-- [x] Admin signup creates organization automatically
-- [x] Admin can view and edit their organization profile
-- [x] Admin can manage services and working hours
-- [x] Admin can generate and share booking QR code/link
-- [x] Customers can access booking via QR/link
-- [x] Customers can book appointments with conflict prevention
-- [x] Daily queue auto-generates from appointments (client-side when admin opens app)
-- [x] Admin can manage queue in real-time (next, skip, no-show, rejoin)
-- [x] Customers can see their queue position and wait time
-- [x] Real-time updates work across all users
-- [x] Time margin policy enforced (client-side with auto no-show detection)
-- [ ] FCM push notifications sent for turn approaching/missed (works even when app terminated)
-- [ ] Basic daily summary available
-- [ ] App is stable with no critical bugs
-- [ ] Core features tested (unit + integration)
-- [ ] App deployed to Firebase Hosting / App Stores (internal testing)
-
-### Current Progress Summary
-**Completed:** ~75% (Core infrastructure, booking flow, queue system, customer dashboard, access portal, business automation, customer appointment watching)
-**In Progress:** Sprint 6A - Staff Member Management (hybrid approach)
-**Pending:** ~20-25% (Notifications, testing, deployment)
-
-**Key Achievements:**
-- ✅ Complete authentication system (email/password, Google Sign-In, password reset)
-- ✅ Full RBAC with role-based routing
-- ✅ Comprehensive error handling and logging framework
-- ✅ Complete onboarding flow with custom illustrations
-- ✅ Clean architecture with DI and state management
-- ✅ ALL 5 core domain entities defined (Organization, Service, WorkingHours, Appointment, Queue)
-- ✅ ALL 5 Firestore models with serialization (fromFirestore/toFirestore)
-- ✅ Comprehensive test coverage (15+ test files covering entities, models, auth, error handling)
-- ✅ Complete architectural documentation
-- ✅ Organization setup and service management (Sprint 2)
-- ✅ Working hours configuration and QR/share access (Sprint 3)
-- ✅ **Customer booking flow — end-to-end (Sprint 4)**: org landing → service selection → slot picker → booking form → confirmation
-- ✅ **Queue system — end-to-end (Sprint 5)**: generation → admin queue actions → customer live status → wait estimates
-- ✅ **Customer dashboard (Sprint 5/US5)**: active queue card, upcoming appointment card, empty state CTA
-- ✅ **Customer access portal (Sprint 5/US6)**: camera QR, gallery QR, manual URL parsing to org landing
-- ✅ **Customer appointment watching (May 2026)**: appointments list page, watch use case, cancellation flow integration
-- ✅ **Customer dashboard refinements (May 2026)**: refreshed UI components and supporting polish
-
-**Critical Path Next Steps:**
-1. ~~Define all Firestore entity models~~ ✅ COMPLETE
-2. ~~Implement Firestore security rules~~ ✅ COMPLETE
-3. ~~Implement repositories (organization, service, working hours, appointment)~~ ✅ COMPLETE
-4. ~~Build Service Management CRUD (admin UI)~~ ✅ COMPLETE
-5. ~~Build Working Hours configuration (admin UI)~~ ✅ COMPLETE
-6. ~~Implement booking flow with conflict prevention~~ ✅ COMPLETE
-7. ~~Build queue generation and management system (Sprint 5)~~ ✅ COMPLETE
-8. ~~Build customer queue status view (Sprint 5)~~ ✅ COMPLETE
-9. ~~Implement time margin enforcement and automatic no-show workflows (Sprint 6/7)~~ ✅ COMPLETE
-10. 🚧 Implement staff member management with hybrid queue model (Sprint 6A — IN PROGRESS)
-11. Implement FCM push notifications (Sprint 7)
-12. Comprehensive testing and deployment (Sprint 8)
+- [x] Admin can manage a full day without manual tools
+- [x] Customers always know their queue position
+- [x] System handles delays and no-shows correctly
+- [x] Appointment conflict prevention works
+- [x] QR/link-based customer access works
+- [x] Time margin policy enforced client-side
+- [x] All P1/P2/P3 known bugs fixed
+- [ ] FCM push notifications functional (Sprint 7)
+- [ ] Daily summary data wired (Sprint 8)
+- [ ] Comprehensive test coverage (Sprint 8)
+- [ ] App deployed to internal testing (Sprint 8)
 
 ---
 
-## Priority Order for Development
+## Current Progress Summary
 
-### ✅ Phase 1: Foundation (COMPLETE)
-1. ✅ Complete authentication implementation
-2. ✅ Router and navigation setup
-3. ✅ Error handling and logging framework
-4. ✅ Onboarding flow
-5. ✅ Define all domain entities (Organization, Service, WorkingHours, Appointment, Queue)
-6. ✅ Create all Firestore models with serialization
-7. ✅ Write comprehensive entity & model tests
+**Completed:** ~82%
+**In Progress:** Sprint 7 preparation
+**Pending:** ~18% (Notifications, full test suite, deployment)
 
-### Phase 2: Repository Layer & Security (Weeks 1-2)
-1. Set up Firestore security rules
-2. Implement OrganizationRepository (CRUD operations)
-3. Implement ServiceRepository (CRUD operations)
-4. Implement WorkingHoursRepository (CRUD operations)
-5. Implement AppointmentRepository (CRUD operations)
-6. Implement QueueRepository (CRUD operations)
-7. Write repository unit tests
+### Sprint History
 
-### Phase 3: Admin Core (Weeks 2-3)
-4. Service management (CRUD)
-5. Working hours configuration
-6. QR code and link generation
+| Sprint | Status | Key Deliverables |
+|--------|--------|-----------------|
+| 1 | ✅ | Auth, onboarding, data models, Firestore rules |
+| 2 | ✅ | Org setup, service management |
+| 3 | ✅ | Working hours, QR/share access |
+| 4 | ✅ | Customer booking flow end-to-end |
+| 5 | ✅ | Queue system, customer dashboard, access portal |
+| 6/7 | ✅ | Business automation (countdown, auto no-show) |
+| 009 | ✅ | 16 GitHub issues resolved (P1+P2+P3) |
+| 6A | 🔄 | Staff management — deferred to post-MVP |
+| **7** | ⏳ | **FCM notifications + UI polish — NEXT** |
+| **8** | ⏳ | **Testing + deployment — UPCOMING** |
 
-### Phase 4: Customer Core (Weeks 3-4) - ✅ COMPLETE (Sprint 4)
-7. ✅ Organization landing screen
-8. ✅ Service selection and details
-9. ✅ Appointment booking flow (slot picker + booking form)
-10. ✅ Conflict prevention logic
+### Critical Path — Next Steps
 
-### Phase 5: Queue System (Weeks 4-5) - ✅ COMPLETE (Sprint 5)
-11. ✅ Client-side queue generation from appointments (triggered by admin flow)
-12. ✅ Admin queue management interface
-13. ✅ Customer queue status view
-14. ✅ Real-time updates implementation
-15. ⏳ Client-side no-show detection logic
-
-### Phase 5A: Staff Member Management (Weeks 5.5-6.5) - 🚧 IN PROGRESS (Sprint 6A)
-15a. Staff member entity and CRUD operations
-15b. Service-staff assignment (one-to-many)
-15c. Appointment staff inheritance
-15d. Queue UI staff filtering
-15e. Data migration for existing services/appointments
-
-### Phase 6: Business Logic (Week 7-8)
-16. Time margin enforcement (client-side)
-17. Automatic no-show detection (client-side)
-18. Wait time estimation
-
-### Phase 7: Notifications & Polish (Week 6-7)
-18. FCM integration (firebase_messaging package)
-19. Client-side FCM notification sending from admin app
-20. UI/UX polish and error handling
-
-### Phase 8: Testing & Deployment (Week 7-8)
-21. Comprehensive testing
-22. Bug fixes
-23. Documentation
-24. Deployment preparation
-
----
-
-## Notes
-
-- This checklist was last updated on **May 21, 2026** to reflect:
-  - **Customer appointment watching and dashboard refinements added**
-  - **Sprint 7 prep checkpoint merged**
-  - **Current progress estimate updated to ~75% complete**
-  - Existing Sprint 6A scope remains the active in-progress workstream
-- This checklist was last updated on **March 17, 2026** to reflect:
-  - **Sprint 6A (Staff Management) added** using hybrid approach (critical for MVP)
-  - Staff member entity and CRUD added to feature list
-  - ServiceEntity and AppointmentEntity marked with breaking changes (staffId fields)
-  - Updated timeline to account for 2-week staff management sprint
-  - Queue filtering (not separate queues per staff) included in Sprint 6A scope
-- This checklist was updated on **March 15, 2026** to reflect:
-  - **Sprint 4 Polish completed** (build_runner regeneration, Talker audit, auth-redirect verification, smoke test)
-  - **Sprint 5 complete (T001–T064)** including queue system, customer dashboard (US5), and access portal (US6)
-  - Admin queue actions (`next`, `skip`, `no-show`, `rejoin`) and idempotent queue generation are live
-  - Customer live queue status and wait-time estimation are integrated
-  - Customer dashboard now serves as primary entry page with active queue/upcoming/empty states
-  - Access portal route `/c/access` supports camera QR, gallery QR, and manual URL parsing
-- This checklist was updated on **February 26, 2026** to reflect:
-  - **Removed Cloud Functions** due to Firebase Spark plan limitations
-  - **Client-side architecture** for queue generation, no-show detection, and notifications
-  - All alternatives documented in "Architectural Decisions" section
-- Phase 1 (Foundation) is COMPLETE including:
-  - Full authentication system (email/password, Google Sign-In, password reset, RBAC, session persistence)
-  - All domain entities (5) and Firestore models (5) with complete test coverage
-  - Comprehensive architecture documentation
-- All auth UI components are implemented with proper error handling
-- Clean architecture patterns established with DI, state management, and error handling
-- Estimated remaining MVP timeline: ~4-6 weeks from current state
-- Domain layer is 100% complete - ready for repository implementation
-- Items marked with ✅ have confirmed implementation in the codebase
-- Items marked with 🚧 are currently being worked on
-- Items marked with ⏳ have folder structure but no implementation or are planned
-- Items marked with ❌ are removed from the plan
-- Regular updates to this checklist should be made as features progress
-
-**Development Velocity**: With data models and architecture fully established, feature development should accelerate significantly in the coming weeks.
-
----
-
-**For questions or updates, refer to:**
-- [PRD.md](PRD.md) - Product Requirements Document
-- [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) - Detailed timeline, work packages, and network diagrams
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Comprehensive architecture documentation
-- [entities.md](entities.md) - Entity models specification
-- [UI Screens](ui-screens/) - Design mockups
+1. **Sprint 7** — FCM integration (`firebase_messaging`), admin-triggered push notifications, UI/UX accessibility pass
+2. **Sprint 8** — P3 regression test suite, repository unit tests, widget tests, production deployment prep
+3. **Post-MVP** — Staff management (spec ready in `specs/007-staff-management/`), advanced analytics, multi-branch

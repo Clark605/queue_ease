@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+dart run tool/automation/pre_commit.dart

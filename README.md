@@ -5,8 +5,8 @@ Smart queue and appointment management for small clinics and service-based busin
 ![Version](https://img.shields.io/badge/version-1.3.0%2B1-blue)
 ![Flutter](https://img.shields.io/badge/Flutter-3.9.0%2B-02569B?logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-3.9.0%2B-0175C2?logo=dart&logoColor=white)
-![Status](https://img.shields.io/badge/status-sprint%206a%20in%20progress-orange)
-![Coverage](https://img.shields.io/badge/progress-70%25-orange)
+![Status](https://img.shields.io/badge/status-sprint%207%20upcoming-blue)
+![Coverage](https://img.shields.io/badge/progress-82%25-green)
 
 ---
 
@@ -24,12 +24,13 @@ Queue Ease helps businesses manage appointments and live queues while giving cus
 - 📊 Live queue management and real-time updates
 - ⏱️ Automatic no-show detection with time margins
 - 📱 QR code and unique link generation for easy access
-- 🔔 Push notifications for queue status
-- 📈 Daily summary and analytics
+- 🔔 Push notifications for queue status *(Sprint 7)*
+- 📈 Daily summary and analytics *(post-MVP)*
 
 For detailed product requirements, see [docs/domain/PRD.md](docs/domain/PRD.md).
 
 ---
+
 ## 🎓 Skills Learned
 
 - ✅ Building multi-role Flutter apps (admin + customer)
@@ -45,7 +46,6 @@ For detailed product requirements, see [docs/domain/PRD.md](docs/domain/PRD.md).
 
 ---
 
-
 ## 📁 Project Structure
 
 ```
@@ -58,148 +58,149 @@ lib/
 │   ├── utils/                      # Utilities (logger, validators)
 │   └── widgets/                    # Reusable UI components
 │
-├── shared/                         # Role-agnostic features
-│   ├── auth/                       # Authentication (✅ Complete)
-│   ├── onboarding/                 # First-time user flow (✅ Complete)
-│   ├── organization/               # Organization domain (✅ Repositories complete)
-│   ├── booking/                    # Appointment domain (🚧 Models complete)
-│   └── queue/                      # Queue domain (🚧 Models complete)
+├── features/
+│   ├── shared_domain/              # Entities & Firestore models (all 5 complete)
+│   ├── authentication/             # ✅ Complete
+│   ├── onboarding/                 # ✅ Complete
+│   ├── admin/
+│   │   ├── organization_management/ # ✅ Complete
+│   │   ├── service_management/      # ✅ Complete
+│   │   ├── working_hours_management/# ✅ Complete
+│   │   ├── queue_management/        # ✅ Complete
+│   │   ├── share_access/            # ✅ Complete
+│   │   ├── tutorial/                # ✅ Complete
+│   │   ├── dashboard/               # ✅ Complete
+│   │   └── daily_summary/           # ⏳ Pending
+│   └── customer/
+│       ├── booking/                 # ✅ Complete
+│       ├── entry/                   # ✅ Complete
+│       └── access_portal/           # ✅ Complete
 │
-├── admin/                          # Admin-specific features
-│   ├── dashboard/                  # Admin dashboard (✅ Basic UI)
-│   ├── services/                   # Service management (✅ Complete - Sprint 2)
-│   ├── working_hours/              # Hours configuration (✅ Complete - Sprint 3)
-│   ├── share_access/               # QR & link generation (✅ Complete - Sprint 3)
-│   ├── queue_management/           # Live queue control (⏳ Planned)
-│   └── daily_summary/              # Reports (⏳ Planned)
-│
-├── customer/                       # Customer-specific features
-│   ├── entry/                      # Customer home (✅ Basic UI)
-│   ├── booking_flow/               # Booking UI (⏳ Planned)
-│   └── queue_status/               # Queue tracking (⏳ Planned)
-│
-├── firebase_options.dart           # Firebase configuration
-├── main_dev.dart                   # Dev entrypoint
-└── main_prod.dart                  # Prod entrypoint
+├── firebase_options.dart
+├── main_dev.dart
+└── main_prod.dart
 
-test/                               # Mirror of lib/ structure
-├── core/error/                     # Error handling tests (✅)
-└── shared/
-    ├── auth/                       # Auth tests (✅)
-    ├── organization/               # Entity & model tests (✅)
-    ├── booking/                    # Entity & model tests (✅)
-    └── queue/                      # Entity & model tests (✅)
-
-docs/                               # Documentation
-├── ARCHITECTURE.md                 # Comprehensive architecture guide (✅)
-├── domain/PRD.md                   # Product requirements (✅)
-├── FEATURE_CHECKLIST.md            # Implementation tracking (✅)
-├── PROJECT_TIMELINE.md             # Timeline & Gantt charts (✅)
-├── domain/ENTITIES.md              # Domain model specs (✅)
-└── README.md                       # Documentation index (✅)
-
-.specify/                           # Project governance & specs
-├── memory/
-│   └── constitution.md             # Development principles & standards (✅)
-└── templates/                      # Spec templates
+docs/
+├── ARCHITECTURE.md
+├── domain/PRD.md
+├── domain/ENTITIES.md
+├── FEATURE_CHECKLIST.md
+├── PROJECT_TIMELINE.md
+└── ADR/001-role-based-repositories.md
 ```
 
 **Legend:** ✅ Complete | 🚧 In Progress | ⏳ Planned
 
 **📋 Key Documents:**
-- **[Constitution](.specify/memory/constitution.md)** - Core development principles and standards (Code Quality, Testing, UX, Performance)
-- **[Architecture](docs/ARCHITECTURE.md)** - Technical implementation details
-- **[PRD](docs/domain/PRD.md)** - Product requirements and MVP scope
-- **[Entities](docs/domain/ENTITIES.md)** - Domain model specifications
-
-For complete documentation, see [docs/](docs/) folder.
+- **[Constitution](.specify/memory/constitution.md)** — Core development principles and standards
+- **[Architecture](docs/ARCHITECTURE.md)** — Technical implementation details
+- **[PRD](docs/domain/PRD.md)** — Product requirements and MVP scope
+- **[Entities](docs/domain/ENTITIES.md)** — Domain model specifications
+- **[Feature Checklist](docs/FEATURE_CHECKLIST.md)** — Implementation progress tracker
 
 ---
 
 ## 🛠️ Technologies Used
 
 ### Core Framework
-- **Flutter** 3.9.0+ - Cross-platform UI framework
-- **Dart** 3.9.0+ - Programming language
+- **Flutter** 3.9.0+ — Cross-platform UI framework
+- **Dart** 3.9.0+ — Programming language
 
 ### State Management & Architecture
-- **flutter_bloc** 9.1.1 - State management (Cubit pattern)
-- **Equatable** 2.0.7 - Value equality for domain entities
+- **flutter_bloc** 9.1.1 — State management (Cubit pattern)
+- **Equatable** 2.0.7 — Value equality for domain entities
 
 ### Backend & Services
-- **Firebase Core** 4.4.0 - Firebase integration
-- **Firebase Auth** 6.1.4 - Authentication
-- **Cloud Firestore** 6.1.2 - NoSQL database
-- **Firebase Crashlytics** 5.0.7 - Crash reporting
-- **Google Sign-In** 7.2.0 - OAuth authentication
+- **Firebase Core** 4.4.0
+- **Firebase Auth** 6.1.4
+- **Cloud Firestore** 6.1.2
+- **Firebase Crashlytics** 5.0.7
+- **Google Sign-In** 7.2.0
 
 ### Navigation & Routing
-- **GoRouter** 17.1.0 - Declarative routing with guards
+- **GoRouter** 17.1.0
 
 ### Dependency Injection
-- **GetIt** 9.2.0 - Service locator
-- **Injectable** 2.5.0 - Code generation for DI
+- **GetIt** 9.2.0 · **Injectable** 2.5.0
 
 ### Utilities
-- **Intl** 0.20.2 - Internationalization and date formatting
-- **UUID** 4.5.1 - Unique ID generation
-- **flutter_dotenv** 5.1.0 - Environment variables
+- **Intl** 0.20.2 · **UUID** 4.5.1 · **flutter_dotenv** 5.1.0
 
 ### Local Storage
-- **SharedPreferences** 2.3.3 - Key-value persistence
+- **SharedPreferences** 2.3.3
 
 ### UI Components
-- **smooth_page_indicator** 2.0.1 - Page indicators
-- **qr_flutter** 4.1.0 - QR code generation
-- **share_plus** 12.0.1 - Native platform sharing
-- **gal** 2.3.0 - Gallery/photo library access
+- **smooth_page_indicator** 2.0.1
+- **qr_flutter** 4.1.0
+- **share_plus** 12.0.1
+- **gal** 2.3.0
+- **mobile_scanner** (QR access portal)
 
 ### Logging & Debugging
-- **Talker** 4.9.3 - Advanced logging
-- **Talker Flutter** 4.9.3 - Flutter-specific logger
-- **Talker BLoC Logger** 4.9.3 - BLoC event/state logging
-- **Device Preview** 1.3.1 - Multi-device testing (dev only)
+- **Talker** 4.9.3 · **Talker Flutter** 4.9.3 · **Talker BLoC Logger** 4.9.3
+- **Device Preview** 1.3.1 (dev only)
 
 ### Testing
-- **flutter_test** - Unit and widget testing
-- **bloc_test** 10.0.0 - BLoC testing utilities
-- **mocktail** 1.0.4 - Mocking framework
-
-### Build Tools
-- **build_runner** 2.4.15 - Code generation
-- **injectable_generator** 2.7.0 - DI code generation
-- **flutter_native_splash** 2.4.5 - Splash screen generation
+- **flutter_test** · **bloc_test** 10.0.0 · **mocktail** 1.0.4
 
 ---
+
 ## 🎯 Current Project Status
 
-**Last Updated:** April 22, 2026  
+**Last Updated:** May 31, 2026
 **Current Branch:** `develop`
 
+### ✅ Completed Sprints
 
-### ✅ Completed
-- Phase 1 foundation: authentication, RBAC, onboarding, error handling, logging, and clean architecture
-- Sprint 2: organization setup and service management
-- Sprint 3: working hours configuration and QR/share access
-- Sprint 4: customer booking flow
-- Sprint 5: queue system, customer dashboard, and access portal
-- Sprint 6: business logic and automation (time margin countdown, pre-booking lock, auto no-show progression)
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| Sprint 1 | Foundation: Auth, RBAC, Onboarding, Data models, Firestore rules | ✅ Complete |
+| Sprint 2 | Admin Core: Org setup, Service management | ✅ Complete |
+| Sprint 3 | Working Hours + QR/Share Access | ✅ Complete |
+| Sprint 4 | Customer Booking Flow (end-to-end) | ✅ Complete |
+| Sprint 5 | Queue System, Customer Dashboard, Access Portal | ✅ Complete |
+| Sprint 6/7 | Business Automation: countdown, auto no-show, pre-booking lock | ✅ Complete |
+| Sprint 009 | Bug fixes: 16 GitHub issues resolved (P1 + P2 + P3 implementations) | ✅ Complete |
 
-### 🚧 In Progress (Sprint 6A - Staff Member Management)
-- Staff member entity/model and Firestore schema updates
-- Service and appointment staff assignment fields
-- Staff CRUD, validation, queue filtering, and migration support
-- Firestore security rules for the staff subcollection
+### 🐛 Bug Fixes Shipped (Sprint 009)
+
+**P1 — Critical**
+- `#17` Firestore `whereIn` limit crash on 31+ queue entries — chunked to 30
+- `#18` Cancelled appointments blocked re-booking of their slot
+- `#19` Mixed-case QR slug lookup failed — normalized to lowercase
+
+**P2 — High Impact**
+- `#20` Slot picker didn't refresh when admin changed working hours mid-session
+- `#21` `transactionNext` skipped ghost entries (completed/noShow) incorrectly
+- `#22` Open/closed status derived from device clock instead of server time
+- `#30` Wait-time countdown widget froze (no periodic rebuild)
+- `#31` Cancellation blocked for `inQueue` appointments — now allowed
+- `#32` Firestore rules rejected admin updates on cancelled appointments
+
+**P3 — Medium**
+- `#23` Retry after slot conflict re-submitted stale slot
+- `#24` Multiple active appointments from different orgs were silently dropped
+- `#25` Zero-duration services corrupted queue wait estimates
+- `#26` Orphaned `inQueue` appointments from prior day not visible on dashboard
+- `#27` Break-time end could be set before start with no inline error
+- `#28` No booking horizon limit — now capped at 30 days
+- `#29` Auto no-show backoff reset on any unrelated queue success
+
+### 🚧 Deferred
+
+- **Staff Member Management (Sprint 6A)** — Deferred to post-MVP. Single-queue model with staff filtering; spec and task breakdown complete in `specs/007-staff-management/`.
 
 ### ⏳ Next Up
-- Sprint 7 — Notifications & Polish
-- Sprint 8 — Testing & Deployment
 
-**Overall Progress:** ~70% complete  
-**Estimated MVP Timeline:** ~4-6 weeks remaining
+| Sprint | Focus | Target |
+|--------|-------|--------|
+| Sprint 7 | FCM Push Notifications + UI/UX Polish | June 2026 |
+| Sprint 8 | Comprehensive Testing + Production Deployment | July 2026 |
+
+**Overall Progress:** ~82% complete
+**Estimated MVP Timeline:** ~3-4 weeks remaining
 
 ---
-
 
 ## 🧪 Testing
 
@@ -222,16 +223,15 @@ flutter test --coverage
 - ✅ Auth: AuthCubit (comprehensive)
 - ✅ Core: Result type, AppException hierarchy
 - ✅ Entities: Organization, Service, WorkingHours, Appointment, Queue
-- ✅ Models: All 5 Firestore models with serialization round-trips
+- ✅ Models: All 5 Firestore models with round-trip serialization
 - ✅ Onboarding: Integration test
+- ✅ Bug regression: P1/P2 issue fixes covered
 
-**Total Test Files:** 15+
+**Total Test Files:** 20+
 
 ---
 
 ## 📚 Documentation
-
-All documentation is located in the [docs/](docs/) folder:
 
 | Document | Description |
 |----------|-------------|
@@ -240,117 +240,75 @@ All documentation is located in the [docs/](docs/) folder:
 | [FEATURE_CHECKLIST.md](docs/FEATURE_CHECKLIST.md) | Feature implementation tracking |
 | [PROJECT_TIMELINE.md](docs/PROJECT_TIMELINE.md) | Timeline, Gantt charts, milestones |
 | [ENTITIES.md](docs/domain/ENTITIES.md) | Domain entity specifications |
-| [README.md](docs/README.md) | Documentation index |
+| [ADR/001](docs/ADR/001-role-based-repositories.md) | Role-based repository architecture decision |
 
 ---
 
 ## 🔄 GitHub Workflow
 
-This repository uses a feature-branch workflow:
+```bash
+# Feature branch from develop
+git checkout -b feature/your-feature-name
 
-1. **Create a feature branch** from `main`:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+# Commit
+git commit -m "feat(scope): description"
 
-2. **Commit focused changes:**
-   ```bash
-   git add .
-   git commit -m "feat: add user authentication"
-   ```
+# Push and open PR
+git push origin feature/your-feature-name
+```
 
-3. **Push and create a pull request:**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-4. **Review, iterate, and merge** to `main`
-
-**Branch Naming Convention:**
-- `feature/` - New features
-- `bugfix/` - Bug fixes
-- `refactor/` - Code refactoring
-- `docs/` - Documentation updates
+**Branch Naming:** `feature/` · `bugfix/` · `refactor/` · `docs/`
 
 ---
-
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-- **Flutter SDK** 3.9.0 or higher
-- **Dart SDK** 3.9.0 or higher
-- **Android Studio** / **Xcode** for device builds
-- **Firebase Account** (for backend services)
-- **Git** for version control
+- Flutter SDK 3.9.0+, Dart SDK 3.9.0+
+- Android Studio / Xcode
+- Firebase project (Auth, Firestore, Crashlytics)
 
 ### Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Clark605/queue_ease.git
-   cd queue_ease
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Generate dependency injection code:**
-   ```bash
-   flutter pub run build_runner build --delete-conflicting-outputs
-   ```
-
-4. **Configure environment variables:**
-   
-   Copy the example environment files:
-   ```bash
-   cp .env.example .env.dev
-   cp .env.example .env.prod
-   ```
-   
-   Update `.env.dev` and `.env.prod` with your actual configuration.
-   
-   **Note:** `.env.dev` and `.env.prod` are git-ignored to protect sensitive data.
-
-5. **Firebase setup:**
-   
-   Ensure Firebase is configured for your project:
-   - Add `google-services.json` (Android) to `android/app/`
-   - Add `GoogleService-Info.plist` (iOS) to `ios/Runner/`
-   - Update `firebase_options.dart` if needed
-
-### Running the App
-
-**Development Build (with debugging tools):**
-
 ```bash
-flutter run --flavor dev -t lib/main_dev.dart
+git clone https://github.com/Clark605/queue_ease.git
+cd queue_ease
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
+cp .env.example .env.dev && cp .env.example .env.prod
+# Add google-services.json / GoogleService-Info.plist
 ```
 
-Features enabled in dev:
-- Device preview
-- Verbose logging
-- Debug overlays
-- In-app log viewer at `/debug/logs`
-
-**Production Build:**
+### Running
 
 ```bash
+# Development
+flutter run --flavor dev -t lib/main_dev.dart
+
+# Production
 flutter run --flavor prod -t lib/main_prod.dart
 ```
 
-Production optimizations:
-- Error-only logging
-- No debug tools
-- Performance optimizations
+### Automation
 
-**VS Code Launch Configurations:**
+The repository now keeps the local git hooks and CI checks in Dart for easier reuse.
 
-Use the pre-configured launch options in `.vscode/launch.json`:
-- **Dev** - Development flavor
-- **Prod** - Production flavor
+```bash
+# One-time developer setup
+dart run tool/automation/setup_dev.dart
 
----
+# Run the same validation that CI uses
+dart run tool/automation/ci.dart
+
+# Regenerate DI output manually
+dart run tool/automation/run_build_runner.dart
+```
+
+What the hooks do:
+
+- `pre-commit` runs `dart format --set-exit-if-changed .` and `flutter analyze` before every commit.
+- `commit-msg` enforces Conventional Commits formatting for commit messages.
+- If staged changes touch DI annotations or `lib/core/di/`, the hook runs build_runner and re-stages the generated output.
+- `post-commit` deploys `firestore.rules` to the dev Firebase project automatically when a commit includes that file.
+
+To install the hooks locally, run `dart run tool/automation/setup_dev.dart` once after cloning.
